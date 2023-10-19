@@ -62,12 +62,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                             setState(() {
                               roomResult = RoomResult.fetchRoom(r.identifier);
                               roomResult!.then((v) {
-                                print('Has ' +
-                                    v.layers.length.toString() +
-                                    ' layers');
-                                print('Has ' +
-                                    v.rooms.length.toString() +
-                                    ' rooms');
+                                print("reload done");
                               }, onError: (e) {
                                 print(e);
                               });

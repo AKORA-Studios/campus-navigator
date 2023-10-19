@@ -1,6 +1,8 @@
 // Define a custom Form widget.
 import 'package:flutter/material.dart';
+import 'package:flutter_testy/api/plan.dart';
 import 'package:flutter_testy/api/search.dart';
+import 'package:flutter_testy/painter.dart';
 
 class MyCustomForm extends StatefulWidget {
   const MyCustomForm({super.key});
@@ -16,6 +18,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
   // of the TextField.
   final myController = TextEditingController();
   Future<SearchResult>? searchResult;
+  Future<RoomResult>? roomResult;
 
   @override
   void dispose() {
@@ -48,10 +51,28 @@ class _MyCustomFormState extends State<MyCustomForm> {
               return Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: snapshot.data!.resultsRooms
+                      .take(10)
                       .map(
-                        (r) => Text(
-                          r.name,
-                          textAlign: TextAlign.left,
+                        (r) => TextButton(
+                          child: Text(
+                            r.name,
+                            textAlign: TextAlign.left,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              roomResult = RoomResult.fetchRoom(r.identifier);
+                              roomResult!.then((v) {
+                                print('Has ' +
+                                    v.layers.length.toString() +
+                                    ' layers');
+                                print('Has ' +
+                                    v.rooms.length.toString() +
+                                    ' rooms');
+                              }, onError: (e) {
+                                print(e);
+                              });
+                            });
+                          },
                         ),
                       )
                       .toList());
@@ -62,7 +83,27 @@ class _MyCustomFormState extends State<MyCustomForm> {
             // By default, show a loading spinner.
             return const CircularProgressIndicator();
           },
-        )
+        ),
+        FutureBuilder<RoomResult>(
+          future: roomResult,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CustomPaint(
+                      size: const Size(300, 200),
+                      painter: MapPainter(roomResult: snapshot.data!),
+                    )
+                  ]);
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+
+            // By default, show a loading spinner.
+            return const CircularProgressIndicator();
+          },
+        ),
       ],
     );
   }

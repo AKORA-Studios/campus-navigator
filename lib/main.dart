@@ -12,7 +12,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Test',
-      theme: ThemeData(primarySwatch: Colors.teal),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.purple,
+          // ···
+          brightness: Brightness.dark,
+        ),
+      ),
       home: const FirstPage(),
     );
   }
@@ -24,43 +30,15 @@ class FirstPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Page Uno'),
-      ),
-      backgroundColor: Colors.amber,
-      body: const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[MyCustomForm()],
-      ),
-    );
-  }
-}
-
-class SecondPage extends StatelessWidget {
-  final String data;
-
-  const SecondPage({Key? key, required this.data}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Page Des'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            'Pageee deees',
-            style: TextStyle(fontSize: 50),
+        appBar: AppBar(
+          title: const Text('Campus Navigator'),
+        ),
+        body: const Padding(
+          padding: EdgeInsets.all(40.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[MyCustomForm()],
           ),
-          ElevatedButton(
-              child: const Text('Go to pagee des'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              })
-        ],
-      ),
-    );
+        ));
   }
 }

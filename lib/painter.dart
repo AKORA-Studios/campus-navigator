@@ -11,6 +11,10 @@ Color fromHex(String hexString) {
   return Color(int.parse(buffer.toString(), radix: 16));
 }
 
+const offX = 200.0;
+const offY = 200.0;
+const fac = 1;
+
 class MapPainter extends CustomPainter {
   final RoomResult roomResult;
 
@@ -23,7 +27,7 @@ class MapPainter extends CustomPainter {
     final strokePaint = Paint()
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke
-      ..color = Colors.black;
+      ..color = Colors.white;
 
     for (final RoomData r in roomResult.rooms) {
       for (int i = 0; i < r.points.length; i++) {
@@ -31,10 +35,16 @@ class MapPainter extends CustomPainter {
           final pointList = r.points[i][j];
           final fill = r.fills[i];
 
+          var color = fill != null ? fromHex(fill) : Colors.transparent;
+          if (color.red == 240) {
+            color = Colors.transparent;
+          }
+          color = color.withAlpha(50);
+
           final fillPaint = Paint()
             ..strokeWidth = 2
             ..style = PaintingStyle.fill
-            ..color = fill != null ? fromHex(fill) : Colors.transparent;
+            ..color = color;
 
           var path = Path();
           final mapped = mapPoints(pointList);
@@ -53,12 +63,29 @@ class MapPainter extends CustomPainter {
       }
     }
 
-    var paint = Paint()
+    var symbolPaint = Paint()
       ..strokeWidth = 4
       ..color = Colors.teal;
 
     for (final LayerData l in roomResult.layers) {
-      canvas.drawPoints(PointMode.points, mapPoints2(l.symbol), paint);
+      canvas.drawPoints(PointMode.points, mapPoints2(l.symbol), symbolPaint);
+    }
+
+    // Beschriftungen
+    for (final entry in roomResult.raumBezData.fills) {
+      final txt = entry.qy;
+      final offset = Offset((entry.x + offX) * fac, (entry.y + offY) * fac);
+      final paragraphStyle = ParagraphStyle(
+          fontSize: 13, textAlign: TextAlign.center, maxLines: 10);
+      final paragraphBuilder = ParagraphBuilder(paragraphStyle);
+      paragraphBuilder.addText(txt);
+      // paragraphBuilder.pushStyle();
+
+      final paragraph = paragraphBuilder.build();
+      const width = 100.0;
+      paragraph.layout(const ParagraphConstraints(width: width));
+
+      canvas.drawParagraph(paragraph, offset.translate(-(width / 2), 0));
     }
   }
 
@@ -69,14 +96,11 @@ class MapPainter extends CustomPainter {
 }
 
 List<Offset> mapPoints(List<double> rawPoints) {
-  const off = 200.0;
-  const fac = 1;
-
   List<Offset> chunks = [];
   int chunkSize = 2;
   for (var i = 0; i < rawPoints.length; i += chunkSize) {
     var point =
-        Offset((rawPoints[i] + off) * fac, (rawPoints[i + 1] + off) * fac);
+        Offset((rawPoints[i] + offX) * fac, (rawPoints[i + 1] + offY) * fac);
     chunks.add(point);
   }
   return chunks;

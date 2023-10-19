@@ -76,27 +76,24 @@ class _MyCustomFormState extends State<MyCustomForm> {
             }
 
             // By default, show a loading spinner.
-            return const CircularProgressIndicator();
+            return const SizedBox.shrink();
           },
         ),
+        const SizedBox(height: 100),
         FutureBuilder<RoomResult>(
           future: roomResult,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CustomPaint(
-                      size: const Size(300, 200),
-                      painter: MapPainter(roomResult: snapshot.data!),
-                    )
-                  ]);
+              return CustomPaint(
+                size: const Size(300, 300),
+                painter: MapPainter(roomResult: snapshot.data!),
+              );
             } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
             }
 
             // By default, show a loading spinner.
-            return const CircularProgressIndicator();
+            return const SizedBox.shrink();
           },
         ),
       ],

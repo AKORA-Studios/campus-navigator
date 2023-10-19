@@ -27,6 +27,7 @@ class FirstPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Page Uno'),
       ),
+      backgroundColor: Colors.amber,
       body: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[MyCustomForm()],

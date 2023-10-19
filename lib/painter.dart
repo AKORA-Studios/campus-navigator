@@ -20,18 +20,35 @@ class MapPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final strokePaint = Paint()
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke
+      ..color = Colors.black;
+
     for (final RoomData r in roomResult.rooms) {
       for (int i = 0; i < r.points.length; i++) {
         for (int j = 0; j < r.points[i].length; j++) {
-          var pointList = r.points[i][j];
+          final pointList = r.points[i][j];
+          final fill = r.fills[i];
 
-          var fill = r.fills[i];
-
-          var paint = Paint()
+          final fillPaint = Paint()
             ..strokeWidth = 2
-            ..color = fill != null ? fromHex(fill) : Colors.black;
+            ..style = PaintingStyle.fill
+            ..color = fill != null ? fromHex(fill) : Colors.transparent;
 
-          canvas.drawPoints(PointMode.polygon, mapPoints(pointList), paint);
+          var path = Path();
+          final mapped = mapPoints(pointList);
+
+          if (mapped.isNotEmpty) {
+            path.moveTo(mapped[0].dx, mapped[0].dy);
+
+            for (final p in mapped.skip(0)) {
+              path.lineTo(p.dx, p.dy);
+            }
+          }
+
+          canvas.drawPath(path, fillPaint);
+          canvas.drawPath(path, strokePaint);
         }
       }
     }

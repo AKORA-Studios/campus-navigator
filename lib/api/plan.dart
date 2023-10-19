@@ -4,16 +4,20 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-final RegExp exp = RegExp(r"^var (\w+) = ({[^;]+)", multiLine: true);
-final RegExp jsVariableExp = RegExp(r"(\w+):", multiLine: true);
+final RegExp variableDeclarationExp =
+    RegExp(r"^var (\w+) = ({[^;]+)", multiLine: true);
+final RegExp raumbezExp = RegExp(r"^raumbezData = ({[^;]+)", multiLine: true);
+final RegExp jsObjectExp = RegExp(r"(\w+):", multiLine: true);
 
 class RoomResult {
   final HTMLData htmlData;
+  final RaumBezData raumBezData;
   final List<RoomData> rooms;
   final List<LayerData> layers;
 
   const RoomResult({
     required this.htmlData,
+    required this.raumBezData,
     required this.rooms,
     required this.layers,
   });
@@ -21,12 +25,16 @@ class RoomResult {
   factory RoomResult.fromHTMLText(String body) {
     var htmlData = HTMLData.fromBody(body);
 
-    var matches = exp.allMatches(htmlData.script);
+    final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
+    final json = jsonDecode(raumBezMatch[1]!);
+    RaumBezData raumBezData = RaumBezData.fromJson(json);
+
+    var matches = variableDeclarationExp.allMatches(htmlData.script);
     Map<String, dynamic> variables = {};
     for (final Match m in matches) {
       String varName = m[1]!;
       String varValue =
-          m[2]!.replaceAllMapped(jsVariableExp, (m) => '"' + m[1]! + '":');
+          m[2]!.replaceAllMapped(jsObjectExp, (m) => '"' + m[1]! + '":');
       var json = jsonDecode(varValue);
 
       variables[varName] = json;
@@ -42,7 +50,11 @@ class RoomResult {
         .map((e) => RoomData.fromJson(e.value))
         .toList();
 
-    return RoomResult(htmlData: htmlData, layers: layers, rooms: rooms);
+    return RoomResult(
+        htmlData: htmlData,
+        raumBezData: raumBezData,
+        layers: layers,
+        rooms: rooms);
   }
 
   static Future<RoomResult> fetchRoom(String query) async {
@@ -80,6 +92,57 @@ class HTMLData {
     return HTMLData(
       document: document,
       script: script,
+    );
+  }
+}
+
+class RaumBezData {
+  final String textFill;
+  final List<RaumBezDataEntry> fills;
+
+  const RaumBezData({
+    required this.textFill,
+    required this.fills,
+  });
+
+  factory RaumBezData.fromJson(Map<dynamic, dynamic> json) {
+    String textFill = json["textFill"];
+    List<RaumBezDataEntry> fills = (json["fills"] as List<dynamic>)
+        .map((e) => RaumBezDataEntry.fromJson(e))
+        .toList();
+
+    return RaumBezData(
+      textFill: textFill,
+      fills: fills,
+    );
+  }
+}
+
+class RaumBezDataEntry {
+  final double x;
+  final String qy;
+  final double y;
+  final double mx;
+  final double my;
+  final double th;
+
+  RaumBezDataEntry({
+    required this.x,
+    required this.qy,
+    required this.y,
+    required this.mx,
+    required this.my,
+    required this.th,
+  });
+
+  factory RaumBezDataEntry.fromJson(Map<dynamic, dynamic> json) {
+    return RaumBezDataEntry(
+      x: json["x"],
+      qy: json["qy"],
+      y: json["y"],
+      mx: json["mx"],
+      my: json["my"],
+      th: json["th"],
     );
   }
 }

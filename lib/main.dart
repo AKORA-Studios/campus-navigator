@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_testy/form.dart';
+import 'package:campus_navigator/form.dart';
 
 void main() {
   runApp(const MyApp());

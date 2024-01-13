@@ -1,8 +1,8 @@
 // Define a custom Form widget.
 import 'package:flutter/material.dart';
-import 'package:flutter_testy/api/building.dart';
-import 'package:flutter_testy/api/search.dart';
-import 'package:flutter_testy/painter.dart';
+import 'package:campus_navigator/api/building.dart';
+import 'package:campus_navigator/api/search.dart';
+import 'package:campus_navigator/painter.dart';
 
 class MyCustomForm extends StatefulWidget {
   const MyCustomForm({super.key});

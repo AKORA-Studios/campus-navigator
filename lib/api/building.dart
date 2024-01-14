@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'dart:convert';
@@ -12,12 +13,14 @@ final RegExp jsObjectExp = RegExp(r"(\w+):", multiLine: true);
 class RoomResult {
   final HTMLData htmlData;
   final RaumBezData raumBezData;
+  final String pngFileName;
   final List<RoomData> rooms;
   final List<LayerData> layers;
 
   const RoomResult({
     required this.htmlData,
     required this.raumBezData,
+    required this.pngFileName,
     required this.rooms,
     required this.layers,
   });
@@ -50,11 +53,22 @@ class RoomResult {
         .map((e) => RoomData.fromJson(e.value))
         .toList();
 
+    String pngFileName = variables["png_file_name"];
+
     return RoomResult(
         htmlData: htmlData,
         raumBezData: raumBezData,
+        pngFileName: pngFileName,
         layers: layers,
         rooms: rooms);
+  }
+
+  NetworkImage fetchImage() {
+    final url = "https://navigator.tu-dresden.de/images/etplan_cache/" +
+        pngFileName +
+        "_1/0_0.png/nobase64";
+
+    return NetworkImage(url);
   }
 
   static Future<RoomResult> fetchRoom(String query) async {

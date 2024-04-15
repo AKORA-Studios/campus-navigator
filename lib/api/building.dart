@@ -28,8 +28,6 @@ class RoomResult {
   factory RoomResult.fromHTMLText(String body) {
     var htmlData = HTMLData.fromBody(body);
 
-    print("BCC");
-
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
     final json = jsonDecode(raumBezMatch[1]!);
     RaumBezData raumBezData = RaumBezData.fromJson(json);

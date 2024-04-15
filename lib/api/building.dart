@@ -28,6 +28,8 @@ class RoomResult {
   factory RoomResult.fromHTMLText(String body) {
     var htmlData = HTMLData.fromBody(body);
 
+    print("BCC");
+
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
     final json = jsonDecode(raumBezMatch[1]!);
     RaumBezData raumBezData = RaumBezData.fromJson(json);
@@ -53,7 +55,7 @@ class RoomResult {
         .map((e) => RoomData.fromJson(e.value))
         .toList();
 
-    String pngFileName = variables["png_file_name"];
+    String pngFileName = variables["png_file_name"] ?? 'A';
 
     return RoomResult(
         htmlData: htmlData,

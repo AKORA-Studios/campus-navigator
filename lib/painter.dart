@@ -56,6 +56,7 @@ class MapPainter extends CustomPainter {
               path.lineTo(p.dx, p.dy);
             }
           }
+          path.close();
 
           canvas.drawPath(path, fillPaint);
           canvas.drawPath(path, strokePaint);

@@ -1,25 +1,40 @@
-import 'package:flutter/widgets.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'dart:convert';
 
+import 'dart:async';
+import 'dart:ui' as ui;
+
 import 'package:http/http.dart' as http;
 
+// Matches variables that define a json object
 final RegExp variableDeclarationExp =
     RegExp(r"^var (\w+) = ({[^;]+)", multiLine: true);
 final RegExp raumbezExp = RegExp(r"^raumbezData = ({[^;]+)", multiLine: true);
 final RegExp jsObjectExp = RegExp(r"(\w+):", multiLine: true);
 
+final RegExp pngFileNameExp =
+    RegExp(r'var png_file_name = "(\w+)";', multiLine: true);
+
+final RegExp stringVariableExp =
+    RegExp(r'var ([\w_]+) = "(\w+)";', multiLine: true);
+
+final RegExp numberVariableExp =
+    RegExp(r'(var)? ([\w_]+) = (\d+);', multiLine: true);
+
 class RoomResult {
   final HTMLData htmlData;
   final RaumBezData raumBezData;
+  final Map<String, double> numberVariables;
   final String pngFileName;
   final List<RoomData> rooms;
   final List<LayerData> layers;
+  ui.Image? backgroundImage;
 
-  const RoomResult({
+  RoomResult({
     required this.htmlData,
     required this.raumBezData,
+    required this.numberVariables,
     required this.pngFileName,
     required this.rooms,
     required this.layers,
@@ -53,22 +68,47 @@ class RoomResult {
         .map((e) => RoomData.fromJson(e.value))
         .toList();
 
-    String pngFileName = variables["png_file_name"] ?? 'A';
+    // String variables
+    Map<String, String> stringVariables = {};
+    for (final Match m in stringVariableExp.allMatches(htmlData.script)) {
+      stringVariables[m[1]!] = m[2]!;
+    }
+
+    // Number variables
+    Map<String, double> numberVariables = {};
+    for (final Match m in numberVariableExp.allMatches(htmlData.script)) {
+      var val = double.tryParse(m[3]!);
+      if (val == null) continue;
+      numberVariables[m[2]!] = val;
+    }
+
+    String pngFileName = stringVariables["png_file_name"] ?? "AA";
 
     return RoomResult(
         htmlData: htmlData,
         raumBezData: raumBezData,
         pngFileName: pngFileName,
+        numberVariables: numberVariables,
         layers: layers,
         rooms: rooms);
   }
 
-  NetworkImage fetchImage() {
-    final url = "https://navigator.tu-dresden.de/images/etplan_cache/" +
-        pngFileName +
-        "_1/0_0.png/nobase64";
+  Future<void> fetchImage() async {
+    final uri = Uri.parse(
+        "https://navigator.tu-dresden.de/images/etplan_cache/" +
+            pngFileName +
+            "_1/0_0.png/nobase64");
 
-    return NetworkImage(url);
+    final response = await http.get(uri);
+
+    if (response.statusCode != 200 || response.bodyBytes.isEmpty) return;
+
+    final Completer<ui.Image> completer = Completer();
+    ui.decodeImageFromList(response.bodyBytes, (ui.Image img) {
+      return completer.complete(img);
+    });
+
+    backgroundImage = await completer.future;
   }
 
   static Future<RoomResult> fetchRoom(String query) async {
@@ -79,7 +119,12 @@ class RoomResult {
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      return RoomResult.fromHTMLText(response.body);
+      var roomResult = RoomResult.fromHTMLText(response.body);
+
+      // Load background image
+      await roomResult.fetchImage();
+
+      return roomResult;
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.

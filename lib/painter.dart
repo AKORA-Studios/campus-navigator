@@ -21,11 +21,30 @@ class MapPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Setup correct scalign and offset so everything will fit into the given size
     Rect drawingArea = calculateDrawingArea();
     double scale = size.width / drawingArea.width;
     scale = min(scale, size.height / drawingArea.height);
 
+    // Scaling needs to happen before the image gets painted
     canvas.scale(scale);
+
+    // Paint background image
+    if (roomResult.backgroundImage != null) {
+      // canvas.scale(1 / 4);
+      double canvWidth = roomResult.numberVariables["data_canv_width"]!;
+      double canvHeight = roomResult.numberVariables["data_canv_height"]!;
+      // var quali_size = subpics_size / quali_steps[quali_cur];
+      double qualiSize = roomResult.numberVariables["subpics_size"]! / 1;
+      var imageOffset = Offset((-0.5 * canvWidth) + (1 * qualiSize),
+          (-0.5 * canvHeight) + (1 * qualiSize));
+
+      print(qualiSize);
+      canvas.drawImage(roomResult.backgroundImage!, imageOffset, Paint());
+      //canvas.scale(4);
+    }
+
+    // Translation needs to happen after the image was painted
     canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
 
     final strokePaint = Paint()
@@ -143,13 +162,9 @@ List<Offset> mapPoints(List<double> rawPoints) {
 }
 
 List<Offset> mapPoints2(List<Position> rawPoints) {
-  const off = 200.0;
-  const fac = 1;
-
   List<Offset> chunks = [];
   for (var i = 0; i < rawPoints.length; i++) {
-    var point =
-        Offset((rawPoints[i].x + off) * fac, (rawPoints[i].y + off) * fac);
+    var point = Offset(rawPoints[i].x as double, rawPoints[i].y as double);
     chunks.add(point);
   }
   return chunks;

@@ -5,9 +5,10 @@ import 'package:campus_navigator/api/search.dart';
 import 'package:campus_navigator/painter.dart';
 
 class RoomView extends StatefulWidget {
-  const RoomView({super.key, required this.myController, required this.room});
+  const RoomView({super.key, required this.myController, required this.room, required this.name});
   final TextEditingController myController;
   final RoomResult room;
+  final String name;
 
   @override
   State<RoomView> createState() => _RoomViewState();
@@ -26,7 +27,7 @@ class _RoomViewState extends State<RoomView> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("Home"),
+          title: Text(widget.name),
         ),
         body:SingleChildScrollView(
       child: Column(

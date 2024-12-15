@@ -40,7 +40,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      RoomView(myController: myController, room: v)),
+                      RoomView(myController: myController, room: v, name: r.name)),
             );
           }, onError: (e) {
             print(e);

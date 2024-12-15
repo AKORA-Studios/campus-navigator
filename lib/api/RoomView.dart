@@ -17,7 +17,7 @@ class _RoomViewState extends State<RoomView> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    widget.myController.dispose();
+   // widget.myController.dispose();
     super.dispose();
   }
 

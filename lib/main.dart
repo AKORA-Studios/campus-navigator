@@ -13,11 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Test',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.purple,
-          // ···
-          brightness: Brightness.dark,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const FirstPage(),
     );
@@ -33,6 +29,7 @@ class FirstPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Campus Navigator'),
         ),
+        resizeToAvoidBottomInset: false,
         body: const Padding(
           padding: EdgeInsets.all(40.0),
           child: Column(

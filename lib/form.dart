@@ -1,4 +1,5 @@
 // Define a custom Form widget.
+import 'package:campus_navigator/api/RoomView.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building.dart';
 import 'package:campus_navigator/api/search.dart';
@@ -11,11 +12,7 @@ class MyCustomForm extends StatefulWidget {
   State<MyCustomForm> createState() => _MyCustomFormState();
 }
 
-// Define a corresponding State class.
-// This class holds the data related to the Form.
 class _MyCustomFormState extends State<MyCustomForm> {
-  // Create a text controller and use it to retrieve the current value
-  // of the TextField.
   final myController = TextEditingController();
   Future<SearchResult>? searchResult;
   Future<RoomResult>? roomResult;
@@ -39,11 +36,12 @@ class _MyCustomFormState extends State<MyCustomForm> {
           roomResult = RoomResult.fetchRoom(r.identifier);
           roomResult!.then((v) {
             print("reload done");
-            /*  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LogPage(title: "Log", logEntries: logs)),
-                                  );*/
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      RoomView(myController: myController, room: v)),
+            );
           }, onError: (e) {
             print(e);
           });
@@ -52,65 +50,74 @@ class _MyCustomFormState extends State<MyCustomForm> {
     );
   }
 
+  Widget resultsView() {
+    return FutureBuilder<RoomResult>(
+      future: roomResult,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Column(
+            children: <Widget>[
+              CustomPaint(
+                size: const Size(300, 300),
+                painter: MapPainter(roomResult: snapshot.data!),
+              ),
+              Text('eeee'),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+
+        // By default, show a loading spinner.
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            'Raumsuche',
-            style: TextStyle(fontSize: 50),
-          ),
-          TextField(
-            controller: myController,
-            onChanged: (text) {
-              setState(() {
-                searchResult = SearchResult.searchRoom(myController.text);
-              });
-            },
-          ),
-          FutureBuilder<SearchResult>(
-            future: searchResult,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: snapshot.data!.resultsRooms
-                        .take(8)
-                        .map((r) => getResultButton(r))
-                        .toList());
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-              // By default, show a loading spinner.
-              return const SizedBox.shrink();
-            },
-          ),
-          const SizedBox(height: 100),
-          FutureBuilder<RoomResult>(
-            future: roomResult,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column(
-                  children: <Widget>[
-                    CustomPaint(
-                      size: const Size(300, 300),
-                      painter: MapPainter(roomResult: snapshot.data!),
-                    ),
-                    Text('eeee'),
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              // By default, show a loading spinner.
-              return const SizedBox.shrink();
-            },
-          ),
-        ],
-      ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: const Text("Raumsuche"),
+        ),
+        body: Container(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  TextField(
+                    controller: myController,
+                    decoration: InputDecoration(hintText: 'Raumabkürzung hier eingeben'),
+                    onChanged: (text) {
+                      setState(() {
+                        searchResult =
+                            SearchResult.searchRoom(myController.text);
+                      });
+                    },
+                  ),
+                  FutureBuilder<SearchResult>(
+                    future: searchResult,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: snapshot.data!.resultsRooms
+                                .take(8)
+                                .map((r) => getResultButton(r))
+                                .toList());
+                      } else if (snapshot.hasError) {
+                        return Text('${snapshot.error}');
+                      }
+                      // By default, show a loading spinner.
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  const SizedBox(height: 100),
+                  resultsView()
+                ],
+              ),
+            )));
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class MapPainter extends CustomPainter {
     final strokePaint = Paint()
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke
-      ..color = Colors.white;
+      ..color = Colors.black.withAlpha(120);
 
     for (final RoomData r in roomResult.rooms) {
       for (int i = 0; i < r.points.length; i++) {
@@ -35,10 +36,10 @@ class MapPainter extends CustomPainter {
           final pointList = r.points[i][j];
           final fill = r.fills[i];
 
-          var color = fill != null ? fromHex(fill) : Colors.transparent;
-          if (color.red == 240) {
-            color = Colors.transparent;
-          }
+          var color = fill != null ? fromHex(fill) : Colors.red;
+
+          // Normal rooms
+          if (color.red == 240) color = Colors.grey;
           color = color.withAlpha(50);
 
           final fillPaint = Paint()
@@ -76,17 +77,29 @@ class MapPainter extends CustomPainter {
     for (final entry in roomResult.raumBezData.fills) {
       final txt = entry.qy;
       final offset = Offset((entry.x + offX) * fac, (entry.y + offY) * fac);
-      final paragraphStyle = ParagraphStyle(
-          fontSize: 13, textAlign: TextAlign.center, maxLines: 10);
-      final paragraphBuilder = ParagraphBuilder(paragraphStyle);
-      paragraphBuilder.addText(txt);
-      // paragraphBuilder.pushStyle();
 
-      final paragraph = paragraphBuilder.build();
       const width = 100.0;
-      paragraph.layout(const ParagraphConstraints(width: width));
 
-      canvas.drawParagraph(paragraph, offset.translate(-(width / 2), 0));
+      //const fontSize = 15.0;
+      double fontSize = min(entry.my, entry.mx / entry.qy.length);
+
+      final textPainter = TextPainter(
+          text: TextSpan(
+            text: txt,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: fontSize,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center);
+
+      textPainter.layout(minWidth: width, maxWidth: width);
+
+      // Aligning the text vertically and horizontally
+      // 0.15 is because the text won't be perfectly vertically centere
+      textPainter.paint(canvas,
+          offset.translate(-width / 2, -((fontSize / 2) + fontSize * 0.15)));
     }
   }
 

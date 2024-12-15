@@ -88,7 +88,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 children: <Widget>[
                   TextField(
                     controller: myController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         hintText: 'Raumabkürzung hier eingeben'),
                     onChanged: (text) {
                       setState(() {

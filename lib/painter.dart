@@ -12,10 +12,6 @@ Color fromHex(String hexString) {
   return Color(int.parse(buffer.toString(), radix: 16));
 }
 
-const offX = 200.0;
-const offY = 200.0;
-const fac = 1;
-
 class MapPainter extends CustomPainter {
   final RoomResult roomResult;
 
@@ -25,6 +21,13 @@ class MapPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    Rect drawingArea = calculateDrawingArea();
+    double scale = size.width / drawingArea.width;
+    scale = min(scale, size.height / drawingArea.height);
+
+    canvas.scale(scale);
+    canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
+
     final strokePaint = Paint()
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke
@@ -76,7 +79,7 @@ class MapPainter extends CustomPainter {
     // Beschriftungen
     for (final entry in roomResult.raumBezData.fills) {
       final txt = entry.qy;
-      final offset = Offset((entry.x + offX) * fac, (entry.y + offY) * fac);
+      final offset = Offset(entry.x, entry.y);
 
       const width = 100.0;
 
@@ -107,14 +110,33 @@ class MapPainter extends CustomPainter {
   bool shouldRepaint(MapPainter oldDelegate) {
     return roomResult.htmlData != oldDelegate.roomResult.htmlData;
   }
+
+  Rect calculateDrawingArea() {
+    var allPoints = roomResult.rooms
+        .expand((r) => r.points.expand((p) => p.expand(mapPoints)))
+        .toList();
+
+    var minX = allPoints.fold(allPoints[0].dx,
+        (previousValue, element) => min(previousValue, element.dx));
+
+    var maxX = allPoints.fold(allPoints[0].dx,
+        (previousValue, element) => max(previousValue, element.dx));
+
+    var minY = allPoints.fold(allPoints[0].dy,
+        (previousValue, element) => min(previousValue, element.dy));
+
+    var maxY = allPoints.fold(allPoints[0].dy,
+        (previousValue, element) => max(previousValue, element.dy));
+
+    return Rect.fromLTRB(minX, minY, maxX, maxY);
+  }
 }
 
 List<Offset> mapPoints(List<double> rawPoints) {
   List<Offset> chunks = [];
   int chunkSize = 2;
   for (var i = 0; i < rawPoints.length; i += chunkSize) {
-    var point =
-        Offset((rawPoints[i] + offX) * fac, (rawPoints[i + 1] + offY) * fac);
+    var point = Offset(rawPoints[i], rawPoints[i + 1]);
     chunks.add(point);
   }
   return chunks;

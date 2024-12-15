@@ -35,7 +35,6 @@ class _MyCustomFormState extends State<MyCustomForm> {
         setState(() {
           roomResult = RoomResult.fetchRoom(r.identifier);
           roomResult!.then((v) {
-            print("reload done");
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -92,8 +91,19 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         hintText: 'Raumabkürzung hier eingeben'),
                     onChanged: (text) {
                       setState(() {
-                        searchResult =
+                        var searchFuture =
                             SearchResult.searchRoom(myController.text);
+                        searchResult = searchFuture;
+
+                        searchFuture.then((value) {
+                          var result = value.resultsRooms.firstOrNull;
+                          if (result == null) return;
+
+                          setState(() {
+                            roomResult =
+                                RoomResult.fetchRoom(result.identifier);
+                          });
+                        });
                       });
                     },
                   ),

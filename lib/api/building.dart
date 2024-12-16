@@ -1,3 +1,4 @@
+import 'package:campus_navigator/api/roomAdress.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'dart:convert';
@@ -30,18 +31,42 @@ class RoomResult {
   final List<RoomData> rooms;
   final List<LayerData> layers;
   ui.Image? backgroundImage;
+  final List<RoomAdress> adressInfo;
 
-  RoomResult({
-    required this.htmlData,
-    required this.raumBezData,
-    required this.numberVariables,
-    required this.pngFileName,
-    required this.rooms,
-    required this.layers,
-  });
+  RoomResult(
+      {required this.htmlData,
+      required this.raumBezData,
+      required this.numberVariables,
+      required this.pngFileName,
+      required this.rooms,
+      required this.layers,
+      required this.adressInfo});
 
   factory RoomResult.fromHTMLText(String body) {
     var htmlData = HTMLData.fromBody(body);
+
+    var rightNavBarContent =
+        htmlData.document.querySelector("#menu_cont_right");
+    List<RoomAdress> adressInfo = [];
+    if (rightNavBarContent != null) {
+      var buildingInfos = rightNavBarContent.children[rightNavBarContent.children.length - 2];
+
+      List<Element> childrenGiver = buildingInfos.children;
+      List<List<Element>> buildingList = [];
+      while (childrenGiver.length > 8) {
+        buildingList.add(childrenGiver.take(8).where((element) => element.localName != "p").toList());
+        childrenGiver.removeRange(0,8);
+      }
+
+      for(List<Element> buildingInfo in buildingList) {
+        print(buildingInfo);
+        var fullTitle = buildingInfo[0].innerHtml;//.where((element) => element.localName == "h6").first.innerHtml;
+        var adressInfoRoom = RoomAdress(fullTitle, buildingInfo[3].innerHtml, buildingInfo[1].innerHtml, buildingInfo[2].innerHtml);
+        print(adressInfoRoom);
+        adressInfo.add(adressInfoRoom);
+      }
+    }
+
 
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
     final json = jsonDecode(raumBezMatch[1]!);
@@ -90,7 +115,8 @@ class RoomResult {
         pngFileName: pngFileName,
         numberVariables: numberVariables,
         layers: layers,
-        rooms: rooms);
+        rooms: rooms,
+        adressInfo: adressInfo);
   }
 
   Future<void> fetchImage() async {

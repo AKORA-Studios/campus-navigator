@@ -1,4 +1,5 @@
 // Define a custom Form widget.
+import 'package:campus_navigator/api/roomAdress.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building.dart';
 import 'package:campus_navigator/painter.dart';
@@ -25,6 +26,14 @@ class _RoomViewState extends State<RoomView> {
     super.dispose();
   }
 
+  Widget adressInfo() {
+    List<Widget> arr = [];
+    for(RoomAdress child in widget.room.adressInfo) {
+      arr.add(Text(child.fullTitle));
+    }
+    return Column(children: arr);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +50,8 @@ class _RoomViewState extends State<RoomView> {
               child: CustomPaint(
                 painter: MapPainter(roomResult: widget.room),
                 size: const Size(800, 900),
-              ))
+              )),
+              adressInfo()
         ])));
   }
 }

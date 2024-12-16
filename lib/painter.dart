@@ -26,26 +26,30 @@ class MapPainter extends CustomPainter {
     double scale = size.width / drawingArea.width;
     scale = min(scale, size.height / drawingArea.height);
 
-    // Scaling needs to happen before the image gets painted
+    // Translate & Scale coordinate system
     canvas.scale(scale);
+    canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
 
     // Paint background image
     if (roomResult.backgroundImage != null) {
       // canvas.scale(1 / 4);
+      double x = 0;
+      double y = 0;
+      int qualiCur = 0;
+      List<double> qualiSteps = [1, 2, 4, 8];
+
       double canvWidth = roomResult.numberVariables["data_canv_width"]!;
       double canvHeight = roomResult.numberVariables["data_canv_height"]!;
-      // var quali_size = subpics_size / quali_steps[quali_cur];
-      double qualiSize = roomResult.numberVariables["subpics_size"]! / 1;
-      var imageOffset = Offset((-0.5 * canvWidth) + (1 * qualiSize),
-          (-0.5 * canvHeight) + (1 * qualiSize));
+      double qualiSize =
+          roomResult.numberVariables["subpics_size"]! / qualiSteps[qualiCur];
 
-      print(qualiSize);
+      var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
+          (-0.5 * canvHeight) + (y * qualiSize));
+
+      //print(
+      //    "canvWidth: $canvWidth, canvHeight: $canvHeight, qualiSize: $qualiSize, imageOffset: $imageOffset");
       canvas.drawImage(roomResult.backgroundImage!, imageOffset, Paint());
-      //canvas.scale(4);
     }
-
-    // Translation needs to happen after the image was painted
-    canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
 
     final strokePaint = Paint()
       ..strokeWidth = 1

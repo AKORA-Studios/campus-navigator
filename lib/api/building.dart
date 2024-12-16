@@ -49,17 +49,22 @@ class RoomResult {
         htmlData.document.querySelector("#menu_cont_right");
     List<RoomAdress> adressInfo = [];
     if (rightNavBarContent != null) {
-      var buildingInfos = rightNavBarContent.children[rightNavBarContent.children.length - 2];
+      var buildingInfos =
+          rightNavBarContent.children[rightNavBarContent.children.length - 2];
 
       List<Element> childrenGiver = buildingInfos.children;
       List<List<Element>> buildingList = [];
       while (childrenGiver.length > 8) {
-        buildingList.add(childrenGiver.take(8).where((element) => element.localName != "p").toList());
-        childrenGiver.removeRange(0,8);
+        buildingList.add(childrenGiver
+            .take(8)
+            .where((element) => element.localName != "p")
+            .toList());
+        childrenGiver.removeRange(0, 8);
       }
-      for(List<Element> buildingInfo in buildingList) {
+      for (List<Element> buildingInfo in buildingList) {
         var fullTitle = buildingInfo[0].innerHtml;
-        var adressInfoRoom = RoomAdress(fullTitle, buildingInfo[3].innerHtml, buildingInfo[1].innerHtml, buildingInfo[2].innerHtml);
+        var adressInfoRoom = RoomAdress(fullTitle, buildingInfo[3].innerHtml,
+            buildingInfo[1].innerHtml, buildingInfo[2].innerHtml);
         adressInfo.add(adressInfoRoom);
       }
     }
@@ -99,7 +104,7 @@ class RoomResult {
     Map<String, double> numberVariables = {};
     for (final Match m in numberVariableExp.allMatches(htmlData.script)) {
       var val = double.tryParse(m[3]!);
-      if (val == null) continue;
+      if (val == null || numberVariables.containsKey(m[2])) continue;
       numberVariables[m[2]!] = val;
     }
 

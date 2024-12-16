@@ -28,9 +28,13 @@ class _RoomViewState extends State<RoomView> {
 
   Widget adressInfo() {
     List<Widget> arr = [];
-    for(RoomAdress child in widget.room.adressInfo) {
-      arr.add(Text(child.fullTitle.split(',')[0].trim(), style: const TextStyle(fontWeight: FontWeight.bold)));
-      arr.add(Text(child.adress.replaceAll("<br>", "\n"), style: const TextStyle(color: Colors.grey),));
+    for (RoomAdress child in widget.room.adressInfo) {
+      arr.add(Text(child.fullTitle.split(',')[0].trim(),
+          style: const TextStyle(fontWeight: FontWeight.bold)));
+      arr.add(Text(
+        child.adress.replaceAll("<br>", "\n"),
+        style: const TextStyle(color: Colors.grey),
+      ));
     }
     return Column(children: arr);
   }
@@ -46,13 +50,13 @@ class _RoomViewState extends State<RoomView> {
             child: Column(children: [
           InteractiveViewer(
               boundaryMargin: const EdgeInsets.all(20.0),
-              //minScale: 0.1,
-              //maxScale: 1.6,
+              minScale: 0.001,
+              maxScale: 16.0,
               child: CustomPaint(
                 painter: MapPainter(roomResult: widget.room),
                 size: const Size(800, 900),
               )),
-              adressInfo()
+          adressInfo()
         ])));
   }
 }

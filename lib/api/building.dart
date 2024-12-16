@@ -30,7 +30,7 @@ class RoomResult {
   final String pngFileName;
   final List<RoomData> rooms;
   final List<LayerData> layers;
-  ui.Image? backgroundImage;
+  List<ui.Image>? backgroundImage;
   final List<RoomAdress> adressInfo;
 
   RoomResult(
@@ -120,22 +120,28 @@ class RoomResult {
         adressInfo: adressInfo);
   }
 
-  Future<void> fetchImage() async {
-    final uri = Uri.parse(
-        "https://navigator.tu-dresden.de/images/etplan_cache/" +
-            pngFileName +
-            "_1/0_0.png/nobase64");
+  Future<void> fetchImage({int qualiIndex = 1}) async {
+    final List<int> qualiSteps = [1, 2, 4, 8];
+    final int qualiStep = qualiSteps[qualiIndex];
 
-    final response = await http.get(uri);
+    backgroundImage = [];
+    for (int x = 0; x <= qualiIndex; x++) {
+      for (int y = 0; y <= qualiIndex; y++) {
+        final uri = Uri.parse(
+            "https://navigator.tu-dresden.de/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
 
-    if (response.statusCode != 200 || response.bodyBytes.isEmpty) return;
+        final response = await http.get(uri);
 
-    final Completer<ui.Image> completer = Completer();
-    ui.decodeImageFromList(response.bodyBytes, (ui.Image img) {
-      return completer.complete(img);
-    });
+        if (response.statusCode != 200 || response.bodyBytes.isEmpty) return;
 
-    backgroundImage = await completer.future;
+        final Completer<ui.Image> completer = Completer();
+        ui.decodeImageFromList(response.bodyBytes, (ui.Image img) {
+          return completer.complete(img);
+        });
+
+        backgroundImage!.add(await completer.future);
+      }
+    }
   }
 
   static Future<RoomResult> fetchRoom(String query) async {

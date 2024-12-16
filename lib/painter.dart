@@ -32,23 +32,31 @@ class MapPainter extends CustomPainter {
 
     // Paint background image
     if (roomResult.backgroundImage != null) {
-      // canvas.scale(1 / 4);
-      double x = 0;
-      double y = 0;
-      int qualiCur = 0;
-      List<double> qualiSteps = [1, 2, 4, 8];
+      int qualiCur = 1;
+      List<int> qualiSteps = [1, 2, 4, 8];
+      int qualiStep = qualiSteps[qualiCur];
+      double qualiStepD = qualiStep.toDouble();
 
       double canvWidth = roomResult.numberVariables["data_canv_width"]!;
       double canvHeight = roomResult.numberVariables["data_canv_height"]!;
       double qualiSize =
-          roomResult.numberVariables["subpics_size"]! / qualiSteps[qualiCur];
+          roomResult.numberVariables["subpics_size"]! / qualiStep;
 
-      var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
-          (-0.5 * canvHeight) + (y * qualiSize));
+      canvas.scale(1 / qualiStepD);
 
-      //print(
-      //    "canvWidth: $canvWidth, canvHeight: $canvHeight, qualiSize: $qualiSize, imageOffset: $imageOffset");
-      canvas.drawImage(roomResult.backgroundImage!, imageOffset, Paint());
+      for (int x = 0; x <= qualiCur; x++) {
+        for (int y = 0; y <= qualiCur; y++) {
+          var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
+              (-0.5 * canvHeight) + (y * qualiSize));
+
+          //print(
+          //    "canvWidth: $canvWidth, canvHeight: $canvHeight, qualiSize: $qualiSize, imageOffset: $imageOffset");
+          canvas.drawImage(roomResult.backgroundImage![(x * qualiStep) + (y)],
+              imageOffset.scale(qualiStepD, qualiStepD), Paint());
+        }
+      }
+
+      canvas.scale(qualiStepD);
     }
 
     final strokePaint = Paint()

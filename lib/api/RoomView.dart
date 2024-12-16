@@ -29,7 +29,8 @@ class _RoomViewState extends State<RoomView> {
   Widget adressInfo() {
     List<Widget> arr = [];
     for(RoomAdress child in widget.room.adressInfo) {
-      arr.add(Text(child.fullTitle));
+      arr.add(Text(child.fullTitle.split(',')[0].trim(), style: const TextStyle(fontWeight: FontWeight.bold)));
+      arr.add(Text(child.adress.replaceAll("<br>", "\n"), style: const TextStyle(color: Colors.grey),));
     }
     return Column(children: arr);
   }

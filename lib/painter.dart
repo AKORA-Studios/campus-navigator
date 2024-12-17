@@ -59,43 +59,59 @@ class MapPainter extends CustomPainter {
     }
 
     final strokePaint = Paint()
-      ..strokeWidth = 1
+      ..strokeWidth = .4
       ..style = PaintingStyle.stroke
       ..color = Colors.black.withAlpha(120);
 
-    for (final RoomData r in roomResult.rooms) {
-      for (int i = 0; i < r.points.length; i++) {
-        for (int j = 0; j < r.points[i].length; j++) {
-          final pointList = r.points[i][j];
-          final fill = r.fills[i];
+    void drawRoom(RoomData roomData, {Color? fillColor}) {
+      for (int i = 0; i < roomData.points.length; i++) {
+        final pointList = roomData.points[i];
+        final fill = roomData.fill;
 
-          var color = fill != null ? fromHex(fill) : Colors.red;
-
+        Color color;
+        if (fillColor != null) {
+          // Specially highlighted rooms
+          color = fillColor;
+        } else {
           // Normal rooms
+          color = fill != null ? fromHex(fill) : Colors.red;
+
+          // Make color less aggresive
           if (color.red == 240) color = Colors.grey;
           color = color.withAlpha(50);
-
-          final fillPaint = Paint()
-            ..strokeWidth = 2
-            ..style = PaintingStyle.fill
-            ..color = color;
-
-          var path = Path();
-          final mapped = mapPoints(pointList);
-
-          if (mapped.isNotEmpty) {
-            path.moveTo(mapped[0].dx, mapped[0].dy);
-
-            for (final p in mapped.skip(0)) {
-              path.lineTo(p.dx, p.dy);
-            }
-          }
-          path.close();
-
-          canvas.drawPath(path, fillPaint);
-          canvas.drawPath(path, strokePaint);
         }
+
+        final fillPaint = Paint()
+          ..strokeWidth = 0
+          ..style = PaintingStyle.fill
+          ..color = color;
+
+        var path = Path();
+        final mapped = mapPoints(pointList);
+
+        if (mapped.isNotEmpty) {
+          path.moveTo(mapped[0].dx, mapped[0].dy);
+
+          for (final p in mapped.skip(0)) {
+            path.lineTo(p.dx, p.dy);
+          }
+        }
+        path.close();
+
+        canvas.drawPath(path, fillPaint);
+        canvas.drawPath(path, strokePaint);
       }
+    }
+
+    for (final List<RoomData> roomList in roomResult.rooms) {
+      for (final RoomData roomData in roomList) {
+        drawRoom(roomData);
+      }
+    }
+
+    // Highlight room
+    for (final roomData in roomResult.hoersaele) {
+      drawRoom(roomData, fillColor: Colors.red.withAlpha(200));
     }
 
     var symbolPaint = Paint()
@@ -143,7 +159,7 @@ class MapPainter extends CustomPainter {
 
   Rect calculateDrawingArea() {
     var allPoints = roomResult.rooms
-        .expand((r) => r.points.expand((p) => p.expand(mapPoints)))
+        .expand((r) => r.expand((e) => e.points).expand(mapPoints))
         .toList();
 
     var minX = allPoints.fold(allPoints[0].dx,

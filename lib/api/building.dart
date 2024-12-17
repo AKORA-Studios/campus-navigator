@@ -42,7 +42,8 @@ class RoomResult {
   final RaumBezData raumBezData;
   final Map<String, double> numberVariables;
   final String pngFileName;
-  final List<RoomData> rooms;
+  final List<List<RoomData>> rooms;
+  final List<RoomData> hoersaele;
   final List<LayerData> layers;
   BackgroundImageData? backgroundImageData;
   final List<RoomAdress> adressInfo;
@@ -54,6 +55,7 @@ class RoomResult {
       required this.pngFileName,
       required this.rooms,
       required this.layers,
+      required this.hoersaele,
       required this.adressInfo});
 
   factory RoomResult.fromHTMLText(String body) {
@@ -103,10 +105,13 @@ class RoomResult {
         .map((e) => LayerData.fromJson(e.value))
         .toList();
 
-    List<RoomData> rooms = variables.entries
+    List<List<RoomData>> rooms = variables.entries
         .where((e) => !e.key.startsWith("slayer"))
-        .map((e) => RoomData.fromJson(e.value))
+        .map((e) => RoomData.fromJsonList(e.value))
         .toList();
+
+    List<RoomData> highlightedRooms =
+        RoomData.fromJsonList(variables["hoersaeleData"]);
 
     // String variables
     Map<String, String> stringVariables = {};
@@ -131,6 +136,7 @@ class RoomResult {
         numberVariables: numberVariables,
         layers: layers,
         rooms: rooms,
+        hoersaele: highlightedRooms,
         adressInfo: adressInfo);
   }
 
@@ -270,15 +276,15 @@ class RaumBezDataEntry {
 }
 
 class RoomData {
-  final List<List<List<double>>> points;
-  final List<String?> fills;
+  final List<List<double>> points;
+  final String? fill;
 
   const RoomData({
     required this.points,
-    required this.fills,
+    required this.fill,
   });
 
-  factory RoomData.fromJson(Map<dynamic, dynamic> json) {
+  static List<RoomData> fromJsonList(Map<dynamic, dynamic> json) {
     List<dynamic> points = json["points"];
 
     List<List<List<double>>> points3 = points
@@ -289,10 +295,12 @@ class RoomData {
     List<String?> fills =
         (json["fills"] as List<dynamic>).map((e) => e as String?).toList();
 
-    return RoomData(
-      points: points3,
-      fills: fills,
-    );
+    List<RoomData> rooms = [];
+    for (int i = 0; i < points3.length; i++) {
+      rooms.add(RoomData(points: points3[i], fill: fills[i]));
+    }
+
+    return rooms;
   }
 }
 

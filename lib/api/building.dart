@@ -23,6 +23,20 @@ final RegExp stringVariableExp =
 final RegExp numberVariableExp =
     RegExp(r'(var)? ([\w_]+) = (\d+);', multiLine: true);
 
+class BackgroundImageData {
+  final int qualiStep;
+  final Map<String, ui.Image> backgroundImages;
+
+  BackgroundImageData({
+    required this.qualiStep,
+    required this.backgroundImages,
+  });
+
+  ui.Image? getImage(int x, int y) {
+    return backgroundImages["${x}_$y"];
+  }
+}
+
 class RoomResult {
   final HTMLData htmlData;
   final RaumBezData raumBezData;
@@ -30,7 +44,7 @@ class RoomResult {
   final String pngFileName;
   final List<RoomData> rooms;
   final List<LayerData> layers;
-  List<ui.Image>? backgroundImage;
+  BackgroundImageData? backgroundImageData;
   final List<RoomAdress> adressInfo;
 
   RoomResult(
@@ -120,28 +134,44 @@ class RoomResult {
         adressInfo: adressInfo);
   }
 
-  Future<void> fetchImage({int qualiIndex = 1}) async {
+  Future<void> fetchImage({int qualiIndex = 2}) async {
     final List<int> qualiSteps = [1, 2, 4, 8];
     final int qualiStep = qualiSteps[qualiIndex];
 
-    backgroundImage = [];
-    for (int x = 0; x <= qualiIndex; x++) {
-      for (int y = 0; y <= qualiIndex; y++) {
+    List<Future<(String, ui.Image?)>> imageBuffer = [];
+    for (int x = 0; x < qualiStep; x++) {
+      for (int y = 0; y < qualiStep; y++) {
         final uri = Uri.parse(
             "https://navigator.tu-dresden.de/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
 
-        final response = await http.get(uri);
+        final imageFuture = http.get(uri).then((response) async {
+          if (response.statusCode != 200 || response.bodyBytes.isEmpty) {
+            return ("${x}_$y", null);
+          }
 
-        if (response.statusCode != 200 || response.bodyBytes.isEmpty) return;
+          final Completer<ui.Image> completer = Completer();
+          ui.decodeImageFromList(response.bodyBytes, (ui.Image img) {
+            return completer.complete(img);
+          });
 
-        final Completer<ui.Image> completer = Completer();
-        ui.decodeImageFromList(response.bodyBytes, (ui.Image img) {
-          return completer.complete(img);
+          var image = await completer.future;
+          return ("${x}_$y", image);
         });
 
-        backgroundImage!.add(await completer.future);
+        imageBuffer.add(imageFuture);
       }
     }
+
+    var imageList = await Future.wait(imageBuffer);
+
+    Map<String, ui.Image> imageMap = {};
+    for (final e in imageList) {
+      if (e.$2 == null) continue;
+      imageMap[e.$1] = e.$2!;
+    }
+
+    backgroundImageData =
+        BackgroundImageData(backgroundImages: imageMap, qualiStep: qualiStep);
   }
 
   static Future<RoomResult> fetchRoom(String query) async {

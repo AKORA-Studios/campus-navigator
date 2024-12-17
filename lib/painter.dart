@@ -31,10 +31,9 @@ class MapPainter extends CustomPainter {
     canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
 
     // Paint background image
-    if (roomResult.backgroundImage != null) {
-      int qualiCur = 1;
-      List<int> qualiSteps = [1, 2, 4, 8];
-      int qualiStep = qualiSteps[qualiCur];
+    if (roomResult.backgroundImageData != null) {
+      final imageData = roomResult.backgroundImageData!;
+      int qualiStep = imageData.qualiStep;
       double qualiStepD = qualiStep.toDouble();
 
       double canvWidth = roomResult.numberVariables["data_canv_width"]!;
@@ -44,15 +43,15 @@ class MapPainter extends CustomPainter {
 
       canvas.scale(1 / qualiStepD);
 
-      for (int x = 0; x <= qualiCur; x++) {
-        for (int y = 0; y <= qualiCur; y++) {
+      for (int x = 0; x < qualiStep; x++) {
+        for (int y = 0; y < qualiStep; y++) {
           var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
               (-0.5 * canvHeight) + (y * qualiSize));
 
-          //print(
-          //    "canvWidth: $canvWidth, canvHeight: $canvHeight, qualiSize: $qualiSize, imageOffset: $imageOffset");
-          canvas.drawImage(roomResult.backgroundImage![(x * qualiStep) + (y)],
-              imageOffset.scale(qualiStepD, qualiStepD), Paint());
+          final image = imageData.getImage(x, y);
+          if (image == null) continue;
+          canvas.drawImage(
+              image, imageOffset.scale(qualiStepD, qualiStepD), Paint());
         }
       }
 

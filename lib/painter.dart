@@ -74,11 +74,16 @@ class MapPainter extends CustomPainter {
           color = fillColor;
         } else {
           // Normal rooms
-          color = fill != null ? fromHex(fill) : Colors.red;
+          // Transparent is for some rea
+          if (fill != null) {
+            color = fromHex(fill);
 
-          // Make color less aggresive
-          if (color.red == 240) color = Colors.grey;
-          color = color.withAlpha(50);
+            // Make color less aggresive
+            // if (color.red == 240) color = Colors.grey;
+            color = color.withAlpha(200);
+          } else {
+            color = Colors.transparent;
+          }
         }
 
         final fillPaint = Paint()
@@ -111,7 +116,7 @@ class MapPainter extends CustomPainter {
 
     // Highlight room
     for (final roomData in roomResult.hoersaele) {
-      drawRoom(roomData, fillColor: Colors.red.withAlpha(200));
+      // drawRoom(roomData); //, fillColor: Colors.red.withAlpha(200));
     }
 
     var symbolPaint = Paint()

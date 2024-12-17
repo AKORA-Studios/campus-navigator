@@ -10,9 +10,9 @@ import 'dart:ui' as ui;
 
 import 'package:http/http.dart' as http;
 
-import 'parsing/RaumBezData.dart';
-import 'parsing/layer.dart';
-import 'parsing/RoomPolygon.dart';
+import 'parsing/raum_bez_data.dart';
+import 'parsing/layer_data.dart';
+import 'parsing/room_polygon.dart';
 
 // Matches variables that define a json object
 final RegExp variableDeclarationExp =

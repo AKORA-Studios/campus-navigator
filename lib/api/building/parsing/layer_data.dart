@@ -2,7 +2,7 @@
 {symbol: [{"x":-92.48137627634475,"y":129.45925411059233}], symbolPNG: "icon_wifi.png", symbscale: 0.3, name: "WLAN AccessPoints"};
 */
 
-import 'points.dart';
+import 'position.dart';
 
 class LayerData {
   final List<Position> symbol;

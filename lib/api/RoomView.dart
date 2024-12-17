@@ -1,11 +1,17 @@
-// Define a custom Form widget.
+import 'package:campus_navigator/api/roomAdress.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building.dart';
-import 'package:campus_navigator/api/search.dart';
 import 'package:campus_navigator/painter.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class RoomView extends StatefulWidget {
-  const RoomView({super.key, required this.myController, required this.room, required this.name});
+  const RoomView(
+      {super.key,
+      required this.myController,
+      required this.room,
+      required this.name});
   final TextEditingController myController;
   final RoomResult room;
   final String name;
@@ -18,8 +24,48 @@ class _RoomViewState extends State<RoomView> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-   // widget.myController.dispose();
+    // widget.myController.dispose();
     super.dispose();
+  }
+
+  void _launchMapsUrl(String adress) async {
+    final Uri url = Uri.parse('https://maps.google.com/maps/search/?q=$adress');
+    await launchUrl(url);
+
+ /*   if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }*/
+  }
+
+  Widget adressInfo() {
+    List<Widget> arr = [];
+    for (RoomAdress child in widget.room.adressInfo) {
+      arr.add(Text(child.fullTitle.split(',')[0].trim(),
+          style: const TextStyle(fontWeight: FontWeight.bold)));
+      arr.add(RichText(
+          text: TextSpan(children: [
+        TextSpan(
+            text: child.adress.replaceAll("<br>", "\n"),
+            style: const TextStyle(color: Colors.deepPurpleAccent, decoration: TextDecoration.underline),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _launchMapsUrl(child.adress.replaceAll("<br>", " "));
+              })
+      ])));
+    }
+    return Container(
+      margin: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Column(children: arr),
+    );
+
+    return Column(children: arr);
   }
 
   @override
@@ -29,21 +75,18 @@ class _RoomViewState extends State<RoomView> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.name),
         ),
-        body:SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              CustomPaint(
-                size: const Size(300, 300),
+        body: SingleChildScrollView(
+            child: Column(children: [
+          InteractiveViewer(
+              boundaryMargin: const EdgeInsets.all(20.0),
+              minScale: 0.001,
+              maxScale: 16.0,
+              child: CustomPaint(
                 painter: MapPainter(roomResult: widget.room),
-              ),
-              Text('eeee'),
-            ],
-          ),
-        ],
-      ),
-    ));
+                size:  Size(1.0*MediaQuery.sizeOf(context).width, 9/8*MediaQuery.sizeOf(context).width),
+              )),
+          Text("Gebäudeadressen"),
+          adressInfo()
+        ])));
   }
 }

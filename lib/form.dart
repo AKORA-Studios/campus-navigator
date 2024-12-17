@@ -35,12 +35,11 @@ class _MyCustomFormState extends State<MyCustomForm> {
         setState(() {
           roomResult = RoomResult.fetchRoom(r.identifier);
           roomResult!.then((v) {
-            print("reload done");
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      RoomView(myController: myController, room: v, name: r.name)),
+                  builder: (context) => RoomView(
+                      myController: myController, room: v, name: r.name)),
             );
           }, onError: (e) {
             print(e);
@@ -61,7 +60,6 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 size: const Size(300, 300),
                 painter: MapPainter(roomResult: snapshot.data!),
               ),
-              Text('eeee'),
             ],
           );
         } else if (snapshot.hasError) {
@@ -89,11 +87,23 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 children: <Widget>[
                   TextField(
                     controller: myController,
-                    decoration: InputDecoration(hintText: 'Raumabkürzung hier eingeben'),
+                    decoration: const InputDecoration(
+                        hintText: 'Raumabkürzung hier eingeben'),
                     onChanged: (text) {
                       setState(() {
-                        searchResult =
+                        var searchFuture =
                             SearchResult.searchRoom(myController.text);
+                        searchResult = searchFuture;
+
+                        searchFuture.then((value) {
+                          var result = value.resultsRooms.firstOrNull;
+                          if (result == null) return;
+
+                          setState(() {
+                            roomResult =
+                                RoomResult.fetchRoom(result.identifier);
+                          });
+                        });
                       });
                     },
                   ),

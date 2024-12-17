@@ -4,6 +4,8 @@
 
 import 'package:campus_navigator/api/building/building.dart';
 
+import 'points.dart';
+
 class LayerData {
   final List<Position> symbol;
   final String symbolPNG;

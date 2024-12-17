@@ -10,6 +10,8 @@ import 'dart:ui' as ui;
 
 import 'package:http/http.dart' as http;
 
+import 'parsing/layer.dart';
+
 // Matches variables that define a json object
 final RegExp variableDeclarationExp =
     RegExp(r"^var (\w+) = ({[^;]+)", multiLine: true);
@@ -362,41 +364,5 @@ class Position {
 
   static List<Position> listFromJson(List<dynamic> json) {
     return json.map((jsonEntry) => Position.fromJson(jsonEntry)).toList();
-  }
-}
-
-/*
-{symbol: [{"x":-92.48137627634475,"y":129.45925411059233}], symbolPNG: "icon_wifi.png", symbscale: 0.3, name: "WLAN AccessPoints"};
-*/
-
-class LayerData {
-  final List<Position> symbol;
-  final String symbolPNG;
-  final num symbscale;
-  final String name;
-
-  const LayerData({
-    required this.symbol,
-    required this.symbolPNG,
-    required this.symbscale,
-    required this.name,
-  });
-
-  factory LayerData.fromJson(Map<dynamic, dynamic> json) {
-    List<Position> symbol = Position.listFromJson(json["symbol"]);
-    String symbolPNG = json["symbolPNG"];
-    num symbscale = json["symbscale"];
-    String name = json["name"];
-
-    return LayerData(
-      symbol: symbol,
-      symbolPNG: symbolPNG,
-      symbscale: symbscale,
-      name: name,
-    );
-  }
-
-  static listFromJson(List<dynamic> json) {
-    return json.map((jsonEntry) => LayerData.fromJson(jsonEntry)).toList();
   }
 }

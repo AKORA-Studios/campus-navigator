@@ -30,11 +30,13 @@ class _RoomViewState extends State<RoomView> {
 
   void _launchMapsUrl(String adress) async {
     final Uri url = Uri.parse('https://maps.google.com/maps/search/?q=$adress');
-    if (await canLaunchUrl(url)) {
+    await launchUrl(url);
+
+ /*   if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
       throw 'Could not launch $url';
-    }
+    }*/
   }
 
   Widget adressInfo() {
@@ -46,13 +48,23 @@ class _RoomViewState extends State<RoomView> {
           text: TextSpan(children: [
         TextSpan(
             text: child.adress.replaceAll("<br>", "\n"),
-            style: const TextStyle(color: Colors.deepPurpleAccent),
+            style: const TextStyle(color: Colors.deepPurpleAccent, decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 _launchMapsUrl(child.adress.replaceAll("<br>", " "));
               })
       ])));
     }
+    return Container(
+      margin: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Column(children: arr),
+    );
+
     return Column(children: arr);
   }
 
@@ -73,6 +85,7 @@ class _RoomViewState extends State<RoomView> {
                 painter: MapPainter(roomResult: widget.room),
                 size: const Size(800, 900),
               )),
+          Text("Gebäudeadressen"),
           adressInfo()
         ])));
   }

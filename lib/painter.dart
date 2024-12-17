@@ -17,7 +17,7 @@ Color fromHex(String hexString) {
 }
 
 class MapPainter extends CustomPainter {
-  final RoomResult roomResult;
+  final RoomPage roomResult;
 
   const MapPainter({
     required this.roomResult,

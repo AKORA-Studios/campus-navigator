@@ -43,7 +43,7 @@ class BackgroundImageData {
   }
 }
 
-class RoomResult {
+class RoomPage {
   final HTMLData htmlData;
   final RaumBezData raumBezData;
   final Map<String, double> numberVariables;
@@ -54,7 +54,7 @@ class RoomResult {
   BackgroundImageData? backgroundImageData;
   final BuildingData buildingData;
 
-  RoomResult(
+  RoomPage(
       {required this.htmlData,
       required this.raumBezData,
       required this.numberVariables,
@@ -64,7 +64,7 @@ class RoomResult {
       required this.hoersaele,
       required this.buildingData});
 
-  factory RoomResult.fromHTMLText(String body) {
+  factory RoomPage.fromHTMLText(String body) {
     var htmlData = HTMLData.fromBody(body);
 
     // Gebäude/Etagenpläne/Lehrräume
@@ -170,7 +170,7 @@ class RoomResult {
 
     String pngFileName = stringVariables["png_file_name"] ?? "AA";
 
-    return RoomResult(
+    return RoomPage(
         htmlData: htmlData,
         raumBezData: raumBezData,
         pngFileName: pngFileName,
@@ -221,7 +221,7 @@ class RoomResult {
         BackgroundImageData(backgroundImages: imageMap, qualiStep: qualiStep);
   }
 
-  static Future<RoomResult> fetchRoom(String query) async {
+  static Future<RoomPage> fetchRoom(String query) async {
     final uri = Uri.parse('https://navigator.tu-dresden.de/etplan/' + query);
 
     final response = await http.get(uri);
@@ -229,7 +229,7 @@ class RoomResult {
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      var roomResult = RoomResult.fromHTMLText(response.body);
+      var roomResult = RoomPage.fromHTMLText(response.body);
 
       // Load background image
       await roomResult.fetchImage();

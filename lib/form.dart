@@ -15,7 +15,7 @@ class MyCustomForm extends StatefulWidget {
 class _MyCustomFormState extends State<MyCustomForm> {
   final myController = TextEditingController();
   Future<SearchResult>? searchResult;
-  Future<RoomResult>? roomResult;
+  Future<RoomPage>? roomResult;
 
   @override
   void dispose() {
@@ -33,7 +33,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
       ),
       onPressed: () {
         setState(() {
-          roomResult = RoomResult.fetchRoom(r.identifier);
+          roomResult = RoomPage.fetchRoom(r.identifier);
           roomResult!.then((v) {
             Navigator.push(
               context,
@@ -50,7 +50,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
   }
 
   Widget resultsView() {
-    return FutureBuilder<RoomResult>(
+    return FutureBuilder<RoomPage>(
       future: roomResult,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -100,8 +100,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                           if (result == null) return;
 
                           setState(() {
-                            roomResult =
-                                RoomResult.fetchRoom(result.identifier);
+                            roomResult = RoomPage.fetchRoom(result.identifier);
                           });
                         });
                       });

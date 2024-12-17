@@ -14,7 +14,7 @@ class RoomView extends StatefulWidget {
       required this.room,
       required this.name});
   final TextEditingController myController;
-  final RoomResult room;
+  final RoomPage room;
   final String name;
 
   @override

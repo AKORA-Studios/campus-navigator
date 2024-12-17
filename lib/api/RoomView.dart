@@ -83,7 +83,7 @@ class _RoomViewState extends State<RoomView> {
               maxScale: 16.0,
               child: CustomPaint(
                 painter: MapPainter(roomResult: widget.room),
-                size: const Size(800, 900),
+                size:  Size(1.0*MediaQuery.sizeOf(context).width, 9/8*MediaQuery.sizeOf(context).width),
               )),
           Text("Gebäudeadressen"),
           adressInfo()

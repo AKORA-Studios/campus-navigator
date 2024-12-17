@@ -11,6 +11,7 @@ import 'dart:ui' as ui;
 import 'package:http/http.dart' as http;
 
 import 'parsing/layer.dart';
+import 'parsing/RoomPolygon.dart';
 
 // Matches variables that define a json object
 final RegExp variableDeclarationExp =
@@ -46,8 +47,8 @@ class RoomResult {
   final RaumBezData raumBezData;
   final Map<String, double> numberVariables;
   final String pngFileName;
-  final List<List<RoomData>> rooms;
-  final List<RoomData> hoersaele;
+  final List<List<RoomPolygon>> rooms;
+  final List<RoomPolygon> hoersaele;
   final List<LayerData> layers;
   BackgroundImageData? backgroundImageData;
   final BuildingData buildingData;
@@ -144,13 +145,13 @@ class RoomResult {
         .map((e) => LayerData.fromJson(e.value))
         .toList();
 
-    List<List<RoomData>> rooms = variables.entries
+    List<List<RoomPolygon>> rooms = variables.entries
         .where((e) => !e.key.startsWith("slayer"))
-        .map((e) => RoomData.fromJsonList(e.value))
+        .map((e) => RoomPolygon.fromJsonList(e.value))
         .toList();
 
-    List<RoomData> highlightedRooms =
-        RoomData.fromJsonList(variables["hoersaeleData"]);
+    List<RoomPolygon> highlightedRooms =
+        RoomPolygon.fromJsonList(variables["hoersaeleData"]);
 
     // String variables
     Map<String, String> stringVariables = {};
@@ -311,34 +312,5 @@ class RaumBezDataEntry {
       my: (json["my"] as num).toDouble(),
       th: 0, //json["th"],
     );
-  }
-}
-
-class RoomData {
-  final List<List<double>> points;
-  final String? fill;
-
-  const RoomData({
-    required this.points,
-    required this.fill,
-  });
-
-  static List<RoomData> fromJsonList(Map<dynamic, dynamic> json) {
-    List<dynamic> points = json["points"];
-
-    List<List<List<double>>> points3 = points
-        .map((e) => (e as List<dynamic>)
-            .map((e) => (e as List<dynamic>).map((e) => e as double).toList())
-            .toList())
-        .toList();
-    List<String?> fills =
-        (json["fills"] as List<dynamic>).map((e) => e as String?).toList();
-
-    List<RoomData> rooms = [];
-    for (int i = 0; i < points3.length; i++) {
-      rooms.add(RoomData(points: points3[i], fill: fills[i]));
-    }
-
-    return rooms;
   }
 }

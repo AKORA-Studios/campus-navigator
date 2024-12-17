@@ -6,6 +6,7 @@ import 'package:campus_navigator/api/building/building.dart';
 
 import 'api/building/parsing/layer.dart';
 import 'api/building/parsing/points.dart';
+import 'api/building/parsing/RoomPolygon.dart';
 
 // https://stackoverflow.com/questions/55147586/flutter-convert-color-to-hex-string
 Color fromHex(String hexString) {
@@ -66,7 +67,7 @@ class MapPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..color = Colors.black.withAlpha(120);
 
-    void drawRoom(RoomData roomData, {Color? fillColor}) {
+    void drawRoom(RoomPolygon roomData, {Color? fillColor}) {
       for (int i = 0; i < roomData.points.length; i++) {
         final pointList = roomData.points[i];
         final fill = roomData.fill;
@@ -111,8 +112,8 @@ class MapPainter extends CustomPainter {
       }
     }
 
-    for (final List<RoomData> roomList in roomResult.rooms) {
-      for (final RoomData roomData in roomList) {
+    for (final List<RoomPolygon> roomList in roomResult.rooms) {
+      for (final RoomPolygon roomData in roomList) {
         drawRoom(roomData);
       }
     }

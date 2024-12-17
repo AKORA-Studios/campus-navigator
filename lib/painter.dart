@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:campus_navigator/api/building.dart';
+import 'package:campus_navigator/api/building/building.dart';
 
 // https://stackoverflow.com/questions/55147586/flutter-convert-color-to-hex-string
 Color fromHex(String hexString) {

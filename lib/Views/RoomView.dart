@@ -2,7 +2,7 @@ import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/RoomInfo.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:campus_navigator/api/building.dart';
+import 'package:campus_navigator/api/building/building.dart';
 import 'package:campus_navigator/painter.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -54,7 +54,11 @@ class _RoomViewState extends State<RoomView> {
           width: double.infinity)
     ];
     for (RoomInfo child in widget.room.buildingData.rooms) {
-      arr.add(Text(child.fullTitle.split(',')[0].trim() + " [" + child.buildingNumber + "]",
+      arr.add(Text(
+          child.fullTitle.split(',')[0].trim() +
+              " [" +
+              child.buildingNumber +
+              "]",
           style: const TextStyle(fontWeight: FontWeight.bold)));
       arr.add(RichText(
           text: TextSpan(children: [
@@ -98,7 +102,8 @@ class _RoomViewState extends State<RoomView> {
                     size: Size(1.0 * MediaQuery.sizeOf(context).width,
                         9 / 8 * MediaQuery.sizeOf(context).width),
                   )),
-              adressInfo(),
+              Text("Gebäudeadressen"),
+              adressInfo()
             ])));
   }
 }

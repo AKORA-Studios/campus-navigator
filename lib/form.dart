@@ -1,5 +1,5 @@
 // Define a custom Form widget.
-import 'package:campus_navigator/api/RoomView.dart';
+import 'package:campus_navigator/Views/RoomView.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building.dart';
 import 'package:campus_navigator/api/search.dart';

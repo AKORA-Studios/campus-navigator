@@ -52,7 +52,7 @@ class MapPainter extends CustomPainter {
           var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
               (-0.5 * canvHeight) + (y * qualiSize));
 
-          final image = imageData.getImage(x, y);
+          final image = imageData.getBackgroundImage(x, y);
           if (image == null) continue;
           canvas.drawImage(
               image, imageOffset.scale(qualiStepD, qualiStepD), Paint());
@@ -119,18 +119,25 @@ class MapPainter extends CustomPainter {
     }
 
     // Highlight room
+    /*
     for (final roomData in roomResult.hoersaele) {
-      // drawRoom(roomData); //, fillColor: Colors.red.withAlpha(200));
+      drawRoom(roomData); //, fillColor: Colors.red.withAlpha(200));
     }
+    */
 
     var symbolPaint = Paint()
       ..strokeWidth = 4
       ..color = Colors.teal;
 
     for (final LayerData l in roomResult.layers) {
-      for (final p in l.symbol) {
-        canvas.drawPoints(
-            PointMode.points, mapPositions(l.symbol), symbolPaint);
+      for (final pos in l.getSymbolOffsets()) {
+        final image =
+            roomResult.backgroundImageData!.getLayerSymbol(l.symbolPNG);
+        if (image == null) continue;
+
+        canvas.scale(l.symbscale);
+        canvas.drawImage(image, pos, symbolPaint);
+        canvas.scale(1 / l.symbscale);
       }
     }
 

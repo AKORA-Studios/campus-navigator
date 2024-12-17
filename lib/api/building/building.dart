@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'parsing/raum_bez_data.dart';
 import 'parsing/layer_data.dart';
 import 'parsing/room_polygon.dart';
+import 'parsing/common.dart' as common;
 
 // Matches variables that define a json object
 final RegExp variableDeclarationExp =
@@ -29,16 +30,20 @@ final RegExp stringVariableExp =
 final RegExp numberVariableExp =
     RegExp(r'(var)? ([\w_]+) = (\d+);', multiLine: true);
 
-class BackgroundImageData {
+class PageImageData {
   final int qualiStep;
   final Map<String, ui.Image> backgroundImages;
 
-  BackgroundImageData({
+  PageImageData({
     required this.qualiStep,
     required this.backgroundImages,
   });
 
-  ui.Image? getImage(int x, int y) {
+  ui.Image? getLayerSymbol(String symbolName) {
+    return backgroundImages[symbolName];
+  }
+
+  ui.Image? getBackgroundImage(int x, int y) {
     return backgroundImages["${x}_$y"];
   }
 }
@@ -51,8 +56,9 @@ class RoomPage {
   final List<List<RoomPolygon>> rooms;
   final List<RoomPolygon> hoersaele;
   final List<LayerData> layers;
-  BackgroundImageData? backgroundImageData;
   final BuildingData buildingData;
+  PageImageData? backgroundImageData;
+  final List<RoomInfo> adressInfo;
 
   RoomPage(
       {required this.htmlData,
@@ -69,27 +75,37 @@ class RoomPage {
 
     // Gebäude/Etagenpläne/Lehrräume
     List<BuildingLevel> buildingLevelInfo = [];
-    var leftMenuParent = htmlData.document.querySelector("#menu_cont")?.children.where((element) => element.localName == "ul").first;
-    if(leftMenuParent != null) { // Children: li: closed or open
-      Element building =  leftMenuParent.children[0];
-      Element studyRooms =  leftMenuParent.children[2];
+    var leftMenuParent = htmlData.document
+        .querySelector("#menu_cont")
+        ?.children
+        .where((element) => element.localName == "ul")
+        .first;
+    if (leftMenuParent != null) {
+      // Children: li: closed or open
+      Element building = leftMenuParent.children[0];
+      Element studyRooms = leftMenuParent.children[2];
 
-      var levelPlan = leftMenuParent.children[1].children.where((element) => element.localName == "ul").first;
+      var levelPlan = leftMenuParent.children[1].children
+          .where((element) => element.localName == "ul")
+          .first;
 
-      if(levelPlan != null && levelPlan.children.isNotEmpty) {
-        for(Element level in levelPlan.children) {
+      if (levelPlan != null && levelPlan.children.isNotEmpty) {
+        for (Element level in levelPlan.children) {
           List<BuildingRoom> roomInfos = [];
 
-          if(level.children.length > 1) { // display rooms in selected level
-            for(Element room in level.children) {
-              if(room.children.isNotEmpty) {
-                for(Element singleRoom in room.children) {
+          if (level.children.length > 1) {
+            // display rooms in selected level
+            for (Element room in level.children) {
+              if (room.children.isNotEmpty) {
+                for (Element singleRoom in room.children) {
                   roomInfos.add(BuildingRoom(singleRoom.children[0].text));
                 }
               }
             }
-            buildingLevelInfo.add(BuildingLevel.fromRooms(level.children[0].innerHtml, roomInfos));
-          } else { // No Rooms loaded for this level
+            buildingLevelInfo.add(BuildingLevel.fromRooms(
+                level.children[0].innerHtml, roomInfos));
+          } else {
+            // No Rooms loaded for this level
             buildingLevelInfo.add(BuildingLevel(level.children[0].innerHtml));
           }
         }
@@ -122,9 +138,6 @@ class RoomPage {
     }
 
     var BuildingInfo = BuildingData(buildingLevelInfo, adressInfo);
-
-
-
 
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
     final json = jsonDecode(raumBezMatch[1]!);
@@ -181,32 +194,33 @@ class RoomPage {
         buildingData: BuildingInfo);
   }
 
-  Future<void> fetchImage({int qualiIndex = 2}) async {
+  Future<void> fecthImages({int qualiIndex = 2}) async {
     final List<int> qualiSteps = [1, 2, 4, 8];
     final int qualiStep = qualiSteps[qualiIndex];
 
+    // Prepare buffer, this is to avoid concurrency bugs during fetching
     List<Future<(String, ui.Image?)>> imageBuffer = [];
+
+    // Background tiles
     for (int x = 0; x < qualiStep; x++) {
       for (int y = 0; y < qualiStep; y++) {
         final uri = Uri.parse(
             "https://navigator.tu-dresden.de/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
 
-        final imageFuture = http.get(uri).then((response) async {
-          if (response.statusCode != 200 || response.bodyBytes.isEmpty) {
-            return ("${x}_$y", null);
-          }
-
-          final Completer<ui.Image> completer = Completer();
-          ui.decodeImageFromList(response.bodyBytes, (ui.Image img) {
-            return completer.complete(img);
-          });
-
-          var image = await completer.future;
-          return ("${x}_$y", image);
-        });
+        final imageFuture =
+            common.fetchImage(uri).then((image) => ("${x}_$y", image));
 
         imageBuffer.add(imageFuture);
       }
+    }
+
+    // Layer symbols
+    for (final layer in layers) {
+      final imageFuture = common
+          .fetchImage(layer.getSymbolUri())
+          .then((image) => (layer.symbolPNG, image));
+
+      imageBuffer.add(imageFuture);
     }
 
     var imageList = await Future.wait(imageBuffer);
@@ -218,7 +232,7 @@ class RoomPage {
     }
 
     backgroundImageData =
-        BackgroundImageData(backgroundImages: imageMap, qualiStep: qualiStep);
+        PageImageData(backgroundImages: imageMap, qualiStep: qualiStep);
   }
 
   static Future<RoomPage> fetchRoom(String query) async {
@@ -232,7 +246,7 @@ class RoomPage {
       var roomResult = RoomPage.fromHTMLText(response.body);
 
       // Load background image
-      await roomResult.fetchImage();
+      await roomResult.fecthImages();
 
       return roomResult;
     } else {

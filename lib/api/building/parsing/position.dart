@@ -1,5 +1,9 @@
 import 'dart:ui';
 
+/// Describes a position like the following
+/// ```js
+/// { x: -181.03355276266677, y: 197.55803541534254 }
+/// ```
 class Position {
   final num x;
   final num y;

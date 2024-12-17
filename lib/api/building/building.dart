@@ -56,9 +56,8 @@ class RoomPage {
   final List<List<RoomPolygon>> rooms;
   final List<RoomPolygon> hoersaele;
   final List<LayerData> layers;
-  final BuildingData buildingData;
   PageImageData? backgroundImageData;
-  final List<RoomInfo> adressInfo;
+  final BuildingData buildingData;
 
   RoomPage(
       {required this.htmlData,

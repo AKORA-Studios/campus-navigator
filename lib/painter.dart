@@ -142,7 +142,7 @@ class MapPainter extends CustomPainter {
     }
 
     // Beschriftungen
-    for (final entry in roomResult.raumBezData.fills) {
+    for (final entry in roomResult.raumBezData.text) {
       final txt = entry.qy;
       final offset = Offset(entry.x, entry.y);
 

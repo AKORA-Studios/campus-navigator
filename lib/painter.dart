@@ -128,7 +128,10 @@ class MapPainter extends CustomPainter {
       ..color = Colors.teal;
 
     for (final LayerData l in roomResult.layers) {
-      canvas.drawPoints(PointMode.points, mapPoints2(l.symbol), symbolPaint);
+      for (final p in l.symbol) {
+        canvas.drawPoints(
+            PointMode.points, mapPositions(l.symbol), symbolPaint);
+      }
     }
 
     // Beschriftungen
@@ -197,11 +200,6 @@ List<Offset> mapPoints(List<double> rawPoints) {
   return chunks;
 }
 
-List<Offset> mapPoints2(List<Position> rawPoints) {
-  List<Offset> chunks = [];
-  for (var i = 0; i < rawPoints.length; i++) {
-    var point = Offset(rawPoints[i].x as double, rawPoints[i].y as double);
-    chunks.add(point);
-  }
-  return chunks;
+List<Offset> mapPositions(List<Position> rawPoints) {
+  return rawPoints.map((p) => p.toOffset()).toList();
 }

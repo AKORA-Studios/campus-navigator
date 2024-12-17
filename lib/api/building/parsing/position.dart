@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class Position {
   final num x;
   final num y;
@@ -19,5 +21,9 @@ class Position {
 
   static List<Position> listFromJson(List<dynamic> json) {
     return json.map((jsonEntry) => Position.fromJson(jsonEntry)).toList();
+  }
+
+  Offset toOffset() {
+    return Offset(x.toDouble(), y.toDouble());
   }
 }

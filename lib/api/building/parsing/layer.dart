@@ -2,8 +2,6 @@
 {symbol: [{"x":-92.48137627634475,"y":129.45925411059233}], symbolPNG: "icon_wifi.png", symbscale: 0.3, name: "WLAN AccessPoints"};
 */
 
-import 'package:campus_navigator/api/building/building.dart';
-
 import 'points.dart';
 
 class LayerData {

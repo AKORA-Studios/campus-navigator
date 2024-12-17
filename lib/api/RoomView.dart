@@ -1,4 +1,3 @@
-// Define a custom Form widget.
 import 'package:campus_navigator/api/roomAdress.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,6 @@ class _RoomViewState extends State<RoomView> {
   }
 
   void _launchMapsUrl(String adress) async {
-    //("https://maps.google.com/maps?daddr="+address, _blank);
     final Uri url = Uri.parse('https://maps.google.com/maps/search/?q=$adress');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
@@ -51,7 +49,7 @@ class _RoomViewState extends State<RoomView> {
             style: const TextStyle(color: Colors.deepPurpleAccent),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                _launchMapsUrl(child.adress.replaceAll("<br>", " ").replaceAll(" ", ""));
+                _launchMapsUrl(child.adress.replaceAll("<br>", " "));
               })
       ])));
     }

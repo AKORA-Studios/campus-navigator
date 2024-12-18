@@ -2,7 +2,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:campus_navigator/api/building.dart';
+import 'package:campus_navigator/api/building/building.dart';
+
+import 'api/building/parsing/layer_data.dart';
+import 'api/building/parsing/position.dart';
+import 'api/building/parsing/room_polygon.dart';
 
 // https://stackoverflow.com/questions/55147586/flutter-convert-color-to-hex-string
 Color fromHex(String hexString) {
@@ -13,7 +17,7 @@ Color fromHex(String hexString) {
 }
 
 class MapPainter extends CustomPainter {
-  final RoomResult roomResult;
+  final RoomPage roomResult;
 
   const MapPainter({
     required this.roomResult,
@@ -48,7 +52,7 @@ class MapPainter extends CustomPainter {
           var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
               (-0.5 * canvHeight) + (y * qualiSize));
 
-          final image = imageData.getImage(x, y);
+          final image = imageData.getBackgroundImage(x, y);
           if (image == null) continue;
           canvas.drawImage(
               image, imageOffset.scale(qualiStepD, qualiStepD), Paint());
@@ -63,7 +67,7 @@ class MapPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..color = Colors.black.withAlpha(120);
 
-    void drawRoom(RoomData roomData, {Color? fillColor}) {
+    void drawRoom(RoomPolygon roomData, {Color? fillColor}) {
       for (int i = 0; i < roomData.points.length; i++) {
         final pointList = roomData.points[i];
         final fill = roomData.fill;
@@ -108,27 +112,37 @@ class MapPainter extends CustomPainter {
       }
     }
 
-    for (final List<RoomData> roomList in roomResult.rooms) {
-      for (final RoomData roomData in roomList) {
+    for (final List<RoomPolygon> roomList in roomResult.rooms) {
+      for (final RoomPolygon roomData in roomList) {
         drawRoom(roomData);
       }
     }
 
     // Highlight room
+    /*
     for (final roomData in roomResult.hoersaele) {
-      // drawRoom(roomData); //, fillColor: Colors.red.withAlpha(200));
+      drawRoom(roomData); //, fillColor: Colors.red.withAlpha(200));
     }
+    */
 
     var symbolPaint = Paint()
       ..strokeWidth = 4
       ..color = Colors.teal;
 
     for (final LayerData l in roomResult.layers) {
-      canvas.drawPoints(PointMode.points, mapPoints2(l.symbol), symbolPaint);
+      for (final pos in l.getSymbolOffsets()) {
+        final image =
+            roomResult.backgroundImageData!.getLayerSymbol(l.symbolPNG);
+        if (image == null) continue;
+
+        canvas.scale(l.symbscale);
+        canvas.drawImage(image, pos, symbolPaint);
+        canvas.scale(1 / l.symbscale);
+      }
     }
 
     // Beschriftungen
-    for (final entry in roomResult.raumBezData.fills) {
+    for (final entry in roomResult.raumBezData.text) {
       final txt = entry.qy;
       final offset = Offset(entry.x, entry.y);
 
@@ -193,11 +207,6 @@ List<Offset> mapPoints(List<double> rawPoints) {
   return chunks;
 }
 
-List<Offset> mapPoints2(List<Position> rawPoints) {
-  List<Offset> chunks = [];
-  for (var i = 0; i < rawPoints.length; i++) {
-    var point = Offset(rawPoints[i].x as double, rawPoints[i].y as double);
-    chunks.add(point);
-  }
-  return chunks;
+List<Offset> mapPositions(List<Position> rawPoints) {
+  return rawPoints.map((p) => p.toOffset()).toList();
 }

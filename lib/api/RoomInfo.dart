@@ -1,9 +1,10 @@
+import 'building/building.dart';
 
 class RoomInfo {
   String fullTitle = "";
-   String adress = "";
-   String buildingNumber = "";
-   String buildingYear = "";
+  String adress = "";
+  String buildingNumber = "";
+  String buildingYear = "";
 
   RoomInfo(this.fullTitle, this.adress, this.buildingNumber, this.buildingYear);
 

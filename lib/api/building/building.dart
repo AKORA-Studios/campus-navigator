@@ -1,25 +1,30 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui' as ui;
+import 'dart:developer';
 
-import 'package:campus_navigator/api/BuildingData.dart';
-import 'package:campus_navigator/api/BuildingLevels.dart';
-import 'package:campus_navigator/api/RoomInfo.dart';
+import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 
-import 'parsing/common.dart' as common;
+import 'page_image_data.dart';
 import 'parsing/layer_data.dart';
 import 'parsing/raum_bez_data.dart';
 import 'parsing/room_polygon.dart';
 
-// Matches variables that define a json object
+/// Matches variables declarations that define a JS object
 final RegExp variableDeclarationExp =
     RegExp(r"^var (\w+) = ({[^;]+)", multiLine: true);
+
+/// Matches variables assignments that assign a JS object
+final RegExp variableAssignmentsExp =
+    RegExp(r"^(\w+) = ({[^;]+)", multiLine: true);
+
+// Matches JS object attribute names
+final RegExp jsObjectExp = RegExp(r'([,{\[]) *(\w+):', multiLine: true);
+
 final RegExp raumbezExp = RegExp(r"^raumbezData = ({[^;]+)", multiLine: true);
-final RegExp jsObjectExp = RegExp(r"(\w+):", multiLine: true);
 
 final RegExp pngFileNameExp =
     RegExp(r'var png_file_name = "(\w+)";', multiLine: true);
@@ -30,31 +35,12 @@ final RegExp stringVariableExp =
 final RegExp numberVariableExp =
     RegExp(r'(var)? ([\w_]+) = (\d+);', multiLine: true);
 
-class PageImageData {
-  final int qualiStep;
-  final Map<String, ui.Image> backgroundImages;
-
-  PageImageData({
-    required this.qualiStep,
-    required this.backgroundImages,
-  });
-
-  ui.Image? getLayerSymbol(String symbolName) {
-    return backgroundImages[symbolName];
-  }
-
-  ui.Image? getBackgroundImage(int x, int y) {
-    return backgroundImages["${x}_$y"];
-  }
-}
-
 class RoomPage {
   final HTMLData htmlData;
   final RaumBezData raumBezData;
   final Map<String, double> numberVariables;
   final String pngFileName;
   final List<List<RoomPolygon>> rooms;
-  final List<RoomPolygon> hoersaele;
   final List<LayerData> layers;
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
@@ -67,106 +53,45 @@ class RoomPage {
       required this.pngFileName,
       required this.rooms,
       required this.layers,
-      required this.hoersaele,
       required this.buildingData,
       required this.queryParts});
 
   factory RoomPage.fromHTMLText(String body, List<String> queryParts) {
     var htmlData = HTMLData.fromBody(body);
 
-    // Gebäude/Etagenpläne/Lehrräume
-    List<BuildingLevel> buildingLevelInfo = [];
-    var leftMenuParent = htmlData.document
-        .querySelector("#menu_cont")
-        ?.children
-        .where((element) => element.localName == "ul")
-        .first;
-    if (leftMenuParent != null) {
-      // Children: li: closed or open
-      Element building = leftMenuParent.children[0];
-      Element studyRooms = leftMenuParent.children[2];
+    var buildingInfo = BuildingData.fromHTMLDocument(htmlData.document);
 
-      var levelPlan = leftMenuParent.children[1].children
-          .where((element) => element.localName == "ul")
-          .first;
-
-      if (levelPlan != null && levelPlan.children.isNotEmpty) {
-        for (Element level in levelPlan.children) {
-          List<BuildingRoom> roomInfos = [];
-
-          if (level.children.length > 1) {
-            // display rooms in selected level
-            for (Element room in level.children) {
-              if (room.children.isNotEmpty) {
-                for (Element singleRoom in room.children) {
-                  roomInfos.add(BuildingRoom(singleRoom.children[0].text));
-                }
-              }
-            }
-            buildingLevelInfo.add(BuildingLevel.fromRooms(
-                level.children[0].innerHtml, roomInfos));
-          } else {
-            // No Rooms loaded for this level
-            buildingLevelInfo.add(BuildingLevel(level.children[0].innerHtml));
-          }
-        }
-      }
-    }
-
-    // Building Info
-    var rightNavBarContent =
-        htmlData.document.querySelector("#menu_cont_right");
-    List<RoomInfo> adressInfo = [];
-    if (rightNavBarContent != null) {
-      var buildingInfos =
-          rightNavBarContent.children[rightNavBarContent.children.length - 2];
-
-      List<Element> childrenGiver = buildingInfos.children;
-      List<List<Element>> buildingList = [];
-      while (childrenGiver.length > 8) {
-        buildingList.add(childrenGiver
-            .take(8)
-            .where((element) => element.localName != "p")
-            .toList());
-        childrenGiver.removeRange(0, 8);
-      }
-      for (List<Element> buildingInfo in buildingList) {
-        var fullTitle = buildingInfo[0].innerHtml;
-        var adressInfoRoom = RoomInfo(fullTitle, buildingInfo[3].innerHtml,
-            buildingInfo[1].innerHtml, buildingInfo[2].innerHtml);
-        adressInfo.add(adressInfoRoom);
-      }
-    }
-
-    var BuildingInfo = BuildingData(buildingLevelInfo, adressInfo);
-
+    // Parse room labels
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
-    final json = jsonDecode(raumBezMatch[1]!);
-    RaumBezData raumBezData = RaumBezData.fromJson(json);
+    RaumBezData raumBezData =
+        RaumBezData.fromJson(jsonDecode(raumBezMatch[1]!));
 
-    var matches = variableDeclarationExp.allMatches(htmlData.script);
-    Map<String, dynamic> variables = {};
-    for (final Match m in matches) {
-      String varName = m[1]!;
-      String varValue =
-          m[2]!.replaceAllMapped(jsObjectExp, (m) => '"' + m[1]! + '":');
-      var json = jsonDecode(varValue);
+    // Parse all variables with JSON object like values
+    Map<String, dynamic> declaredVariables =
+        parseJSVariables(variableDeclarationExp, htmlData.script);
 
-      variables[varName] = json;
-    }
+    Map<String, dynamic> assignedVariables =
+        parseJSVariables(variableAssignmentsExp, htmlData.script);
 
-    List<LayerData> layers = variables.entries
+    // Parse symbol layers
+    List<LayerData> layers = declaredVariables.entries
         .where((e) => e.key.startsWith("slayer"))
         .map((e) => LayerData.fromJson(e.value))
         .toList();
 
-    List<List<RoomPolygon>> rooms = variables.entries
-        .where((e) => !e.key.startsWith("slayer"))
-        .map((e) => RoomPolygon.fromJsonList(e.value))
-        .toList();
+    // Parse room polygons for drawing
+    List<List<RoomPolygon>> rooms = declaredVariables.entries
+        .where((e) => !e.key.startsWith("slayer") && e.key != "raumbezData")
+        .map((e) {
+      debugger(when: e.value["points"] == null);
 
-    List<RoomPolygon> highlightedRooms =
-        RoomPolygon.fromJsonList(variables["hoersaeleData"]);
+      return RoomPolygon.fromJsonList(e.value);
+    }).toList();
+
+    // Highlight specific rooms
+    final gebaeudeData =
+        RoomPolygon.fromJson(assignedVariables["gebaeudeData"]);
+    rooms.add([gebaeudeData]);
 
     // String variables
     Map<String, String> stringVariables = {};
@@ -182,7 +107,8 @@ class RoomPage {
       numberVariables[m[2]!] = val;
     }
 
-    String pngFileName = stringVariables["png_file_name"] ?? "AA";
+    // The file name for the background image
+    String pngFileName = stringVariables["png_file_name"]!;
 
     return RoomPage(
         htmlData: htmlData,
@@ -191,54 +117,12 @@ class RoomPage {
         numberVariables: numberVariables,
         layers: layers,
         rooms: rooms,
-        hoersaele: highlightedRooms,
-        buildingData: BuildingInfo,
+        buildingData: buildingInfo,
         queryParts: queryParts);
   }
 
-  Future<void> fecthImages({int qualiIndex = 2}) async {
-    final List<int> qualiSteps = [1, 2, 4, 8];
-    final int qualiStep = qualiSteps[qualiIndex];
-
-    // Prepare buffer, this is to avoid concurrency bugs during fetching
-    List<Future<(String, ui.Image?)>> imageBuffer = [];
-
-    // Background tiles
-    for (int x = 0; x < qualiStep; x++) {
-      for (int y = 0; y < qualiStep; y++) {
-        final uri = Uri.parse(
-            "${baseURL}/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
-
-        final imageFuture =
-            common.fetchImage(uri).then((image) => ("${x}_$y", image));
-
-        imageBuffer.add(imageFuture);
-      }
-    }
-
-    // Layer symbols
-    for (final layer in layers) {
-      final imageFuture = common
-          .fetchImage(layer.getSymbolUri())
-          .then((image) => (layer.symbolPNG, image));
-
-      imageBuffer.add(imageFuture);
-    }
-
-    var imageList = await Future.wait(imageBuffer);
-
-    Map<String, ui.Image> imageMap = {};
-    for (final e in imageList) {
-      if (e.$2 == null) continue;
-      imageMap[e.$1] = e.$2!;
-    }
-
-    backgroundImageData =
-        PageImageData(backgroundImages: imageMap, qualiStep: qualiStep);
-  }
-
   static Future<RoomPage> fetchRoom(String query) async {
-    final uri = Uri.parse("${baseURL}/etplan/$query");
+    final uri = Uri.parse("$baseURL/etplan/$query");
 
     final response = await http.get(uri);
 
@@ -248,7 +132,8 @@ class RoomPage {
       var roomResult = RoomPage.fromHTMLText(response.body, query.split("/"));
 
       // Load background image
-      await roomResult.fecthImages();
+      roomResult.backgroundImageData = await PageImageData.fetchLevelImages(
+          roomResult.pngFileName, roomResult.layers);
 
       return roomResult;
     } else {
@@ -257,6 +142,27 @@ class RoomPage {
       throw Exception('Failed to load search results');
     }
   }
+}
+
+Map<String, dynamic> parseJSVariables(RegExp regExp, String script) {
+  Map<String, dynamic> declaredVariables = {};
+
+  var matches = regExp.allMatches(script);
+  for (final Match m in matches) {
+    String varName = m[1]!;
+    String valueJsNotation = m[2]!;
+
+    // Convert javascript object notation to JSON object notation
+    // { a: 1 }  ->  { "a": 1 }
+    String valueJsonNotation =
+        valueJsNotation.replaceAllMapped(jsObjectExp, (m) {
+      return '${m[1]}"${m[2]!}":';
+    });
+
+    declaredVariables[varName] = jsonDecode(valueJsonNotation);
+  }
+
+  return declaredVariables;
 }
 
 class HTMLData {

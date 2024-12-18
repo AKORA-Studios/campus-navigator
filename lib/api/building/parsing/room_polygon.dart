@@ -7,6 +7,19 @@ class RoomPolygon {
     required this.fill,
   });
 
+  static RoomPolygon fromJson(Map<dynamic, dynamic> json) {
+    List<dynamic> points = json["points"];
+
+    List<List<double>> points2 = points
+        .map((e) => (e as List<dynamic>).map((e) => e as double).toList())
+        .toList()
+        .toList();
+
+    String? fill = json["fill"] as String?;
+    fill = "#000000";
+    return RoomPolygon(points: points2, fill: fill);
+  }
+
   static List<RoomPolygon> fromJsonList(Map<dynamic, dynamic> json) {
     List<dynamic> points = json["points"];
 

@@ -1,5 +1,6 @@
+import 'package:campus_navigator/api/BuildingData.dart';
 import 'package:campus_navigator/api/BuildingLevels.dart';
-import 'package:campus_navigator/api/roomAdress.dart';
+import 'package:campus_navigator/api/RoomInfo.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'dart:convert';
@@ -47,7 +48,7 @@ class RoomResult {
   final List<RoomData> hoersaele;
   final List<LayerData> layers;
   BackgroundImageData? backgroundImageData;
-  final List<RoomAdress> adressInfo;
+  final BuildingData buildingData;
 
   RoomResult(
       {required this.htmlData,
@@ -57,14 +58,44 @@ class RoomResult {
       required this.rooms,
       required this.layers,
       required this.hoersaele,
-      required this.adressInfo});
+      required this.buildingData});
 
   factory RoomResult.fromHTMLText(String body) {
     var htmlData = HTMLData.fromBody(body);
 
+    // Gebäude/Etagenpläne/Lehrräume
+    List<BuildingLevel> buildingLevelInfo = [];
+    var leftMenuParent = htmlData.document.querySelector("#menu_cont")?.children.where((element) => element.localName == "ul").first;
+    if(leftMenuParent != null) { // Children: li: closed or open
+      Element building =  leftMenuParent.children[0];
+      Element studyRooms =  leftMenuParent.children[2];
+
+      var levelPlan = leftMenuParent.children[1].children.where((element) => element.localName == "ul").first;
+
+      if(levelPlan != null && levelPlan.children.isNotEmpty) {
+        for(Element level in levelPlan.children) {
+          List<BuildingRoom> roomInfos = [];
+
+          if(level.children.length > 1) { // display rooms in selected level
+            for(Element room in level.children) {
+              if(room.children.isNotEmpty) {
+                for(Element singleRoom in room.children) {
+                  roomInfos.add(BuildingRoom(singleRoom.children[0].text));
+                }
+              }
+            }
+            buildingLevelInfo.add(BuildingLevel.fromRooms(level.children[0].innerHtml, roomInfos));
+          } else { // No Rooms loaded for this level
+            buildingLevelInfo.add(BuildingLevel(level.children[0].innerHtml));
+          }
+        }
+      }
+    }
+
+    // Building Info
     var rightNavBarContent =
         htmlData.document.querySelector("#menu_cont_right");
-    List<RoomAdress> adressInfo = [];
+    List<RoomInfo> adressInfo = [];
     if (rightNavBarContent != null) {
       var buildingInfos =
           rightNavBarContent.children[rightNavBarContent.children.length - 2];
@@ -80,40 +111,16 @@ class RoomResult {
       }
       for (List<Element> buildingInfo in buildingList) {
         var fullTitle = buildingInfo[0].innerHtml;
-        var adressInfoRoom = RoomAdress(fullTitle, buildingInfo[3].innerHtml,
+        var adressInfoRoom = RoomInfo(fullTitle, buildingInfo[3].innerHtml,
             buildingInfo[1].innerHtml, buildingInfo[2].innerHtml);
         adressInfo.add(adressInfoRoom);
       }
     }
 
-    // Gebäude/Etagenpläne/Lehrräume
-    List<BuildingLevel> buildingLevelInfo = [];
-    var leftMenuParent = htmlData.document.querySelector("#menu_cont")?.children.where((element) => element.localName == "ul").first;
-    if(leftMenuParent != null) { // Children: li: closed or open
-      Element building =  leftMenuParent.children[0];
-      Element studyRooms =  leftMenuParent.children[2];
+    var BuildingInfo = BuildingData(buildingLevelInfo, adressInfo);
 
-      var levelPlan = leftMenuParent.children[1].children.where((element) => element.localName == "ul").first;
 
-      if(levelPlan != null && levelPlan.children.isNotEmpty) {
-          for(Element level in levelPlan.children) {
-            List<BuildingRoom> roomInfos = [];
 
-            if(level.children.length > 1) { // display rooms in selected level
-              for(Element room in level.children) {
-                if(room.children.isNotEmpty) {
-                  for(Element singleRoom in room.children) {
-                    roomInfos.add(BuildingRoom(singleRoom.children[0].text));
-                  }
-                }
-              }
-              buildingLevelInfo.add(BuildingLevel.fromRooms(level.children[0].innerHtml, roomInfos));
-            } else { // No Rooms loaded for this level
-              buildingLevelInfo.add(BuildingLevel(level.children[0].innerHtml));
-            }
-          }
-      }
-    }
 
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
     final json = jsonDecode(raumBezMatch[1]!);
@@ -167,7 +174,7 @@ class RoomResult {
         layers: layers,
         rooms: rooms,
         hoersaele: highlightedRooms,
-        adressInfo: adressInfo);
+        buildingData: BuildingInfo);
   }
 
   Future<void> fetchImage({int qualiIndex = 2}) async {

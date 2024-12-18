@@ -1,12 +1,11 @@
-import 'building.dart';
 
-class RoomAdress {
+class RoomInfo {
   String fullTitle = "";
    String adress = "";
    String buildingNumber = "";
    String buildingYear = "";
 
-  RoomAdress(this.fullTitle, this.adress, this.buildingNumber, this.buildingYear);
+  RoomInfo(this.fullTitle, this.adress, this.buildingNumber, this.buildingYear);
 
   @override
   String toString() {

@@ -1,4 +1,5 @@
-import 'package:campus_navigator/api/roomAdress.dart';
+import 'package:campus_navigator/api/BuildingLevels.dart';
+import 'package:campus_navigator/api/RoomInfo.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building.dart';
@@ -21,9 +22,17 @@ class RoomView extends StatefulWidget {
 }
 
 class _RoomViewState extends State<RoomView> {
+  BuildingLevel? selectedLevel;
+
   @override
   void dispose() {
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    selectedLevel = widget.room.buildingData.getCurrentLevel();
   }
 
   void _launchMapsUrl(String adress) async {
@@ -44,7 +53,7 @@ class _RoomViewState extends State<RoomView> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           width: double.infinity)
     ];
-    for (RoomAdress child in widget.room.adressInfo) {
+    for (RoomInfo child in widget.room.buildingData.rooms) {
       arr.add(Text(child.fullTitle.split(',')[0].trim() + " [" + child.buildingNumber + "]",
           style: const TextStyle(fontWeight: FontWeight.bold)));
       arr.add(RichText(

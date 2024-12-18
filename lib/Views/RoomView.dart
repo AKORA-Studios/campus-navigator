@@ -45,7 +45,7 @@ class _RoomViewState extends State<RoomView> {
           width: double.infinity)
     ];
     for (RoomAdress child in widget.room.adressInfo) {
-      arr.add(Text(child.fullTitle.split(',')[0].trim(),
+      arr.add(Text(child.fullTitle.split(',')[0].trim() + " [" + child.buildingNumber + "]",
           style: const TextStyle(fontWeight: FontWeight.bold)));
       arr.add(RichText(
           text: TextSpan(children: [

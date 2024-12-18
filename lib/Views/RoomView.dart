@@ -23,8 +23,6 @@ class RoomView extends StatefulWidget {
 class _RoomViewState extends State<RoomView> {
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
-    // widget.myController.dispose();
     super.dispose();
   }
 
@@ -32,7 +30,7 @@ class _RoomViewState extends State<RoomView> {
     final Uri url = Uri.parse('https://maps.google.com/maps/search/?q=$adress');
     await launchUrl(url);
 
- /*   if (await canLaunchUrl(url)) {
+    /*   if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
       throw 'Could not launch $url';
@@ -40,7 +38,12 @@ class _RoomViewState extends State<RoomView> {
   }
 
   Widget adressInfo() {
-    List<Widget> arr = [];
+    List<Widget> arr = [
+      const SizedBox(
+          child: Text("Gebäudeadressen",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          width: double.infinity)
+    ];
     for (RoomAdress child in widget.room.adressInfo) {
       arr.add(Text(child.fullTitle.split(',')[0].trim(),
           style: const TextStyle(fontWeight: FontWeight.bold)));
@@ -48,7 +51,9 @@ class _RoomViewState extends State<RoomView> {
           text: TextSpan(children: [
         TextSpan(
             text: child.adress.replaceAll("<br>", "\n"),
-            style: const TextStyle(color: Colors.deepPurpleAccent, decoration: TextDecoration.underline),
+            style: const TextStyle(
+                color: Colors.deepPurpleAccent,
+                decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 _launchMapsUrl(child.adress.replaceAll("<br>", " "));
@@ -56,16 +61,13 @@ class _RoomViewState extends State<RoomView> {
       ])));
     }
     return Container(
-      margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.all(3.0),
+      padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8.0),
       ),
       child: Column(children: arr),
     );
-
-    return Column(children: arr);
   }
 
   @override
@@ -76,17 +78,18 @@ class _RoomViewState extends State<RoomView> {
           title: Text(widget.name),
         ),
         body: SingleChildScrollView(
+            padding: const EdgeInsets.all(8.0),
             child: Column(children: [
-          InteractiveViewer(
-              boundaryMargin: const EdgeInsets.all(20.0),
-              minScale: 0.001,
-              maxScale: 16.0,
-              child: CustomPaint(
-                painter: MapPainter(roomResult: widget.room),
-                size:  Size(1.0*MediaQuery.sizeOf(context).width, 9/8*MediaQuery.sizeOf(context).width),
-              )),
-          Text("Gebäudeadressen"),
-          adressInfo()
-        ])));
+              InteractiveViewer(
+                  boundaryMargin: const EdgeInsets.all(20.0),
+                  minScale: 0.001,
+                  maxScale: 16.0,
+                  child: CustomPaint(
+                    painter: MapPainter(roomResult: widget.room),
+                    size: Size(1.0 * MediaQuery.sizeOf(context).width,
+                        9 / 8 * MediaQuery.sizeOf(context).width),
+                  )),
+              adressInfo(),
+            ])));
   }
 }

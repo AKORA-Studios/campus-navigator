@@ -17,7 +17,7 @@ class BuildingData {
     return levels.where((element) => element.rooms.isNotEmpty).first;
   }
 
-  static fromHTMLDocument(Document document) {
+  static BuildingData fromHTMLDocument(Document document) {
     // Gebäude/Etagenpläne/Lehrräume
     List<BuildingLevel> buildingLevelInfo = [];
     var leftMenuParent = document

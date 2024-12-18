@@ -74,71 +74,7 @@ class RoomPage {
   factory RoomPage.fromHTMLText(String body, List<String> queryParts) {
     var htmlData = HTMLData.fromBody(body);
 
-    // Gebäude/Etagenpläne/Lehrräume
-    List<BuildingLevel> buildingLevelInfo = [];
-    var leftMenuParent = htmlData.document
-        .querySelector("#menu_cont")
-        ?.children
-        .where((element) => element.localName == "ul")
-        .first;
-    if (leftMenuParent != null) {
-      // Children: li: closed or open
-      Element building = leftMenuParent.children[0];
-      Element studyRooms = leftMenuParent.children[2];
-
-      var levelPlan = leftMenuParent.children[1].children
-          .where((element) => element.localName == "ul")
-          .first;
-
-      if (levelPlan != null && levelPlan.children.isNotEmpty) {
-        for (Element level in levelPlan.children) {
-          List<BuildingRoom> roomInfos = [];
-
-          if (level.children.length > 1) {
-            // display rooms in selected level
-            for (Element room in level.children) {
-              if (room.children.isNotEmpty) {
-                for (Element singleRoom in room.children) {
-                  roomInfos.add(BuildingRoom(singleRoom.children[0].text));
-                }
-              }
-            }
-            buildingLevelInfo.add(BuildingLevel.fromRooms(
-                level.children[0].innerHtml, roomInfos));
-          } else {
-            // No Rooms loaded for this level
-            buildingLevelInfo.add(BuildingLevel(level.children[0].innerHtml));
-          }
-        }
-      }
-    }
-
-    // Building Info
-    var rightNavBarContent =
-        htmlData.document.querySelector("#menu_cont_right");
-    List<RoomInfo> adressInfo = [];
-    if (rightNavBarContent != null) {
-      var buildingInfos =
-          rightNavBarContent.children[rightNavBarContent.children.length - 2];
-
-      List<Element> childrenGiver = buildingInfos.children;
-      List<List<Element>> buildingList = [];
-      while (childrenGiver.length > 8) {
-        buildingList.add(childrenGiver
-            .take(8)
-            .where((element) => element.localName != "p")
-            .toList());
-        childrenGiver.removeRange(0, 8);
-      }
-      for (List<Element> buildingInfo in buildingList) {
-        var fullTitle = buildingInfo[0].innerHtml;
-        var adressInfoRoom = RoomInfo(fullTitle, buildingInfo[3].innerHtml,
-            buildingInfo[1].innerHtml, buildingInfo[2].innerHtml);
-        adressInfo.add(adressInfoRoom);
-      }
-    }
-
-    var BuildingInfo = BuildingData(buildingLevelInfo, adressInfo);
+    var buildingInfo = BuildingData.fromHTMLDocument(htmlData.document);
 
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
     final json = jsonDecode(raumBezMatch[1]!);
@@ -192,7 +128,7 @@ class RoomPage {
         layers: layers,
         rooms: rooms,
         hoersaele: highlightedRooms,
-        buildingData: BuildingInfo,
+        buildingData: buildingInfo,
         queryParts: queryParts);
   }
 

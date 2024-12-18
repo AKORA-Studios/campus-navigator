@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
-import 'package:campus_navigator/api/BuildingLevels.dart';
-import 'package:campus_navigator/api/RoomInfo.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
@@ -45,6 +43,50 @@ class PageImageData {
 
   ui.Image? getBackgroundImage(int x, int y) {
     return backgroundImages["${x}_$y"];
+  }
+
+  /// Fetches all images for a floor plan given the `pngFileName` of
+  /// the current page and all it's layers(needed for fetching of the symbolds)
+  static Future<PageImageData> fetchLevelImages(
+      String pngFileName, List<LayerData> layers,
+      {int qualiIndex = 2}) async {
+    final List<int> qualiSteps = [1, 2, 4, 8];
+    final int qualiStep = qualiSteps[qualiIndex];
+
+    // Prepare buffer, this is to avoid concurrency bugs during fetching
+    List<Future<(String, ui.Image?)>> imageBuffer = [];
+
+    // Background tiles
+    for (int x = 0; x < qualiStep; x++) {
+      for (int y = 0; y < qualiStep; y++) {
+        final uri = Uri.parse(
+            "$baseURL/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
+
+        final imageFuture =
+            common.fetchImage(uri).then((image) => ("${x}_$y", image));
+
+        imageBuffer.add(imageFuture);
+      }
+    }
+
+    // Layer symbols
+    for (final layer in layers) {
+      final imageFuture = common
+          .fetchImage(layer.getSymbolUri())
+          .then((image) => (layer.symbolPNG, image));
+
+      imageBuffer.add(imageFuture);
+    }
+
+    var imageList = await Future.wait(imageBuffer);
+
+    Map<String, ui.Image> imageMap = {};
+    for (final e in imageList) {
+      if (e.$2 == null) continue;
+      imageMap[e.$1] = e.$2!;
+    }
+
+    return PageImageData(backgroundImages: imageMap, qualiStep: qualiStep);
   }
 }
 
@@ -118,7 +160,7 @@ class RoomPage {
       numberVariables[m[2]!] = val;
     }
 
-    String pngFileName = stringVariables["png_file_name"] ?? "AA";
+    String pngFileName = stringVariables["png_file_name"]!;
 
     return RoomPage(
         htmlData: htmlData,
@@ -132,47 +174,6 @@ class RoomPage {
         queryParts: queryParts);
   }
 
-  Future<void> fecthImages({int qualiIndex = 2}) async {
-    final List<int> qualiSteps = [1, 2, 4, 8];
-    final int qualiStep = qualiSteps[qualiIndex];
-
-    // Prepare buffer, this is to avoid concurrency bugs during fetching
-    List<Future<(String, ui.Image?)>> imageBuffer = [];
-
-    // Background tiles
-    for (int x = 0; x < qualiStep; x++) {
-      for (int y = 0; y < qualiStep; y++) {
-        final uri = Uri.parse(
-            "${baseURL}/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
-
-        final imageFuture =
-            common.fetchImage(uri).then((image) => ("${x}_$y", image));
-
-        imageBuffer.add(imageFuture);
-      }
-    }
-
-    // Layer symbols
-    for (final layer in layers) {
-      final imageFuture = common
-          .fetchImage(layer.getSymbolUri())
-          .then((image) => (layer.symbolPNG, image));
-
-      imageBuffer.add(imageFuture);
-    }
-
-    var imageList = await Future.wait(imageBuffer);
-
-    Map<String, ui.Image> imageMap = {};
-    for (final e in imageList) {
-      if (e.$2 == null) continue;
-      imageMap[e.$1] = e.$2!;
-    }
-
-    backgroundImageData =
-        PageImageData(backgroundImages: imageMap, qualiStep: qualiStep);
-  }
-
   static Future<RoomPage> fetchRoom(String query) async {
     final uri = Uri.parse("${baseURL}/etplan/$query");
 
@@ -184,7 +185,8 @@ class RoomPage {
       var roomResult = RoomPage.fromHTMLText(response.body, query.split("/"));
 
       // Load background image
-      await roomResult.fecthImages();
+      roomResult.backgroundImageData = await PageImageData.fetchLevelImages(
+          roomResult.pngFileName, roomResult.layers);
 
       return roomResult;
     } else {

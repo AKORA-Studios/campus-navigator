@@ -46,6 +46,25 @@ class _RoomViewState extends State<RoomView> {
     }*/
   }
 
+  Widget dropDown() {
+    List<DropdownMenuItem> options = [];
+
+    for (BuildingLevel lev in widget.room.buildingData.levels) {
+      options.add(DropdownMenuItem(
+        child: Text(lev.name),
+        value: lev,
+      ));
+    }
+    return DropdownButton(
+        value: selectedLevel,
+        items: options,
+        onChanged: (value) {
+          setState(() {
+            selectedLevel = value;
+          });
+        });
+  }
+
   Widget adressInfo() {
     List<Widget> arr = [
       const SizedBox(
@@ -93,6 +112,13 @@ class _RoomViewState extends State<RoomView> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(8.0),
             child: Column(children: [
+              Row(
+                children: [
+                  const Text("Etage wechseln:"),
+                  dropDown(),
+                ],
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              ),
               InteractiveViewer(
                   boundaryMargin: const EdgeInsets.all(20.0),
                   minScale: 0.001,
@@ -102,7 +128,6 @@ class _RoomViewState extends State<RoomView> {
                     size: Size(1.0 * MediaQuery.sizeOf(context).width,
                         9 / 8 * MediaQuery.sizeOf(context).width),
                   )),
-              Text("Gebäudeadressen"),
               adressInfo()
             ])));
   }

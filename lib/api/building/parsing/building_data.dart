@@ -1,7 +1,7 @@
 import 'package:html/dom.dart';
 
-import 'BuildingLevels.dart';
-import 'RoomInfo.dart';
+import '../../BuildingLevels.dart';
+import '../../RoomInfo.dart';
 
 /// Information about the current building
 /// This includes the available levels in the current building

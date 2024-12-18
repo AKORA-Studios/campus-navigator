@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
 
-import 'package:campus_navigator/api/BuildingData.dart';
+import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/RoomInfo.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';

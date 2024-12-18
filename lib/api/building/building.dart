@@ -235,7 +235,7 @@ class RoomPage {
   }
 
   static Future<RoomPage> fetchRoom(String query) async {
-    final uri = Uri.parse('https://navigator.tu-dresden.de/etplan/' + query);
+    final uri = Uri.parse("https://navigator.tu-dresden.de/etplan/$query");
 
     final response = await http.get(uri);
 

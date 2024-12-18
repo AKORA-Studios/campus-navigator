@@ -8,13 +8,13 @@ import 'package:campus_navigator/painter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RoomView extends StatefulWidget {
-  const RoomView(
+  RoomView(
       {super.key,
       required this.myController,
       required this.room,
       required this.name});
   final TextEditingController myController;
-  final RoomPage room;
+  Future<RoomPage> room;
   final String name;
 
   @override
@@ -32,7 +32,11 @@ class _RoomViewState extends State<RoomView> {
   @override
   void initState() {
     // TODO: implement initState
-    selectedLevel = widget.room.buildingData.getCurrentLevel();
+    widget.room.then((room) {
+      setState(() {
+        selectedLevel = room.buildingData.getCurrentLevel();
+      });
+    });
   }
 
   void _launchMapsUrl(String adress) async {
@@ -47,58 +51,81 @@ class _RoomViewState extends State<RoomView> {
   }
 
   Widget dropDown() {
-    List<DropdownMenuItem> options = [];
+    return FutureBuilder<RoomPage>(
+      future: widget.room,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Text("bruh");
+        }
 
-    for (BuildingLevel lev in widget.room.buildingData.levels) {
-      options.add(DropdownMenuItem(
-        child: Text(lev.name),
-        value: lev,
-      ));
-    }
-    return DropdownButton(
-        value: selectedLevel,
-        items: options,
-        onChanged: (value) {
-          setState(() {
-            selectedLevel = value;
-          });
-        });
+        final room = snapshot.data!;
+
+        List<DropdownMenuItem> options = [];
+
+        for (BuildingLevel lev in room.buildingData.levels) {
+          options.add(DropdownMenuItem(
+            child: Text(lev.name),
+            value: lev,
+          ));
+        }
+        return DropdownButton(
+            value: selectedLevel,
+            items: options,
+            onChanged: (value) {
+              setState(() {
+                selectedLevel = value;
+                widget.room = RoomPage.fetchRoom("pot/03");
+              });
+            });
+      },
+    );
   }
 
-  Widget adressInfo() {
-    List<Widget> arr = [
-      const SizedBox(
-          child: Text("Gebäudeadressen",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-          width: double.infinity)
-    ];
-    for (RoomInfo child in widget.room.buildingData.rooms) {
-      arr.add(Text(
-          child.fullTitle.split(',')[0].trim() +
-              " [" +
-              child.buildingNumber +
-              "]",
-          style: const TextStyle(fontWeight: FontWeight.bold)));
-      arr.add(RichText(
-          text: TextSpan(children: [
-        TextSpan(
-            text: child.adress.replaceAll("<br>", "\n"),
-            style: const TextStyle(
-                color: Colors.deepPurpleAccent,
-                decoration: TextDecoration.underline),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                _launchMapsUrl(child.adress.replaceAll("<br>", " "));
-              })
-      ])));
-    }
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Column(children: arr),
+  Widget adressInfo(Future<RoomPage> roomPage) {
+    return FutureBuilder<RoomPage>(
+      future: widget.room,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Text("bruh");
+        }
+
+        final room = snapshot.data!;
+
+        List<Widget> arr = [
+          const SizedBox(
+              child: Text("Gebäudeadressen",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              width: double.infinity)
+        ];
+        for (RoomInfo child in room.buildingData.rooms) {
+          arr.add(Text(
+              child.fullTitle.split(',')[0].trim() +
+                  " [" +
+                  child.buildingNumber +
+                  "]",
+              style: const TextStyle(fontWeight: FontWeight.bold)));
+          arr.add(RichText(
+              text: TextSpan(children: [
+            TextSpan(
+                text: child.adress.replaceAll("<br>", "\n"),
+                style: const TextStyle(
+                    color: Colors.deepPurpleAccent,
+                    decoration: TextDecoration.underline),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    _launchMapsUrl(child.adress.replaceAll("<br>", " "));
+                  })
+          ])));
+        }
+        return Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Column(children: arr),
+        );
+      },
     );
   }
 
@@ -119,9 +146,9 @@ class _RoomViewState extends State<RoomView> {
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               ),
-              interactiveRoomView(widget.room,
+              asyncInteractiveRoomView(widget.room,
                   size: MediaQuery.sizeOf(context)),
-              adressInfo()
+              adressInfo(widget.room)
             ])));
   }
 }

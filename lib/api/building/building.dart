@@ -58,6 +58,7 @@ class RoomPage {
   final List<LayerData> layers;
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
+  final List<String> queryParts;
 
   RoomPage(
       {required this.htmlData,
@@ -67,9 +68,10 @@ class RoomPage {
       required this.rooms,
       required this.layers,
       required this.hoersaele,
-      required this.buildingData});
+      required this.buildingData,
+      required this.queryParts});
 
-  factory RoomPage.fromHTMLText(String body) {
+  factory RoomPage.fromHTMLText(String body, List<String> queryParts) {
     var htmlData = HTMLData.fromBody(body);
 
     // Gebäude/Etagenpläne/Lehrräume
@@ -190,7 +192,8 @@ class RoomPage {
         layers: layers,
         rooms: rooms,
         hoersaele: highlightedRooms,
-        buildingData: BuildingInfo);
+        buildingData: BuildingInfo,
+        queryParts: queryParts);
   }
 
   Future<void> fecthImages({int qualiIndex = 2}) async {
@@ -242,7 +245,7 @@ class RoomPage {
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      var roomResult = RoomPage.fromHTMLText(response.body);
+      var roomResult = RoomPage.fromHTMLText(response.body, query.split("/"));
 
       // Load background image
       await roomResult.fecthImages();

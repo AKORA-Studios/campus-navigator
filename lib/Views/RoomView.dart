@@ -1,10 +1,9 @@
 import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/RoomInfo.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/building.dart';
 import 'package:campus_navigator/painter.dart';
-
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RoomView extends StatefulWidget {
@@ -74,7 +73,8 @@ class _RoomViewState extends State<RoomView> {
             onChanged: (value) {
               setState(() {
                 selectedLevel = value;
-                widget.room = RoomPage.fetchRoom("pot/03");
+                widget.room = RoomPage.fetchRoom(
+                    "${room.queryParts.first}/${selectedLevel?.name.split(" ").last}");
               });
             });
       },

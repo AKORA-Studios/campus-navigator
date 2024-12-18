@@ -1,3 +1,4 @@
+import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/roomAdress.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
@@ -82,6 +83,35 @@ class RoomResult {
         var adressInfoRoom = RoomAdress(fullTitle, buildingInfo[3].innerHtml,
             buildingInfo[1].innerHtml, buildingInfo[2].innerHtml);
         adressInfo.add(adressInfoRoom);
+      }
+    }
+
+    // Gebäude/Etagenpläne/Lehrräume
+    List<BuildingLevel> buildingLevelInfo = [];
+    var leftMenuParent = htmlData.document.querySelector("#menu_cont")?.children.where((element) => element.localName == "ul").first;
+    if(leftMenuParent != null) { // Children: li: closed or open
+      Element building =  leftMenuParent.children[0];
+      Element studyRooms =  leftMenuParent.children[2];
+
+      var levelPlan = leftMenuParent.children[1].children.where((element) => element.localName == "ul").first;
+
+      if(levelPlan != null && levelPlan.children.isNotEmpty) {
+          for(Element level in levelPlan.children) {
+            List<BuildingRoom> roomInfos = [];
+
+            if(level.children.length > 1) { // display rooms in selected level
+              for(Element room in level.children) {
+                if(room.children.isNotEmpty) {
+                  for(Element singleRoom in room.children) {
+                    roomInfos.add(BuildingRoom(singleRoom.children[0].text));
+                  }
+                }
+              }
+              buildingLevelInfo.add(BuildingLevel.fromRooms(level.children[0].innerHtml, roomInfos));
+            } else { // No Rooms loaded for this level
+              buildingLevelInfo.add(BuildingLevel(level.children[0].innerHtml));
+            }
+          }
       }
     }
 

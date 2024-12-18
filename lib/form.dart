@@ -3,7 +3,6 @@ import 'package:campus_navigator/Views/RoomView.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/building.dart';
 import 'package:campus_navigator/api/search.dart';
-import 'package:campus_navigator/painter.dart';
 
 class MyCustomForm extends StatefulWidget {
   const MyCustomForm({super.key});
@@ -29,7 +28,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
       child: Text(
         r.name,
         textAlign: TextAlign.left,
-        style: TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 18),
       ),
       onPressed: () {
         setState(() {
@@ -45,29 +44,6 @@ class _MyCustomFormState extends State<MyCustomForm> {
             print(e);
           });
         });
-      },
-    );
-  }
-
-  Widget resultsView() {
-    return FutureBuilder<RoomPage>(
-      future: roomResult,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Column(
-            children: <Widget>[
-              CustomPaint(
-                size: const Size(300, 300),
-                painter: MapPainter(roomResult: snapshot.data!),
-              ),
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-
-        // By default, show a loading spinner.
-        return const SizedBox.shrink();
       },
     );
   }
@@ -124,7 +100,9 @@ class _MyCustomFormState extends State<MyCustomForm> {
                     },
                   ),
                   const SizedBox(height: 100),
-                  resultsView()
+                  roomResult != null
+                      ? asyncInteractiveRoomView(roomResult!)
+                      : const Text("No room selected")
                 ],
               ),
             )));

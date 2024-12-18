@@ -119,16 +119,36 @@ class _RoomViewState extends State<RoomView> {
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               ),
-              InteractiveViewer(
-                  boundaryMargin: const EdgeInsets.all(20.0),
-                  minScale: 0.001,
-                  maxScale: 16.0,
-                  child: CustomPaint(
-                    painter: MapPainter(roomResult: widget.room),
-                    size: Size(1.0 * MediaQuery.sizeOf(context).width,
-                        9 / 8 * MediaQuery.sizeOf(context).width),
-                  )),
+              interactiveRoomView(widget.room,
+                  size: MediaQuery.sizeOf(context)),
               adressInfo()
             ])));
   }
+}
+
+Widget interactiveRoomView(RoomPage roomResult,
+    {Size size = const Size(300, 300)}) {
+  return InteractiveViewer(
+      boundaryMargin: const EdgeInsets.all(34.0),
+      minScale: 0.001,
+      maxScale: 16.0,
+      child:
+          CustomPaint(painter: MapPainter(roomResult: roomResult), size: size));
+}
+
+Widget asyncInteractiveRoomView(Future<RoomPage> roomResult,
+    {Size size = const Size(300, 300)}) {
+  return FutureBuilder<RoomPage>(
+    future: roomResult,
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        return interactiveRoomView(snapshot.data!, size: size);
+      } else if (snapshot.hasError) {
+        return Text('${snapshot.error}');
+      }
+
+      // By default, show a loading spinner.
+      return const SizedBox.shrink();
+    },
+  );
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:http/http.dart' as http;
 
 class SearchResult {
@@ -35,7 +36,7 @@ class SearchResult {
   }
 
   static Future<SearchResult> searchRoom(String query) async {
-    final uri = Uri.parse('https://navigator.tu-dresden.de/search');
+    final uri = Uri.parse('$baseURL/search');
     var map = {'query': query, 'from': "/", 'geocode': '1'};
     final response = await http.post(uri, body: map);
 

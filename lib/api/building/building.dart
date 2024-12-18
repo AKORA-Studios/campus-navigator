@@ -1,19 +1,19 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:ui' as ui;
+
 import 'package:campus_navigator/api/BuildingData.dart';
 import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/RoomInfo.dart';
+import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'dart:convert';
-
-import 'dart:async';
-import 'dart:ui' as ui;
-
 import 'package:http/http.dart' as http;
 
-import 'parsing/raum_bez_data.dart';
-import 'parsing/layer_data.dart';
-import 'parsing/room_polygon.dart';
 import 'parsing/common.dart' as common;
+import 'parsing/layer_data.dart';
+import 'parsing/raum_bez_data.dart';
+import 'parsing/room_polygon.dart';
 
 // Matches variables that define a json object
 final RegExp variableDeclarationExp =
@@ -207,7 +207,7 @@ class RoomPage {
     for (int x = 0; x < qualiStep; x++) {
       for (int y = 0; y < qualiStep; y++) {
         final uri = Uri.parse(
-            "https://navigator.tu-dresden.de/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
+            "${baseURL}/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
 
         final imageFuture =
             common.fetchImage(uri).then((image) => ("${x}_$y", image));
@@ -238,7 +238,7 @@ class RoomPage {
   }
 
   static Future<RoomPage> fetchRoom(String query) async {
-    final uri = Uri.parse("https://navigator.tu-dresden.de/etplan/$query");
+    final uri = Uri.parse("${baseURL}/etplan/$query");
 
     final response = await http.get(uri);
 

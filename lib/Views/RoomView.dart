@@ -1,6 +1,7 @@
 import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/RoomInfo.dart';
 import 'package:campus_navigator/api/building/building.dart';
+import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/painter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -135,6 +136,19 @@ class _RoomViewState extends State<RoomView> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.name),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.share),
+              tooltip: 'Open in Web',
+              onPressed: () {
+                widget.room.then((value) async {
+                  final Uri url = Uri.parse(
+                      '$baseURL/etplan/${value.queryParts.join("/")}');
+                  await launchUrl(url);
+                });
+              },
+            ),
+          ],
         ),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(8.0),

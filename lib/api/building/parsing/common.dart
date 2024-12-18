@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:http/http.dart' as http;
 
+const baseURL = "https://navigator.tu-dresden.de";
+
 Future<ui.Image?> fetchImage(Uri uri) {
   return http.get(uri).then((response) async {
     if (response.statusCode != 200 || response.bodyBytes.isEmpty) {

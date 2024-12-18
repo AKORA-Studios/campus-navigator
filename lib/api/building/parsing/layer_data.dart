@@ -4,6 +4,8 @@
 
 import 'dart:ui';
 
+import 'package:campus_navigator/api/building/parsing/common.dart';
+
 import 'position.dart';
 
 /// These will be definied in the JS script as following:
@@ -96,8 +98,7 @@ class LayerData {
   }
 
   Uri getSymbolUri() {
-    return Uri.parse(
-        "https://navigator.tu-dresden.de/images/symbols/$symbolPNG");
+    return Uri.parse("${baseURL}/images/symbols/$symbolPNG");
   }
 
   static const symbolOffset = Offset(30, 30);

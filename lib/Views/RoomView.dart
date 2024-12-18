@@ -21,7 +21,7 @@ class RoomView extends StatefulWidget {
 }
 
 class _RoomViewState extends State<RoomView> {
-  BuildingLevel? selectedLevel;
+  String? selectedLevel;
 
   @override
   void dispose() {
@@ -33,7 +33,7 @@ class _RoomViewState extends State<RoomView> {
     // TODO: implement initState
     widget.room.then((room) {
       setState(() {
-        selectedLevel = room.buildingData.getCurrentLevel();
+        selectedLevel = room.buildingData.getCurrentLevel()?.name;
       });
     });
   }
@@ -64,7 +64,7 @@ class _RoomViewState extends State<RoomView> {
         for (BuildingLevel lev in room.buildingData.levels) {
           options.add(DropdownMenuItem(
             child: Text(lev.name),
-            value: lev,
+            value: lev.name,
           ));
         }
         return DropdownButton(
@@ -74,7 +74,7 @@ class _RoomViewState extends State<RoomView> {
               setState(() {
                 selectedLevel = value;
                 widget.room = RoomPage.fetchRoom(
-                    "${room.queryParts.first}/${selectedLevel?.name.split(" ").last}");
+                    "${room.queryParts.first}/${value.split(" ").last}");
               });
             });
       },

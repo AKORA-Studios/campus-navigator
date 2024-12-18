@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
@@ -12,12 +13,16 @@ import 'parsing/layer_data.dart';
 import 'parsing/raum_bez_data.dart';
 import 'parsing/room_polygon.dart';
 
-/// Matches variables that define a json object
+/// Matches variables declarations that define a JS object
 final RegExp variableDeclarationExp =
-    RegExp(r"^(var )?(\w+) = ({[^;]+)", multiLine: true);
+    RegExp(r"^var (\w+) = ({[^;]+)", multiLine: true);
+
+/// Matches variables assignments that assign a JS object
+final RegExp variableAssignmentsExp =
+    RegExp(r"^(\w+) = ({[^;]+)", multiLine: true);
 
 // Matches JS object attribute names
-final RegExp jsObjectExp = RegExp(r"(\w+):", multiLine: true);
+final RegExp jsObjectExp = RegExp(r'([,{\[]) *(\w+):', multiLine: true);
 
 final RegExp raumbezExp = RegExp(r"^raumbezData = ({[^;]+)", multiLine: true);
 
@@ -36,7 +41,6 @@ class RoomPage {
   final Map<String, double> numberVariables;
   final String pngFileName;
   final List<List<RoomPolygon>> rooms;
-  final List<RoomPolygon> hoersaele;
   final List<LayerData> layers;
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
@@ -49,7 +53,6 @@ class RoomPage {
       required this.pngFileName,
       required this.rooms,
       required this.layers,
-      required this.hoersaele,
       required this.buildingData,
       required this.queryParts});
 
@@ -64,34 +67,31 @@ class RoomPage {
         RaumBezData.fromJson(jsonDecode(raumBezMatch[1]!));
 
     // Parse all variables with JSON object like values
-    var matches = variableDeclarationExp.allMatches(htmlData.script);
-    Map<String, dynamic> variables = {};
-    for (final Match m in matches) {
-      String varName = m[2]!;
-      String valueJsNotation = m[3]!;
+    Map<String, dynamic> declaredVariables =
+        parseJSVariables(variableDeclarationExp, htmlData.script);
 
-      // Convert javascript object notation to JSON object notation
-      // { a: 1 }  ->  { "a": 1 }
-      String valueJsonNotation = valueJsNotation.replaceAllMapped(
-          jsObjectExp, (m) => '"' + m[1]! + '":');
-
-      variables[varName] = jsonDecode(valueJsonNotation);
-    }
+    Map<String, dynamic> assignedVariables =
+        parseJSVariables(variableAssignmentsExp, htmlData.script);
 
     // Parse symbol layers
-    List<LayerData> layers = variables.entries
+    List<LayerData> layers = declaredVariables.entries
         .where((e) => e.key.startsWith("slayer"))
         .map((e) => LayerData.fromJson(e.value))
         .toList();
 
     // Parse room polygons for drawing
-    List<List<RoomPolygon>> rooms = variables.entries
-        .where((e) => !e.key.startsWith("slayer"))
-        .map((e) => RoomPolygon.fromJsonList(e.value))
-        .toList();
+    List<List<RoomPolygon>> rooms = declaredVariables.entries
+        .where((e) => !e.key.startsWith("slayer") && e.key != "raumbezData")
+        .map((e) {
+      debugger(when: e.value["points"] == null);
 
-    List<RoomPolygon> highlightedRooms =
-        RoomPolygon.fromJsonList(variables["hoersaeleData"]);
+      return RoomPolygon.fromJsonList(e.value);
+    }).toList();
+
+    // Highlight specific rooms
+    final gebaeudeData =
+        RoomPolygon.fromJson(assignedVariables["gebaeudeData"]);
+    rooms.add([gebaeudeData]);
 
     // String variables
     Map<String, String> stringVariables = {};
@@ -117,7 +117,6 @@ class RoomPage {
         numberVariables: numberVariables,
         layers: layers,
         rooms: rooms,
-        hoersaele: highlightedRooms,
         buildingData: buildingInfo,
         queryParts: queryParts);
   }
@@ -143,6 +142,27 @@ class RoomPage {
       throw Exception('Failed to load search results');
     }
   }
+}
+
+Map<String, dynamic> parseJSVariables(RegExp regExp, String script) {
+  Map<String, dynamic> declaredVariables = {};
+
+  var matches = regExp.allMatches(script);
+  for (final Match m in matches) {
+    String varName = m[1]!;
+    String valueJsNotation = m[2]!;
+
+    // Convert javascript object notation to JSON object notation
+    // { a: 1 }  ->  { "a": 1 }
+    String valueJsonNotation =
+        valueJsNotation.replaceAllMapped(jsObjectExp, (m) {
+      return '${m[1]}"${m[2]!}":';
+    });
+
+    declaredVariables[varName] = jsonDecode(valueJsonNotation);
+  }
+
+  return declaredVariables;
 }
 
 class HTMLData {

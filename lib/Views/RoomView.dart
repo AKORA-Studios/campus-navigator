@@ -1,5 +1,6 @@
-import 'package:campus_navigator/api/BuildingLevels.dart';
-import 'package:campus_navigator/api/RoomInfo.dart';
+import 'package:campus_navigator/api/building/parsing/building_levels.dart';
+import 'package:campus_navigator/api/building/parsing/room_info.dart';
+import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/painter.dart';
@@ -138,7 +139,7 @@ class _RoomViewState extends State<RoomView> {
           ],
         ),
         body: SingleChildScrollView(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(30.0),
             child: Column(children: [
               Row(
                 children: [
@@ -148,7 +149,7 @@ class _RoomViewState extends State<RoomView> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               ),
               asyncInteractiveRoomView(widget.room,
-                  size: MediaQuery.sizeOf(context)),
+                  size: MediaQuery.sizeOf(context).smallestSquare()),
               buildingAdressBlock(widget.room)
             ])));
   }
@@ -177,4 +178,11 @@ Widget asyncInteractiveRoomView(Future<RoomPage> roomResult,
       return const SizedBox.shrink();
     },
   );
+}
+
+extension SmallestSquare on Size {
+  /// Returns the Size that has `shortestSide` as its width and length
+  Size smallestSquare() {
+    return Size(shortestSide, shortestSide);
+  }
 }

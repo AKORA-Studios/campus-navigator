@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
@@ -29,6 +28,9 @@ final RegExp raumbezExp = RegExp(r"^raumbezData = ({[^;]+)", multiLine: true);
 final RegExp pngFileNameExp =
     RegExp(r'var png_file_name = "(\w+)";', multiLine: true);
 
+final RegExp highlightedRoomExp =
+    RegExp(r"ETplan\.permahighlightRaum\((\d+), (\w+)\);", multiLine: true);
+
 final RegExp stringVariableExp =
     RegExp(r'var ([\w_]+) = "(\w+)";', multiLine: true);
 
@@ -40,7 +42,7 @@ class RoomPage {
   final RaumBezData raumBezData;
   final Map<String, double> numberVariables;
   final String pngFileName;
-  final List<List<RoomPolygon>> rooms;
+  final Map<String, List<RoomPolygon>> rooms;
   final List<LayerData> layers;
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
@@ -70,6 +72,7 @@ class RoomPage {
     Map<String, dynamic> declaredVariables =
         parseJSVariables(variableDeclarationExp, htmlData.script);
 
+    // ignore: unused_local_variable
     Map<String, dynamic> assignedVariables =
         parseJSVariables(variableAssignmentsExp, htmlData.script);
 
@@ -80,17 +83,37 @@ class RoomPage {
         .toList();
 
     // Parse room polygons for drawing
-    List<List<RoomPolygon>> rooms = declaredVariables.entries
-        .where((e) => !e.key.startsWith("slayer") && e.key != "raumbezData")
-        .map((e) {
-      debugger(when: e.value["points"] == null);
-
-      return RoomPolygon.fromJsonList(e.value);
-    }).toList();
+    final roomVariables = declaredVariables.entries
+        .where((e) => !e.key.startsWith("slayer") && e.key != "raumbezData");
+    Map<String, List<RoomPolygon>> rooms = {
+      for (final roomsEntry in roomVariables)
+        roomsEntry.key: RoomPolygon.fromJsonList(roomsEntry.value),
+    };
 
     // Outline of current building
-    // final gebaeudeData =
-    //    RoomPolygon.fromJson(assignedVariables["gebaeudeData"]);
+    final highlightedRoomMatch = highlightedRoomExp.firstMatch(htmlData.script);
+    if (highlightedRoomMatch != null) {
+      final [roomIndexString!, containingVariable!] =
+          highlightedRoomMatch.groups([1, 2]);
+
+      final roomIndex = int.parse(roomIndexString);
+      // `containingVariable` describes the kinetic layer, adding "Data" gives
+      // variable that actually holds the point data
+      final variableName = "${containingVariable}Data";
+
+      final roomPolygons = rooms[variableName]!;
+
+      // Search for matching polygon, the index is a index of drawed polygons
+      // One RoomPolygon contains multiple polygons so we possibly have to traverse all
+      // A List<double> is a single polygon in this case
+      List<List<double>> flattendPolygons =
+          roomPolygons.expand((element) => element.points).toList();
+
+      // Add new room list that only contains the highlighted polygon
+      final newRoomPolygon =
+          RoomPolygon(points: [flattendPolygons[roomIndex]], fill: "#ae0000");
+      rooms["hightlightedRoom"] = [newRoomPolygon];
+    }
 
     // String variables
     Map<String, String> stringVariables = {};
@@ -140,6 +163,10 @@ class RoomPage {
       // then throw an exception.
       throw Exception('Failed to load search results');
     }
+  }
+
+  List<RoomPolygon> getFlatRoomList() {
+    return rooms.values.expand((e) => e).toList();
   }
 }
 

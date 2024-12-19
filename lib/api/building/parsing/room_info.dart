@@ -1,5 +1,3 @@
-import 'building/room_page.dart';
-
 class RoomInfo {
   String fullTitle = "";
   String adress = "";

@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
@@ -33,39 +32,6 @@ class MapPainter extends CustomPainter {
     // Translate & Scale coordinate system
     canvas.scale(scale);
     canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
-
-    // Paint background image
-    if (roomResult.backgroundImageData != null) {
-      final imageData = roomResult.backgroundImageData!;
-      int qualiStep = imageData.qualiStep;
-      double qualiStepD = qualiStep.toDouble();
-
-      double canvWidth = roomResult.numberVariables["data_canv_width"]!;
-      double canvHeight = roomResult.numberVariables["data_canv_height"]!;
-      double qualiSize =
-          roomResult.numberVariables["subpics_size"]! / qualiStep;
-
-      canvas.scale(1 / qualiStepD);
-
-      for (int x = 0; x < qualiStep; x++) {
-        for (int y = 0; y < qualiStep; y++) {
-          var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
-              (-0.5 * canvHeight) + (y * qualiSize));
-
-          final image = imageData.getBackgroundImage(x, y);
-          if (image == null) continue;
-          canvas.drawImage(
-              image, imageOffset.scale(qualiStepD, qualiStepD), Paint());
-        }
-      }
-
-      canvas.scale(qualiStepD);
-    }
-
-    final strokePaint = Paint()
-      ..strokeWidth = .4
-      ..style = PaintingStyle.stroke
-      ..color = Colors.black.withAlpha(120);
 
     void drawRoom(RoomPolygon roomData, {Color? fillColor}) {
       for (int i = 0; i < roomData.points.length; i++) {
@@ -108,22 +74,12 @@ class MapPainter extends CustomPainter {
         path.close();
 
         canvas.drawPath(path, fillPaint);
-        canvas.drawPath(path, strokePaint);
       }
     }
 
-    for (final List<RoomPolygon> roomList in roomResult.rooms) {
-      for (final RoomPolygon roomData in roomList) {
-        drawRoom(roomData);
-      }
+    for (final roomPolygon in roomResult.getFlatRoomList()) {
+      drawRoom(roomPolygon);
     }
-
-    // Highlight room
-    /*
-    for (final roomData in roomResult.hoersaele) {
-      drawRoom(roomData); //, fillColor: Colors.red.withAlpha(200));
-    }
-    */
 
     var symbolPaint = Paint()
       ..strokeWidth = 4
@@ -139,6 +95,34 @@ class MapPainter extends CustomPainter {
         canvas.drawImage(image, pos, symbolPaint);
         canvas.scale(1 / l.symbscale);
       }
+    }
+
+    // Paint background image
+    if (roomResult.backgroundImageData != null) {
+      final imageData = roomResult.backgroundImageData!;
+      int qualiStep = imageData.qualiStep;
+      double qualiStepD = qualiStep.toDouble();
+
+      double canvWidth = roomResult.numberVariables["data_canv_width"]!;
+      double canvHeight = roomResult.numberVariables["data_canv_height"]!;
+      double qualiSize =
+          roomResult.numberVariables["subpics_size"]! / qualiStep;
+
+      canvas.scale(1 / qualiStepD);
+
+      for (int x = 0; x < qualiStep; x++) {
+        for (int y = 0; y < qualiStep; y++) {
+          var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
+              (-0.5 * canvHeight) + (y * qualiSize));
+
+          final image = imageData.getBackgroundImage(x, y);
+          if (image == null) continue;
+          canvas.drawImage(
+              image, imageOffset.scale(qualiStepD, qualiStepD), Paint());
+        }
+      }
+
+      canvas.scale(qualiStepD);
     }
 
     // Beschriftungen
@@ -177,8 +161,10 @@ class MapPainter extends CustomPainter {
   }
 
   Rect calculateDrawingArea() {
-    var allPoints = roomResult.rooms
-        .expand((r) => r.expand((e) => e.points).expand(mapPoints))
+    var allPoints = roomResult
+        .getFlatRoomList()
+        .expand((r) => r.points)
+        .expand(mapPoints)
         .toList();
 
     var minX = allPoints.fold(allPoints[0].dx,

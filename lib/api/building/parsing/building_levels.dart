@@ -1,4 +1,3 @@
-
 class BuildingLevel {
   String name;
   List<BuildingRoom> rooms = [];
@@ -9,11 +8,9 @@ class BuildingLevel {
 
   @override
   String toString() {
-    return 'BuildingLevel{name: $name, rooms: ${this.rooms.map((e) => e.name)}';
+    return 'BuildingLevel{name: $name, rooms: ${rooms.map((e) => e.name)}';
   }
-
 }
-
 
 class BuildingRoom {
   String name;

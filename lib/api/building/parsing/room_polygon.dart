@@ -1,3 +1,5 @@
+/// This describes a set of Polygons with the same fill
+/// Most of the time the polygons are rooms
 class RoomPolygon {
   final List<List<double>> points;
   final String? fill;

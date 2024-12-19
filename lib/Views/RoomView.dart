@@ -1,6 +1,6 @@
 import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/RoomInfo.dart';
-import 'package:campus_navigator/api/building/building.dart';
+import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/painter.dart';
 import 'package:flutter/gestures.dart';

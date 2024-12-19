@@ -16,7 +16,6 @@ class RoomPolygon {
         .toList();
 
     String? fill = json["fill"] as String?;
-    fill = "#000000";
     return RoomPolygon(points: points2, fill: fill);
   }
 

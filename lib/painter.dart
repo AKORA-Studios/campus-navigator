@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:campus_navigator/api/building/building.dart';
+import 'package:campus_navigator/api/building/room_page.dart';
 
 import 'api/building/parsing/layer_data.dart';
 import 'api/building/parsing/position.dart';

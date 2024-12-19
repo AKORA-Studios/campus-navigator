@@ -88,10 +88,9 @@ class RoomPage {
       return RoomPolygon.fromJsonList(e.value);
     }).toList();
 
-    // Highlight specific rooms
-    final gebaeudeData =
-        RoomPolygon.fromJson(assignedVariables["gebaeudeData"]);
-    rooms.add([gebaeudeData]);
+    // Outline of current building
+    // final gebaeudeData =
+    //    RoomPolygon.fromJson(assignedVariables["gebaeudeData"]);
 
     // String variables
     Map<String, String> stringVariables = {};

@@ -91,9 +91,10 @@ class RoomPage {
     };
 
     // Outline of current building
-    {
+    final highlightedRoomMatch = highlightedRoomExp.firstMatch(htmlData.script);
+    if (highlightedRoomMatch != null) {
       final [roomIndexString!, containingVariable!] =
-          highlightedRoomExp.firstMatch(htmlData.script)!.groups([1, 2]);
+          highlightedRoomMatch.groups([1, 2]);
 
       final roomIndex = int.parse(roomIndexString);
       // `containingVariable` describes the kinetic layer, adding "Data" gives

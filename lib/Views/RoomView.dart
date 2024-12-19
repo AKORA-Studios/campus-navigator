@@ -1,13 +1,12 @@
 import 'package:campus_navigator/api/BuildingLevels.dart';
 import 'package:campus_navigator/api/RoomInfo.dart';
-import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/painter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:io' show Platform;
 
 class RoomView extends StatefulWidget {
   RoomView(
@@ -33,7 +32,7 @@ class _RoomViewState extends State<RoomView> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
     widget.room.then((room) {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
@@ -50,7 +49,6 @@ class _RoomViewState extends State<RoomView> {
         }
 
         final room = snapshot.data!;
-
         List<DropdownMenuItem> options = [];
 
         for (BuildingLevel lev in room.buildingData.levels) {
@@ -73,7 +71,7 @@ class _RoomViewState extends State<RoomView> {
     );
   }
 
-  Widget adressInfo(Future<RoomPage> roomPage) {
+  Widget buildingAdressBlock(Future<RoomPage> roomPage) {
     return FutureBuilder<RoomPage>(
       future: widget.room,
       builder: (context, snapshot) {
@@ -104,7 +102,8 @@ class _RoomViewState extends State<RoomView> {
                     decoration: TextDecoration.underline),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    launchMap(child.adress.replaceAll("<br>", " "));
+                    MapsLauncher.launchQuery(
+                        child.adress.replaceAll("<br>", " "));
                   })
           ])));
         }
@@ -118,20 +117,6 @@ class _RoomViewState extends State<RoomView> {
         );
       },
     );
-  }
-
-  launchMap(String query) async {
-    // Android
-    var url = Uri.parse('https://maps.google.com/maps/search/?q=$query');
-    if (Platform.isIOS) {
-      // iOS
-      url = Uri.parse('https://maps.apple.com/?q=$query');
-    }
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   @override
@@ -164,7 +149,7 @@ class _RoomViewState extends State<RoomView> {
               ),
               asyncInteractiveRoomView(widget.room,
                   size: MediaQuery.sizeOf(context)),
-              adressInfo(widget.room)
+              buildingAdressBlock(widget.room)
             ])));
   }
 }
@@ -189,8 +174,6 @@ Widget asyncInteractiveRoomView(Future<RoomPage> roomResult,
       } else if (snapshot.hasError) {
         return Text('${snapshot.error}');
       }
-
-      // By default, show a loading spinner.
       return const SizedBox.shrink();
     },
   );

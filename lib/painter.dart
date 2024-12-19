@@ -48,9 +48,12 @@ class MapPainter extends CustomPainter {
           if (fill != null) {
             color = fromHex(fill);
 
-            // Make color less aggresive
-            // if (color.red == 240) color = Colors.grey;
-            color = color.withAlpha(200);
+            // Check if this is the highlighed room
+            if (color != fromHex("#ae0000")) {
+              // Make color less aggresive
+              // if (color.red == 240) color = Colors.grey;
+              color = color.withAlpha(100);
+            }
           } else {
             color = Colors.transparent;
           }
@@ -139,7 +142,7 @@ class MapPainter extends CustomPainter {
           text: TextSpan(
             text: txt,
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.grey.shade900,
               fontSize: fontSize,
             ),
           ),

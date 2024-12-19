@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/api/search.dart';
 
+import 'Views/building_view.dart';
+
 class MyCustomForm extends StatefulWidget {
   const MyCustomForm({super.key});
 
@@ -103,7 +105,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   ),
                   const SizedBox(height: 100),
                   roomResult != null
-                      ? asyncInteractiveRoomView(roomResult!)
+                      ? asyncInteractiveBuildingView(roomResult!)
                       : const Text("No room selected")
                 ],
               ),

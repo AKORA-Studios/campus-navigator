@@ -2,12 +2,12 @@ import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
-import 'package:campus_navigator/api/building/room_page.dart';
-import 'package:campus_navigator/painter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+
+import 'building_view.dart';
 
 class RoomView extends StatefulWidget {
   RoomView(
@@ -41,82 +41,75 @@ class _RoomViewState extends State<RoomView> {
     });
   }
 
-  Widget dropDown() {
+  Widget futurify(Widget Function(RoomPage) widgetBuilder) {
     return FutureBuilder<RoomPage>(
-      future: widget.room,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Text("bruh");
-        }
+        future: widget.room,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Text("No data yet");
+          } else if (snapshot.hasError) {
+            return Text("Error: ${snapshot.error}");
+          }
 
-        final room = snapshot.data!;
-        List<DropdownMenuItem> options = [];
-
-        for (BuildingLevel lev in room.buildingData.levels) {
-          options.add(DropdownMenuItem(
-            child: Text(lev.name),
-            value: lev.name,
-          ));
-        }
-        return DropdownButton(
-            value: selectedLevel,
-            items: options,
-            onChanged: (value) {
-              setState(() {
-                selectedLevel = value;
-                widget.room = RoomPage.fetchRoom(
-                    "${room.queryParts.first}/${value.split(" ").last}");
-              });
-            });
-      },
-    );
+          final room = snapshot.data!;
+          return widgetBuilder(room);
+        });
   }
 
-  Widget buildingAdressBlock(Future<RoomPage> roomPage) {
-    return FutureBuilder<RoomPage>(
-      future: widget.room,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Text("bruh");
-        }
+  Widget dropDown(RoomPage roomPage) {
+    List<DropdownMenuItem> options = [];
 
-        final room = snapshot.data!;
+    for (BuildingLevel lev in roomPage.buildingData.levels) {
+      options.add(DropdownMenuItem(
+        child: Text(lev.name),
+        value: lev.name,
+      ));
+    }
+    return DropdownButton(
+        value: selectedLevel,
+        items: options,
+        onChanged: (value) {
+          setState(() {
+            selectedLevel = value;
+            widget.room = RoomPage.fetchRoom(
+                "${roomPage.queryParts.first}/${value.split(" ").last}");
+          });
+        });
+  }
 
-        List<Widget> arr = [
-          const SizedBox(
-              child: Text("Gebäudeadressen",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              width: double.infinity)
-        ];
-        for (RoomInfo child in room.buildingData.rooms) {
-          arr.add(SelectableText(
-              child.fullTitle.split(',')[0].trim() +
-                  " [" +
-                  child.buildingNumber +
-                  "]",
-              style: const TextStyle(fontWeight: FontWeight.bold)));
-          arr.add(SelectableText.rich(TextSpan(children: [
-            TextSpan(
-                text: child.adress.replaceAll("<br>", "\n"),
-                style: const TextStyle(
-                    color: Colors.deepPurpleAccent,
-                    decoration: TextDecoration.underline),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    MapsLauncher.launchQuery(
-                        child.adress.replaceAll("<br>", " "));
-                  })
-          ])));
-        }
-        return Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Column(children: arr),
-        );
-      },
+  Widget buildingAdressBlock(RoomPage roomPage) {
+    List<Widget> arr = [
+      const SizedBox(
+          child: Text("Gebäudeadressen",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          width: double.infinity)
+    ];
+    for (RoomInfo child in roomPage.buildingData.rooms) {
+      arr.add(SelectableText(
+          child.fullTitle.split(',')[0].trim() +
+              " [" +
+              child.buildingNumber +
+              "]",
+          style: const TextStyle(fontWeight: FontWeight.bold)));
+      arr.add(SelectableText.rich(TextSpan(children: [
+        TextSpan(
+            text: child.adress.replaceAll("<br>", "\n"),
+            style: const TextStyle(
+                color: Colors.deepPurpleAccent,
+                decoration: TextDecoration.underline),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                MapsLauncher.launchQuery(child.adress.replaceAll("<br>", " "));
+              })
+      ])));
+    }
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Column(children: arr),
     );
   }
 
@@ -139,50 +132,18 @@ class _RoomViewState extends State<RoomView> {
           ],
         ),
         body: SingleChildScrollView(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(children: [
               Row(
                 children: [
                   const Text("Etage wechseln:"),
-                  dropDown(),
+                  futurify(dropDown),
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               ),
-              asyncInteractiveRoomView(widget.room,
+              asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
-              buildingAdressBlock(widget.room)
+              futurify(buildingAdressBlock)
             ])));
-  }
-}
-
-Widget interactiveRoomView(RoomPage roomResult,
-    {Size size = const Size(300, 300)}) {
-  return InteractiveViewer(
-      boundaryMargin: const EdgeInsets.all(34.0),
-      minScale: 0.001,
-      maxScale: 16.0,
-      child:
-          CustomPaint(painter: MapPainter(roomResult: roomResult), size: size));
-}
-
-Widget asyncInteractiveRoomView(Future<RoomPage> roomResult,
-    {Size size = const Size(300, 300)}) {
-  return FutureBuilder<RoomPage>(
-    future: roomResult,
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return interactiveRoomView(snapshot.data!, size: size);
-      } else if (snapshot.hasError) {
-        return Text('${snapshot.error}');
-      }
-      return const SizedBox.shrink();
-    },
-  );
-}
-
-extension SmallestSquare on Size {
-  /// Returns the Size that has `shortestSide` as its width and length
-  Size smallestSquare() {
-    return Size(shortestSide, shortestSide);
   }
 }

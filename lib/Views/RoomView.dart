@@ -6,6 +6,7 @@ import 'package:campus_navigator/painter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 class RoomView extends StatefulWidget {
   RoomView(
@@ -141,10 +142,8 @@ class _RoomViewState extends State<RoomView> {
               icon: const Icon(Icons.share),
               tooltip: 'Open in Web',
               onPressed: () {
-                widget.room.then((value) async {
-                  final Uri url = Uri.parse(
-                      '$baseURL/etplan/${value.queryParts.join("/")}');
-                  await launchUrl(url);
+                widget.room.then((value) {
+                  Share.share('$baseURL/etplan/${value.queryParts.join("/")}');
                 });
               },
             ),

@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'dart:io' show Platform;
 
 class RoomView extends StatefulWidget {
   RoomView(
@@ -38,17 +39,6 @@ class _RoomViewState extends State<RoomView> {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
       });
     });
-  }
-
-  void _launchMapsUrl(String adress) async {
-    final Uri url = Uri.parse('https://maps.google.com/maps/search/?q=$adress');
-    await launchUrl(url);
-
-    /*   if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      throw 'Could not launch $url';
-    }*/
   }
 
   Widget dropDown() {
@@ -100,14 +90,13 @@ class _RoomViewState extends State<RoomView> {
               width: double.infinity)
         ];
         for (RoomInfo child in room.buildingData.rooms) {
-          arr.add(Text(
+          arr.add(SelectableText(
               child.fullTitle.split(',')[0].trim() +
                   " [" +
                   child.buildingNumber +
                   "]",
               style: const TextStyle(fontWeight: FontWeight.bold)));
-          arr.add(RichText(
-              text: TextSpan(children: [
+          arr.add(SelectableText.rich(TextSpan(children: [
             TextSpan(
                 text: child.adress.replaceAll("<br>", "\n"),
                 style: const TextStyle(
@@ -115,7 +104,7 @@ class _RoomViewState extends State<RoomView> {
                     decoration: TextDecoration.underline),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    _launchMapsUrl(child.adress.replaceAll("<br>", " "));
+                    launchMap(child.adress.replaceAll("<br>", " "));
                   })
           ])));
         }
@@ -129,6 +118,20 @@ class _RoomViewState extends State<RoomView> {
         );
       },
     );
+  }
+
+  launchMap(String query) async {
+    // Android
+    var url = Uri.parse('https://maps.google.com/maps/search/?q=$query');
+    if (Platform.isIOS) {
+      // iOS
+      url = Uri.parse('https://maps.apple.com/?q=$query');
+    }
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override

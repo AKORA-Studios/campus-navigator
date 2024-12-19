@@ -27,7 +27,7 @@ class PageImageData {
   /// the current page and all it's layers(needed for fetching of the symbolds)
   static Future<PageImageData> fetchLevelImages(
       String pngFileName, List<LayerData> layers,
-      {int qualiIndex = 2}) async {
+      {int qualiIndex = 3}) async {
     final List<int> qualiSteps = [1, 2, 4, 8];
     final int qualiStep = qualiSteps[qualiIndex];
 

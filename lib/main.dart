@@ -5,6 +5,9 @@ void main() {
   runApp(const MyApp());
 }
 
+final colorScheme = ColorScheme.fromSeed(
+    seedColor: Colors.deepPurple, brightness: Brightness.light);
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -12,9 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Test',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: ThemeData(colorScheme: colorScheme),
       home: const FirstPage(),
     );
   }
@@ -29,7 +30,7 @@ class FirstPage extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: colorScheme,
         useMaterial3: true,
       ),
       home: const MyCustomForm(),

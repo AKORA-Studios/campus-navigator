@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
@@ -112,10 +111,8 @@ class MapPainter extends CustomPainter {
       }
     }
 
-    for (final List<RoomPolygon> roomList in roomResult.rooms) {
-      for (final RoomPolygon roomData in roomList) {
-        drawRoom(roomData);
-      }
+    for (final roomPolygon in roomResult.getFlatRoomList()) {
+      drawRoom(roomPolygon);
     }
 
     // Highlight room
@@ -177,8 +174,10 @@ class MapPainter extends CustomPainter {
   }
 
   Rect calculateDrawingArea() {
-    var allPoints = roomResult.rooms
-        .expand((r) => r.expand((e) => e.points).expand(mapPoints))
+    var allPoints = roomResult
+        .getFlatRoomList()
+        .expand((r) => r.points)
+        .expand(mapPoints)
         .toList();
 
     var minX = allPoints.fold(allPoints[0].dx,

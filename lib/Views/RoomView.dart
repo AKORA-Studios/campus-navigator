@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'building_view.dart';
 
@@ -25,7 +26,8 @@ class RoomView extends StatefulWidget {
 
 class _RoomViewState extends State<RoomView> {
   String? selectedLevel;
-  bool isRoomSelected = false;
+  bool isRoomSelected = true;
+  String? roomURL;
 
   @override
   void dispose() {
@@ -38,13 +40,18 @@ class _RoomViewState extends State<RoomView> {
     widget.room.then((room) {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
+        roomURL = room.queryParts.last; // TODO: place somwhere else
       });
     });
   }
 
-  void openRoomPlan() {
-    print("eeee");
-    //raum/325300.0010
+  void openRoomPlan() async {
+    if (roomURL != null && roomURL!.isNotEmpty) {
+      final Uri _url = Uri.parse(baseURL + "/raum/" + roomURL!);
+      if (!await launchUrl(_url)) {
+        launchUrl(_url);
+      }
+    }
   }
 
   Widget futurify(Widget Function(RoomPage) widgetBuilder) {
@@ -149,9 +156,10 @@ class _RoomViewState extends State<RoomView> {
               ),
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
-              ElevatedButton(
+              ElevatedButton.icon(
                   onPressed: isRoomSelected ? openRoomPlan : null,
-                  child: Text("Raumbelegungsplan ansehen")),
+                  icon: const Icon(Icons.share),
+                  label: const Text("Raumbelegungsplan ansehen")),
               futurify(buildingAdressBlock)
             ])));
   }

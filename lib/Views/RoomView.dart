@@ -1,7 +1,7 @@
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
+import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
-import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -25,6 +25,7 @@ class RoomView extends StatefulWidget {
 
 class _RoomViewState extends State<RoomView> {
   String? selectedLevel;
+  bool isRoomSelected = false;
 
   @override
   void dispose() {
@@ -39,6 +40,11 @@ class _RoomViewState extends State<RoomView> {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
       });
     });
+  }
+
+  void openRoomPlan() {
+    print("eeee");
+    //raum/325300.0010
   }
 
   Widget futurify(Widget Function(RoomPage) widgetBuilder) {
@@ -143,6 +149,9 @@ class _RoomViewState extends State<RoomView> {
               ),
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
+              ElevatedButton(
+                  onPressed: isRoomSelected ? openRoomPlan : null,
+                  child: Text("Raumbelegungsplan ansehen")),
               futurify(buildingAdressBlock)
             ])));
   }

@@ -66,6 +66,16 @@ class BuildingData {
 
       List<Element> childrenGiver = buildingInfos.children;
       List<List<Element>> buildingList = [];
+
+      if (childrenGiver.length <= 8) {
+        // fix for one building?
+        var adressInfoRoom = RoomInfo(
+            childrenGiver[0].innerHtml,
+            childrenGiver[6].innerHtml,
+            childrenGiver[2].innerHtml,
+            childrenGiver[4].innerHtml);
+        adressInfo.add(adressInfoRoom);
+      }
       while (childrenGiver.length > 8) {
         buildingList.add(childrenGiver
             .take(8)

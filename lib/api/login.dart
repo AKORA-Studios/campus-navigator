@@ -6,6 +6,7 @@ import 'building/parsing/common.dart';
 
 class LoginResponse {
   final String loginToken;
+  //final String JSESSIONID;
 
   const LoginResponse({required this.loginToken});
 

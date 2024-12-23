@@ -1,4 +1,5 @@
 import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:http/http.dart' as http;
 
 class RoomPlan {
@@ -8,27 +9,62 @@ class RoomPlan {
     required this.table,
   });
 
-  static Future<String> getRoomPlan(String roomID, {String token = ""}) async {
+  static String _generateCookieHeader(Map<String, String> cookies) {
+    String cookie = "";
+
+    for (var key in cookies.keys) {
+      if (cookie.length > 0) cookie += ";";
+      cookie += key + "=" + cookies[key]!;
+    }
+
+    return cookie;
+  }
+
+  static Future<List<List<String>>> getRoomPlan(String roomID,
+      {String token = ""}) async {
     final uri = Uri.parse('$baseURL/raum/$roomID');
+
+    Map<String, String> cookies = {
+      'loginToken': token,
+    };
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept-Charset": "utf-8",
       "Accept": "application/json",
-      "cookie": token
+      "cookie": _generateCookieHeader(cookies),
     };
 
-    final response = await http.post(uri, headers: headers);
+    final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      return "Aloha!"; //SearchResult.fromJson(jsonDecode(response.body));
+      return getTableContentFromBody(response.body);
     } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
       throw Exception('Failed to load search results');
     }
+  }
+
+  static List<List<String>> getTableContentFromBody(String body) {
+    var htmlDocument = HTMLData.fromBody(body).document;
+
+    print("--------------------------");
+
+    var allTables = htmlDocument.querySelectorAll("table");
+    allTables.removeAt(0);
+
+    List<List<String>> x = [];
+
+    for (var tableBody in allTables) {
+      List<String> entries = [];
+      for (var trTag in tableBody.children) {
+        for (var y in trTag.children) {
+          entries.add(y.text);
+        }
+        print(entries);
+      }
+      x.add(entries);
+    }
+    return x;
   }
 }
 /*

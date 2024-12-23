@@ -3,6 +3,7 @@ import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/roomPlan.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -30,6 +31,7 @@ class _RoomViewState extends State<RoomView> {
   String? selectedLevel;
   bool isRoomSelected = true;
   String? roomURL;
+  List<List<String>>? roomPlan;
 
   @override
   void dispose() {
@@ -43,17 +45,15 @@ class _RoomViewState extends State<RoomView> {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
         roomURL = room.queryParts.last; // TODO: place somwhere else
-        Future<LoginResponse> loginToken =
-            LoginResponse.postLogin("query", "query");
+        Future<LoginResponse> loginToken = LoginResponse.postLogin(
+            "query", "query"); // TODO: inpout login data
         loginToken.then((value) {
-          print("aloha------------------------------------");
-          print(value.loginToken);
-          // TODO: reload page to get table
-          Future<String> tableContent =
+          Future<List<List<String>>> tableContent =
               RoomPlan.getRoomPlan("325302.0020", token: value.loginToken);
           tableContent.then((value) {
-            print("Fetch plan");
-            print(value);
+            setState(() {
+              roomPlan = value;
+            });
           });
         });
       });
@@ -67,6 +67,50 @@ class _RoomViewState extends State<RoomView> {
         launchUrl(_url);
       }
     }
+  }
+
+  Widget roomplans() {
+    List<Widget> childs = [];
+    if (roomPlan != null) {
+      for (var table in roomPlan!) {
+        // print(table);
+        List<Widget> rows = [];
+
+        table.forEachIndexed((index, row) {
+          if (row.isNotEmpty) {
+            //print(row);
+            if (index == 0) {
+              rows.add(
+                  Text(row, style: TextStyle(fontWeight: FontWeight.bold)));
+            } else {
+              rows.add(Text(row));
+            }
+          }
+        });
+
+        for (var row in table) {
+          if (row.isNotEmpty) {
+            print(row);
+            rows.add(Text(row));
+          }
+        }
+
+        if (rows.isEmpty) {
+          continue;
+        }
+
+        var x = Table(
+          border: TableBorder.all(),
+          children: [
+            TableRow(children: rows),
+          ],
+        );
+        if (rows.isNotEmpty) {
+          childs.add(x);
+        }
+      }
+    }
+    return Column(children: childs);
   }
 
   Widget futurify(Widget Function(RoomPage) widgetBuilder) {
@@ -171,6 +215,7 @@ class _RoomViewState extends State<RoomView> {
               ),
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
+              roomplans(),
               ElevatedButton.icon(
                   onPressed: isRoomSelected ? openRoomPlan : null,
                   icon: const Icon(Icons.share),

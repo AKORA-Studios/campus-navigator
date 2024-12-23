@@ -2,37 +2,37 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:flutter/material.dart';
 
 import 'parsing/common.dart' as common;
 import 'parsing/layer_data.dart';
 
-class PageImageData {
-  final int qualiStep;
-  final Map<String, ui.Image> backgroundImages;
+class PageImageData with ChangeNotifier {
+  Map<String, ui.Image> imageMap = {};
+  late int qualiStep;
 
   PageImageData({
     required this.qualiStep,
-    required this.backgroundImages,
+    required this.imageMap,
   });
 
   ui.Image? getLayerSymbol(String symbolName) {
-    return backgroundImages[symbolName];
+    return imageMap[symbolName];
   }
 
   ui.Image? getBackgroundImage(int x, int y) {
-    return backgroundImages["${x}_$y"];
+    return imageMap["${x}_$y"];
   }
 
-  /// Fetches all images for a floor plan given the `pngFileName` of
+  /// Starts fetching all images for a floor plan given the `pngFileName` of
   /// the current page and all it's layers(needed for fetching of the symbolds)
-  static Future<PageImageData> fetchLevelImages(
-      String pngFileName, List<LayerData> layers,
-      {int qualiIndex = 3}) async {
+  PageImageData.fetchLevelImages(String pngFileName, List<LayerData> layers,
+      {int qualiIndex = 3}) {
     final List<int> qualiSteps = [1, 2, 4, 8];
-    final int qualiStep = qualiSteps[qualiIndex];
+    qualiStep = qualiSteps[qualiIndex];
 
-    // Prepare buffer, this is to avoid concurrency bugs during fetching
-    List<Future<(String, ui.Image?)>> imageBuffer = [];
+    // Holds all futures
+    List<Future<(String, ui.Image?)>> imageFutures = [];
 
     // Background tiles
     for (int x = 0; x < qualiStep; x++) {
@@ -43,7 +43,7 @@ class PageImageData {
         final imageFuture =
             common.fetchImage(uri).then((image) => ("${x}_$y", image));
 
-        imageBuffer.add(imageFuture);
+        imageFutures.add(imageFuture);
       }
     }
 
@@ -53,17 +53,16 @@ class PageImageData {
           .fetchImage(layer.getSymbolUri())
           .then((image) => (layer.symbolPNG, image));
 
-      imageBuffer.add(imageFuture);
+      imageFutures.add(imageFuture);
     }
 
-    var imageList = await Future.wait(imageBuffer);
-
-    Map<String, ui.Image> imageMap = {};
-    for (final e in imageList) {
-      if (e.$2 == null) continue;
-      imageMap[e.$1] = e.$2!;
+    imageMap = {};
+    for (final future in imageFutures) {
+      future.then((e) {
+        if (e.$2 == null) return;
+        imageMap[e.$1] = e.$2!;
+        notifyListeners();
+      });
     }
-
-    return PageImageData(backgroundImages: imageMap, qualiStep: qualiStep);
   }
 }

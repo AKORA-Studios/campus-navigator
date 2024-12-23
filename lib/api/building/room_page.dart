@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
@@ -144,25 +145,38 @@ class RoomPage {
   }
 
   static Future<RoomPage> fetchRoom(String query) async {
+    final queryParts = query.split("/");
     final uri = Uri.parse("$baseURL/etplan/$query");
 
-    final response = await http.get(uri);
+    final cachedResponse =
+        await DefaultCacheManager().getFileFromCache(uri.toString());
 
-    if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      var roomResult = RoomPage.fromHTMLText(response.body, query.split("/"));
-
-      // Load background image
-      roomResult.backgroundImageData = await PageImageData.fetchLevelImages(
-          roomResult.pngFileName, roomResult.layers);
-
-      return roomResult;
+    String body;
+    if (cachedResponse != null) {
+      body = await cachedResponse.file.readAsString();
     } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load search results');
+      final response = await http.get(uri);
+
+      if (response.statusCode != 200) {
+        // If the server did not return a 200 OK response,
+        // then throw an exception.
+        throw Exception('Failed to load search results');
+      }
+
+      body = response.body;
+      // Save response in cache
+      DefaultCacheManager().putFile(uri.toString(), response.bodyBytes);
     }
+
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    var roomResult = RoomPage.fromHTMLText(body, queryParts);
+
+    // Start loading process for images
+    roomResult.backgroundImageData = PageImageData.fetchLevelImages(
+        roomResult.pngFileName, roomResult.layers);
+
+    return roomResult;
   }
 
   List<RoomPolygon> getFlatRoomList() {

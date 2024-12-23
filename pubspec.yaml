@@ -37,6 +37,7 @@ dependencies:
   html: ^0.15.4
   share_plus: ^7.2.2
   maps_launcher: ^2.2.1
+  flutter_cache_manager: ^3.3.1
 
 dev_dependencies:
   flutter_test:

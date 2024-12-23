@@ -18,9 +18,9 @@ Color fromHex(String hexString) {
 class MapPainter extends CustomPainter {
   final RoomPage roomResult;
 
-  const MapPainter({
+  MapPainter({
     required this.roomResult,
-  });
+  }) : super(repaint: roomResult.backgroundImageData);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -160,7 +160,10 @@ class MapPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(MapPainter oldDelegate) {
-    return roomResult.htmlData != oldDelegate.roomResult.htmlData;
+    final newHtmlData = roomResult.htmlData != oldDelegate.roomResult.htmlData;
+    final newImages = roomResult.backgroundImageData?.imageMap !=
+        roomResult.backgroundImageData?.imageMap;
+    return newHtmlData || newImages;
   }
 
   Rect calculateDrawingArea() {

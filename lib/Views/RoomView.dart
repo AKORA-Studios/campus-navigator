@@ -8,6 +8,7 @@ import 'package:maps_launcher/maps_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../api/login.dart';
 import 'building_view.dart';
 
 class RoomView extends StatefulWidget {
@@ -41,6 +42,13 @@ class _RoomViewState extends State<RoomView> {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
         roomURL = room.queryParts.last; // TODO: place somwhere else
+        Future<LoginResponse> loginToken =
+            LoginResponse.postLogin("query", "query");
+        loginToken.then((value) {
+          print("aloha------------------------------------");
+          print(value.loginToken);
+          // TODO: reload page to get table
+        });
       });
     });
   }

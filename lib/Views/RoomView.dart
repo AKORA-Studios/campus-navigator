@@ -1,6 +1,7 @@
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
+import 'package:campus_navigator/api/building/roomPlan.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,12 @@ class _RoomViewState extends State<RoomView> {
           print("aloha------------------------------------");
           print(value.loginToken);
           // TODO: reload page to get table
+          Future<String> tableContent =
+              RoomPlan.getRoomPlan("325302.0020", token: value.loginToken);
+          tableContent.then((value) {
+            print("Fetch plan");
+            print(value);
+          });
         });
       });
     });

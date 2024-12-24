@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 class RoomOccupancyPlan {
   final String table;
+  static List<String> tableNames = [];
 
   const RoomOccupancyPlan({
     required this.table,
@@ -46,6 +47,7 @@ class RoomOccupancyPlan {
 
   static List<List<List<String>>> getTableContentFromBody(String body) {
     var htmlDocument = HTMLData.fromBody(body).document;
+    RoomOccupancyPlan.tableNames = [];
 
     final allTables = htmlDocument.querySelectorAll("table");
     allTables.removeAt(0);
@@ -54,6 +56,12 @@ class RoomOccupancyPlan {
 
     // Parse Table into array
     for (final tableBody in allTables) {
+      if (tableBody.previousElementSibling != null) {
+        tableNames.add(tableBody.previousElementSibling!.text);
+      } else {
+        tableNames.add("No Table Name found");
+      }
+
       // table
       List<List<String>> entries =
           []; // Uhrzeit: Tag1Vorlesung, Tag2Vorlesung,.. Tag7Vorlesung

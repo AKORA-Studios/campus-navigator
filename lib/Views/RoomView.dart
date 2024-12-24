@@ -87,7 +87,8 @@ class _RoomViewState extends State<RoomView> {
       return const Column(children: []);
     }
 
-    for (var table in roomPlan!) {
+    roomPlan!.forEachIndexed((i, table) {
+      //  for (var table in roomPlan!) {
       List<TableRow> tableRows = [];
 
       table.forEachIndexed((index, row) {
@@ -120,7 +121,7 @@ class _RoomViewState extends State<RoomView> {
 
       // Don´t create table if it has no rows/entries
       if (tableRows.isEmpty) {
-        continue;
+        return;
       }
 
       // Add completed table to Widget List
@@ -129,12 +130,13 @@ class _RoomViewState extends State<RoomView> {
         children: tableRows,
       );
       if (tableRows.isNotEmpty) {
+        allTables.add(Text(RoomOccupancyPlan.tableNames[i]));
         allTables.add(fullTable);
-        allTables.add(SizedBox(
+        allTables.add(const SizedBox(
           height: 10,
         ));
       }
-    }
+    });
 
     return Column(children: allTables);
   }

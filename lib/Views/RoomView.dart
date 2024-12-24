@@ -1,7 +1,7 @@
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
-import 'package:campus_navigator/api/building/roomPlan.dart';
+import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
@@ -49,7 +49,8 @@ class _RoomViewState extends State<RoomView> {
             "query", "query"); // TODO: inpout login data
         loginToken.then((value) {
           Future<List<List<List<String>>>> tableContent =
-              RoomPlan.getRoomPlan("325302.0020", token: value.loginToken);
+              RoomOccupancyPlan.getRoomPlan("325302.0020",
+                  token: value.loginToken);
           tableContent.then((value) {
             setState(() {
               roomPlan = value;

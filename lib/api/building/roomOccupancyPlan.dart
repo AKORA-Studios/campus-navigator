@@ -2,10 +2,10 @@ import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:http/http.dart' as http;
 
-class RoomPlan {
+class RoomOccupancyPlan {
   final String table;
 
-  const RoomPlan({
+  const RoomOccupancyPlan({
     required this.table,
   });
 

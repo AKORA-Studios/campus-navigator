@@ -13,14 +13,39 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   String username = "";
   String password = "";
+  bool tudSelected = true;
+
   bool passwordInvisible = true;
+  bool updateView = false;
 
   @override
   void initState() {
     super.initState();
+
+    Storage.Shared.getUsername().then((value) {
+      setState(() {
+        username = value ?? "";
+      });
+    });
+    Storage.Shared.getPassword().then((value) {
+      setState(() {
+        password = value ?? "";
+      });
+    });
+    Storage.Shared.getUniversity().then((value) {
+      setState(() {
+        tudSelected = value == "1";
+      });
+    });
+  }
+
+  void saveData() async {
+    await Storage.Shared.editUsername(username);
+    await Storage.Shared.editpassword(password);
+    await Storage.Shared.editUniversity(tudSelected ? "1" : "2");
+
     setState(() {
-      username = Storage.Shared.username;
-      password = Storage.Shared.password;
+      updateView = !updateView;
     });
   }
 
@@ -34,25 +59,68 @@ class _SettingsViewState extends State<SettingsView> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
-              Text("Username: ${Storage.Shared.username}"),
               TextField(
-                decoration: const InputDecoration(
-                    hintText: 'Neuen benutznamen hier eingeben'),
+                maxLines: 1,
+                autocorrect: false,
+                decoration: InputDecoration(
+                    labelText: 'Benutzername: $username',
+                    hintText: 'Neuen Benutzernamen hier eingeben'),
                 onChanged: (newValue) {
-                  print(newValue);
+                  username = newValue;
                 },
               ),
               TextField(
+                maxLines: 1,
+                autocorrect: false,
                 obscureText: passwordInvisible,
-                decoration: const InputDecoration(
-                    hintText: 'Neues Password hier eingeben'),
+                decoration: InputDecoration(
+                    hintText: 'Neues Passwort hier eingeben',
+                    labelText: 'Passwort ${password.length}',
+                    // this button is used to toggle the password visibility
+                    suffixIcon: IconButton(
+                        icon: Icon(passwordInvisible
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            passwordInvisible = !passwordInvisible;
+                          });
+                        })),
                 onChanged: (newValue) {
-                  print(newValue);
+                  password = newValue;
                 },
               ),
-              Text("Password: "),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text("HTW"),
+                  Switch(
+                    value: tudSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        tudSelected = value;
+                      });
+                    },
+                  ),
+                  const Text("TUD"),
+                ],
+              ),
+              const Padding(padding: EdgeInsets.all(10)),
               ElevatedButton(
-                  onPressed: null, child: const Text("Daten speichern")),
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    saveData();
+                  },
+                  child: const Text("Daten aktualisieren")),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[200],
+                      foregroundColor: Colors.black),
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    saveData();
+                  },
+                  child: const Text("Daten löschen")),
             ])));
   }
 }

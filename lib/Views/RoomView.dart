@@ -248,7 +248,8 @@ class _RoomViewState extends State<RoomView> {
                   label: const Text("Raumbelegungsplan im Web ansehen")),
               ElevatedButton(
                   onPressed: isRoomSelected ? loadOccupanyTable : null,
-                  child: const Text("Raumbelegungsplan laden/verstecken")),
+                  child: Text(
+                      "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
               futurify(buildingAdressBlock)
             ])));
   }

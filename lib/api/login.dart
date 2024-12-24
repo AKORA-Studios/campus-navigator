@@ -18,9 +18,17 @@ class LoginResponse {
   }
 
   static Future<LoginResponse> postLogin() async {
-    String user = Storage.Shared.username;
-    String passwd = Storage.Shared.password;
-    int university = Storage.Shared.university;
+    String? user = await Storage.Shared.getUsername();
+    String? passwd = await Storage.Shared.getPassword();
+    int university = int.parse(await Storage.Shared.getUniversity() ?? "1");
+
+    if (user == null) {
+      throw Exception('Failed to login: Invalid Username');
+    }
+
+    if (passwd == null) {
+      throw Exception('Failed to login: Invalid Username');
+    }
 
     //application/x-www-form-urlencoded;charset=UTF-8
     Map<String, String> headers = {

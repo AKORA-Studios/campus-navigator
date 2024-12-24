@@ -12,21 +12,27 @@ const baseURL = "https://navigator.tu-dresden.de";
 Future<ui.Image?> fetchImage(Uri uri) async {
   final cachedImageFile =
       await DefaultCacheManager().getFileFromCache(uri.toString());
+
+  Uint8List imageBytes;
   if (cachedImageFile != null) {
-    return await decodeImage(await cachedImageFile.file.readAsBytes());
+    imageBytes = await cachedImageFile.file.readAsBytes();
+  } else {
+    final response = await http.get(uri);
+    final eTag = response.headers["etag"];
+
+    if (response.statusCode != 200) {
+      return null;
+    }
+
+    await DefaultCacheManager().putFile(uri.toString(), response.bodyBytes,
+        maxAge: const Duration(days: 1), fileExtension: 'png', eTag: eTag);
+
+    imageBytes = response.bodyBytes;
   }
 
-  final response = await http.get(uri);
+  if (imageBytes.isEmpty) return null;
 
-  if (response.statusCode != 200 || response.bodyBytes.isEmpty) {
-    return null;
-  }
-
-  // This wont get awaited
-  DefaultCacheManager().putFile(uri.toString(), response.bodyBytes,
-      maxAge: const Duration(days: 1));
-
-  return await decodeImage(response.bodyBytes);
+  return await decodeImage(imageBytes);
 }
 
 Future<ui.Image> decodeImage(Uint8List bytes) async {

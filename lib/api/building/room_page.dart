@@ -33,10 +33,10 @@ final RegExp highlightedRoomExp =
     RegExp(r"ETplan\.permahighlightRaum\((\d+), (\w+)\);", multiLine: true);
 
 final RegExp stringVariableExp =
-    RegExp(r'var ([\w_]+) = "(\w+)";', multiLine: true);
+    RegExp(r'var ([\w_]+) = "([^"]+)";', multiLine: true);
 
 final RegExp numberVariableExp =
-    RegExp(r'(var)? ([\w_]+) = (\d+);', multiLine: true);
+    RegExp(r'(var)? ([\w_]+) = ([\d.]+);', multiLine: true);
 
 class RoomPage {
   final HTMLData htmlData;

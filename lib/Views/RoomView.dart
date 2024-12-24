@@ -45,7 +45,7 @@ class _RoomViewState extends State<RoomView> {
     widget.room.then((room) {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
-        roomURL = room.queryParts.last; // TODO: place somwhere else
+        roomURL = room.queryParts.last;
       });
     });
   }
@@ -54,8 +54,7 @@ class _RoomViewState extends State<RoomView> {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
       if (showOccupancyTable) {
-        Future<LoginResponse> loginToken = LoginResponse.postLogin(
-            "query", "query"); // TODO: inpout login data
+        Future<LoginResponse> loginToken = LoginResponse.postLogin();
         loginToken.then((value) {
           Future<List<List<List<String>>>> tableContent =
               RoomOccupancyPlan.getRoomPlan("325302.0020",

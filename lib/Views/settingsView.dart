@@ -1,3 +1,4 @@
+import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
 class SettingsView extends StatefulWidget {
@@ -10,9 +11,16 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
+  String username = "";
+  String password = "";
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      username = Storage.Shared.username;
+      password = Storage.Shared.password;
+    });
   }
 
   @override
@@ -32,6 +40,14 @@ class _SettingsViewState extends State<SettingsView> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
+              Text("Username:"),
+              TextFormField(
+                initialValue: username,
+                onChanged: (newValue) {
+                  print(newValue);
+                },
+              ),
+              Text("Password: "),
               ElevatedButton.icon(
                   onPressed: null,
                   icon: const Icon(Icons.share),

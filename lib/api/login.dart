@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:campus_navigator/api/storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'building/parsing/common.dart';
@@ -16,11 +17,10 @@ class LoginResponse {
     );
   }
 
-  static Future<LoginResponse> postLogin(
-      String username, String password) async {
-    String user = username;
-    String passwd = password;
-    int university = 1; //1=TUD, 2=HTW
+  static Future<LoginResponse> postLogin() async {
+    String user = Storage.Shared.username;
+    String passwd = Storage.Shared.password;
+    int university = Storage.Shared.university;
 
     //application/x-www-form-urlencoded;charset=UTF-8
     Map<String, String> headers = {

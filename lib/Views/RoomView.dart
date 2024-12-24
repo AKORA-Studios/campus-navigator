@@ -1,12 +1,16 @@
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
-import 'package:campus_navigator/api/building/parsing/room_info.dart';
-import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/building/parsing/room_info.dart';
+import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
+import 'package:campus_navigator/api/building/room_page.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../api/login.dart';
 import 'building_view.dart';
 
 class RoomView extends StatefulWidget {
@@ -25,6 +29,10 @@ class RoomView extends StatefulWidget {
 
 class _RoomViewState extends State<RoomView> {
   String? selectedLevel;
+  bool isRoomSelected = true;
+  String? roomURL;
+  List<List<List<String>>>? roomPlan;
+  bool showOccupancyTable = false;
 
   @override
   void dispose() {
@@ -37,8 +45,98 @@ class _RoomViewState extends State<RoomView> {
     widget.room.then((room) {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
+        roomURL = room.queryParts.last;
       });
     });
+  }
+
+  void loadOccupanyTable() {
+    setState(() {
+      showOccupancyTable = !showOccupancyTable;
+      if (showOccupancyTable) {
+        Future<LoginResponse> loginToken = LoginResponse.postLogin();
+        loginToken.then((value) {
+          Future<List<List<List<String>>>> tableContent =
+              RoomOccupancyPlan.getRoomPlan("325302.0020",
+                  token: value.loginToken);
+          tableContent.then((value) {
+            setState(() {
+              roomPlan = value;
+            });
+          });
+        });
+      }
+    });
+  }
+
+  void openRoomPlan() async {
+    if (roomURL != null && roomURL!.isNotEmpty) {
+      final Uri _url = Uri.parse(baseURL + "/raum/" + roomURL!);
+      if (!await launchUrl(_url)) {
+        launchUrl(_url);
+      }
+    }
+  }
+
+  Widget roomplans() {
+    var basicStyle = TextStyle(fontSize: 12);
+    var boldStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
+    List<Widget> allTables = [];
+
+    if (roomPlan == null || !showOccupancyTable) {
+      return const Column(children: []);
+    }
+
+    for (var table in roomPlan!) {
+      List<TableRow> tableRows = [];
+
+      table.forEachIndexed((index, row) {
+        List<Widget> rowEntries = [];
+        if (row.isEmpty) {
+          return;
+        }
+
+        row.forEachIndexed((index2, entry) {
+          if (index2 == 0 || index == 0) {
+            //  Left side
+            rowEntries.add(Text(entry, style: boldStyle));
+          } else {
+            rowEntries.add(Text(
+              entry,
+              style: basicStyle,
+            ));
+          }
+        });
+
+        // Add rows
+        if (index == 0) {
+          tableRows.add(TableRow(
+              children: rowEntries,
+              decoration: BoxDecoration(color: Colors.blue[300])));
+        } else {
+          tableRows.add(TableRow(children: rowEntries));
+        }
+      });
+
+      // Don´t create table if it has no rows/entries
+      if (tableRows.isEmpty) {
+        continue;
+      }
+
+      // Add completed table to Widget List
+      var fullTable = Table(
+        border: TableBorder.all(),
+        children: tableRows,
+      );
+      if (tableRows.isNotEmpty) {
+        allTables.add(fullTable);
+        allTables.add(SizedBox(
+          height: 10,
+        ));
+      }
+    }
+
+    return Column(children: allTables);
   }
 
   Widget futurify(Widget Function(RoomPage) widgetBuilder) {
@@ -143,6 +241,14 @@ class _RoomViewState extends State<RoomView> {
               ),
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
+              roomplans(),
+              ElevatedButton.icon(
+                  onPressed: isRoomSelected ? openRoomPlan : null,
+                  icon: const Icon(Icons.share),
+                  label: const Text("Raumbelegungsplan im Web ansehen")),
+              ElevatedButton(
+                  onPressed: isRoomSelected ? loadOccupanyTable : null,
+                  child: const Text("Raumbelegungsplan laden/verstecken")),
               futurify(buildingAdressBlock)
             ])));
   }

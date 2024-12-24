@@ -13,7 +13,8 @@ class RoomPolygon {
     List<dynamic> points = json["points"];
 
     List<List<double>> points2 = points
-        .map((e) => (e as List<dynamic>).map((e) => e as double).toList())
+        .map((e) =>
+            (e as List<dynamic>).map((e) => (e as num).toDouble()).toList())
         .toList()
         .toList();
 
@@ -26,7 +27,8 @@ class RoomPolygon {
 
     List<List<List<double>>> points3 = points
         .map((e) => (e as List<dynamic>)
-            .map((e) => (e as List<dynamic>).map((e) => e as double).toList())
+            .map((e) =>
+                (e as List<dynamic>).map((e) => (e as num).toDouble()).toList())
             .toList())
         .toList();
     List<String?> fills =

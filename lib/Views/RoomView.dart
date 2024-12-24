@@ -114,7 +114,7 @@ class _RoomViewState extends State<RoomView> {
         });
   }
 
-  Widget buildingAdressBlock(RoomPage roomPage) {
+  Widget buildingAddressBlock(RoomPage roomPage) {
     List<Widget> arr = [
       const SizedBox(
           child: Text("Gebäudeadressen",
@@ -189,7 +189,7 @@ class _RoomViewState extends State<RoomView> {
                   onPressed: isRoomSelected ? loadOccupancyTable : null,
                   child: Text(
                       "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
-              futurify(buildingAdressBlock)
+              futurify(buildingAddressBlock)
             ])));
   }
 }

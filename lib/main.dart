@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:campus_navigator/form.dart';
+import 'package:flutter/material.dart';
+
+import 'Styling.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,10 +31,8 @@ class FirstPage extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: colorScheme,
-        useMaterial3: true,
-      ),
+      theme: AppTheme.themeData(AppTheme.lightColorScheme),
+      darkTheme: AppTheme.themeData(AppTheme.darkColorScheme),
       home: const MyCustomForm(),
     );
   }

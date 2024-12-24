@@ -1,3 +1,4 @@
+import 'package:campus_navigator/Styling.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
@@ -132,7 +133,8 @@ class _RoomViewState extends State<RoomView> {
         TextSpan(
             text: child.adress.replaceAll("<br>", "\n"),
             style: const TextStyle(
-                color: Colors.deepPurpleAccent,
+                fontWeight: FontWeight.bold,
+                color: Styling.primaryColor,
                 decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
               ..onTap = () {

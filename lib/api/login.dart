@@ -18,8 +18,8 @@ class LoginResponse {
   }
 
   static Future<LoginResponse> postLogin() async {
-    String? user = await Storage().getUsername();
-    String? passwd = await Storage().getPassword();
+    String? user = await Storage.Shared.getUsername();
+    String? passwd = await Storage.Shared.getPassword();
     int university = Storage().university;
 
     if (user == null) {

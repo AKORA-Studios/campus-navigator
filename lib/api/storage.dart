@@ -6,10 +6,7 @@ class Storage {
   static const keyPassword = "Password";
   static final Storage Shared = Storage();
 
-  factory Storage() {
-    return Shared;
-  }
-  Storage._();
+  Storage();
 
   int university = 1; //1=TUD, 2=HTW
 
@@ -19,7 +16,7 @@ class Storage {
     return storage.read(key: keyUsername);
   }
 
-  void editUsername(String newValue) async {
+  Future<void> editUsername(String newValue) async {
     return await storage.write(key: keyUsername, value: newValue);
   }
 
@@ -27,7 +24,7 @@ class Storage {
     return storage.read(key: keyPassword);
   }
 
-  void editpassword(String newValue) async {
+  Future<void> editpassword(String newValue) async {
     return await storage.write(key: keyPassword, value: newValue);
   }
 

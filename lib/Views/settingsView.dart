@@ -14,20 +14,29 @@ class _SettingsViewState extends State<SettingsView> {
   String username = "";
   String password = "";
   bool passwordInvisible = true;
+  bool updateView = false;
 
   @override
   void initState() {
     super.initState();
 
-    Storage().getUsername().then((value) {
+    Storage.Shared.getUsername().then((value) {
       setState(() {
         username = value ?? "";
       });
     });
-    Storage().getPassword().then((value) {
+    Storage.Shared.getPassword().then((value) {
       setState(() {
         password = value ?? "";
       });
+    });
+  }
+
+  void saveData() async {
+    await Storage.Shared.editUsername(username);
+    await Storage.Shared.editpassword(password);
+    setState(() {
+      updateView = !updateView;
     });
   }
 
@@ -41,25 +50,44 @@ class _SettingsViewState extends State<SettingsView> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
-              Text("Username: ${Storage.Shared.username}"),
               TextField(
+                maxLines: 1,
+                autocorrect: false,
                 decoration: const InputDecoration(
-                    hintText: 'Neuen benutznamen hier eingeben'),
+                    labelText: 'Benutzername',
+                    hintText: 'Neuen Benutzernamen hier eingeben'),
                 onChanged: (newValue) {
-                  print(newValue);
+                  username = newValue;
                 },
               ),
               TextField(
+                maxLines: 1,
+                autocorrect: false,
                 obscureText: passwordInvisible,
-                decoration: const InputDecoration(
-                    hintText: 'Neues Password hier eingeben'),
+                decoration: InputDecoration(
+                    hintText: 'Neues Passwort hier eingeben',
+                    labelText: 'Passwort ${password.length}',
+                    // this button is used to toggle the password visibility
+                    suffixIcon: IconButton(
+                        icon: Icon(passwordInvisible
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            passwordInvisible = !passwordInvisible;
+                          });
+                        })),
                 onChanged: (newValue) {
-                  print(newValue);
+                  password = newValue;
                 },
               ),
-              Text("Password: "),
+              Padding(padding: EdgeInsets.all(10)),
               ElevatedButton(
-                  onPressed: null, child: const Text("Daten speichern")),
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    saveData();
+                  },
+                  child: const Text("Daten aktualisieren")),
             ])));
   }
 }

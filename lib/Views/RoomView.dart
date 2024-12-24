@@ -3,7 +3,6 @@ import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -12,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../api/login.dart';
 import 'building_view.dart';
+import 'occupancyTableView.dart';
 
 class RoomView extends StatefulWidget {
   RoomView(
@@ -50,7 +50,7 @@ class _RoomViewState extends State<RoomView> {
     });
   }
 
-  void loadOccupanyTable() {
+  void loadOccupancyTable() {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
       if (showOccupancyTable) {
@@ -76,69 +76,6 @@ class _RoomViewState extends State<RoomView> {
         launchUrl(_url);
       }
     }
-  }
-
-  Widget roomplans() {
-    var basicStyle = TextStyle(fontSize: 12);
-    var boldStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
-    List<Widget> allTables = [];
-
-    if (roomPlan == null || !showOccupancyTable) {
-      return const Column(children: []);
-    }
-
-    roomPlan!.forEachIndexed((i, table) {
-      //  for (var table in roomPlan!) {
-      List<TableRow> tableRows = [];
-
-      table.forEachIndexed((index, row) {
-        List<Widget> rowEntries = [];
-        if (row.isEmpty) {
-          return;
-        }
-
-        row.forEachIndexed((index2, entry) {
-          if (index2 == 0 || index == 0) {
-            //  Left side
-            rowEntries.add(Text(entry, style: boldStyle));
-          } else {
-            rowEntries.add(Text(
-              entry,
-              style: basicStyle,
-            ));
-          }
-        });
-
-        // Add rows
-        if (index == 0) {
-          tableRows.add(TableRow(
-              children: rowEntries,
-              decoration: BoxDecoration(color: Colors.blue[300])));
-        } else {
-          tableRows.add(TableRow(children: rowEntries));
-        }
-      });
-
-      // Don´t create table if it has no rows/entries
-      if (tableRows.isEmpty) {
-        return;
-      }
-
-      // Add completed table to Widget List
-      var fullTable = Table(
-        border: TableBorder.all(),
-        children: tableRows,
-      );
-      if (tableRows.isNotEmpty) {
-        allTables.add(Text(RoomOccupancyPlan.tableNames[i]));
-        allTables.add(fullTable);
-        allTables.add(const SizedBox(
-          height: 10,
-        ));
-      }
-    });
-
-    return Column(children: allTables);
   }
 
   Widget futurify(Widget Function(RoomPage) widgetBuilder) {
@@ -243,13 +180,13 @@ class _RoomViewState extends State<RoomView> {
               ),
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
-              roomplans(),
+              occupancyTableView(roomPlan, showOccupancyTable),
               ElevatedButton.icon(
                   onPressed: isRoomSelected ? openRoomPlan : null,
                   icon: const Icon(Icons.share),
                   label: const Text("Raumbelegungsplan im Web ansehen")),
               ElevatedButton(
-                  onPressed: isRoomSelected ? loadOccupanyTable : null,
+                  onPressed: isRoomSelected ? loadOccupancyTable : null,
                   child: Text(
                       "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
               futurify(buildingAdressBlock)

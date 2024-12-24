@@ -32,6 +32,7 @@ class _RoomViewState extends State<RoomView> {
   bool isRoomSelected = true;
   String? roomURL;
   List<List<List<String>>>? roomPlan;
+  bool showOccupancyTable = false;
 
   @override
   void dispose() {
@@ -45,6 +46,14 @@ class _RoomViewState extends State<RoomView> {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
         roomURL = room.queryParts.last; // TODO: place somwhere else
+      });
+    });
+  }
+
+  void loadOccupanyTable() {
+    setState(() {
+      showOccupancyTable = !showOccupancyTable;
+      if (showOccupancyTable) {
         Future<LoginResponse> loginToken = LoginResponse.postLogin(
             "query", "query"); // TODO: inpout login data
         loginToken.then((value) {
@@ -57,7 +66,7 @@ class _RoomViewState extends State<RoomView> {
             });
           });
         });
-      });
+      }
     });
   }
 
@@ -75,7 +84,7 @@ class _RoomViewState extends State<RoomView> {
     var boldStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
     List<Widget> allTables = [];
 
-    if (roomPlan == null) {
+    if (roomPlan == null || !showOccupancyTable) {
       return const Column(children: []);
     }
 
@@ -237,7 +246,10 @@ class _RoomViewState extends State<RoomView> {
               ElevatedButton.icon(
                   onPressed: isRoomSelected ? openRoomPlan : null,
                   icon: const Icon(Icons.share),
-                  label: const Text("Raumbelegungsplan ansehen")),
+                  label: const Text("Raumbelegungsplan im Web ansehen")),
+              ElevatedButton(
+                  onPressed: isRoomSelected ? loadOccupanyTable : null,
+                  child: const Text("Raumbelegungsplan laden/verstecken")),
               futurify(buildingAdressBlock)
             ])));
   }

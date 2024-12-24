@@ -18,10 +18,11 @@ class LoginResponse {
 
   static Future<LoginResponse> postLogin(
       String username, String password) async {
-    String user = "";
-    String passwd = "";
+    String user = username;
+    String passwd = password;
     int university = 1; //1=TUD, 2=HTW
 
+    //application/x-www-form-urlencoded;charset=UTF-8
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept-Charset": "utf-8",

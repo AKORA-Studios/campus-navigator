@@ -1,10 +1,11 @@
 // Define a custom Form widget.
 import 'package:campus_navigator/Views/RoomView.dart';
-import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:campus_navigator/api/search.dart';
+import 'package:flutter/material.dart';
 
 import 'Views/building_view.dart';
+import 'Views/settingsView.dart';
 
 class MyCustomForm extends StatefulWidget {
   const MyCustomForm({super.key});
@@ -58,6 +59,19 @@ class _MyCustomFormState extends State<MyCustomForm> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text("Raumsuche"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              tooltip: 'Open in Web',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SettingsView(name: "Settings")),
+                );
+              },
+            ),
+          ],
         ),
         body: Container(
             padding: const EdgeInsets.all(20.0),

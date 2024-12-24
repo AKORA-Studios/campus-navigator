@@ -11,7 +11,8 @@ A WIP flutter app that will hopefully one day replace the https://navigator.tu-d
 
 It works by using the search api and then scraping the returned HTML document to render the campus navigator view in flutter.
 
-![RoomView](./assets/roomView.png)
+![SearchView](./assets/light_search.png)
+![BuildingView](./assets/light_building_view.png)
 
 ## Goals & Non-Goals
 

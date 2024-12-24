@@ -6,6 +6,8 @@ A WIP flutter app that will hopefully one day replace the https://navigator.tu-d
 
 * Search for rooms
 * Display Building Maps & building adresses
+* Display occupancy Tables for Rooms (requieres Login)
+  * save Login Data for re-use
 
 It works by using the search api and then scraping the returned HTML document to render the campus navigator view in flutter.
 
@@ -22,3 +24,35 @@ Goals:
 Non Goals:
 - Support every feature that the website offers (eg. showing the IP adress of the router in a room)
 - Replicate the exact UI of the website
+
+## Supported platforms
+
+| Plattform         | Status | Supported | 
+|--------------|:-----:| :----: |
+| iOS | Builded | :heavy_check_mark: |
+| MacOS      |  - |  :question:|
+| Android |  Builded  | :heavy_check_mark: |
+| Linux |  -  | :heavy_check_mark: | 
+| Windows      |  - |:question:|
+| Web |  Not Planned  | :x: |
+
+### Building
+
+#### APK with VSCode
+
+```Bash
+flutter build appbundle
+flutter build apk --split-per-abi
+```
+
+Go to `projectFolder\build\app\outputs\apk\releases`
+
+### Dependencies
+
+* cupertino_icons: ^1.0.2 [License](https://pub.dev/packages/cupertino_icons/license)
+* http: ^1.1.0 [License](https://pub.dev/packages/http/license)
+* html: ^0.15.4 [License](https://pub.dev/packages/html/license)
+* share_plus: ^7.2.2 [License](https://pub.dev/packages/share_plus/license)
+* maps_launcher: ^2.2.1 [License](https://pub.dev/packages/maps_launcher/license)
+* flutter_cache_manager: ^3.3.1 [License](https://pub.dev/packages/flutter_cache_manager/license)
+* flutter_secure_storage: ^9.2.2 [License](https://pub.dev/packages/flutter_secure_storage/license)

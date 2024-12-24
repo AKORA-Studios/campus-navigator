@@ -18,9 +18,16 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      username = Storage.Shared.username;
-      password = Storage.Shared.password;
+
+    Storage().getUsername().then((value) {
+      setState(() {
+        username = value ?? "";
+      });
+    });
+    Storage().getPassword().then((value) {
+      setState(() {
+        password = value ?? "";
+      });
     });
   }
 

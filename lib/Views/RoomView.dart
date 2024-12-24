@@ -31,7 +31,7 @@ class _RoomViewState extends State<RoomView> {
   String? selectedLevel;
   bool isRoomSelected = true;
   String? roomURL;
-  List<List<String>>? roomPlan;
+  List<List<List<String>>>? roomPlan;
 
   @override
   void dispose() {
@@ -48,7 +48,7 @@ class _RoomViewState extends State<RoomView> {
         Future<LoginResponse> loginToken = LoginResponse.postLogin(
             "query", "query"); // TODO: inpout login data
         loginToken.then((value) {
-          Future<List<List<String>>> tableContent =
+          Future<List<List<List<String>>>> tableContent =
               RoomPlan.getRoomPlan("325302.0020", token: value.loginToken);
           tableContent.then((value) {
             setState(() {
@@ -70,47 +70,64 @@ class _RoomViewState extends State<RoomView> {
   }
 
   Widget roomplans() {
-    List<Widget> childs = [];
-    if (roomPlan != null) {
-      for (var table in roomPlan!) {
-        // print(table);
-        List<Widget> rows = [];
+    var basicStyle = TextStyle(fontSize: 12);
+    var boldStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
+    List<Widget> allTables = [];
 
-        table.forEachIndexed((index, row) {
-          if (row.isNotEmpty) {
-            //print(row);
-            if (index == 0) {
-              rows.add(
-                  Text(row, style: TextStyle(fontWeight: FontWeight.bold)));
-            } else {
-              rows.add(Text(row));
-            }
+    if (roomPlan == null) {
+      return const Column(children: []);
+    }
+
+    for (var table in roomPlan!) {
+      List<TableRow> tableRows = [];
+
+      table.forEachIndexed((index, row) {
+        List<Widget> rowEntries = [];
+        if (row.isEmpty) {
+          return;
+        }
+
+        row.forEachIndexed((index2, entry) {
+          if (index2 == 0 || index == 0) {
+            //  Left side
+            rowEntries.add(Text(entry, style: boldStyle));
+          } else {
+            rowEntries.add(Text(
+              entry,
+              style: basicStyle,
+            ));
           }
         });
 
-        for (var row in table) {
-          if (row.isNotEmpty) {
-            print(row);
-            rows.add(Text(row));
-          }
+        // Add rows
+        if (index == 0) {
+          tableRows.add(TableRow(
+              children: rowEntries,
+              decoration: BoxDecoration(color: Colors.blue[300])));
+        } else {
+          tableRows.add(TableRow(children: rowEntries));
         }
+      });
 
-        if (rows.isEmpty) {
-          continue;
-        }
+      // Don´t create table if it has no rows/entries
+      if (tableRows.isEmpty) {
+        continue;
+      }
 
-        var x = Table(
-          border: TableBorder.all(),
-          children: [
-            TableRow(children: rows),
-          ],
-        );
-        if (rows.isNotEmpty) {
-          childs.add(x);
-        }
+      // Add completed table to Widget List
+      var fullTable = Table(
+        border: TableBorder.all(),
+        children: tableRows,
+      );
+      if (tableRows.isNotEmpty) {
+        allTables.add(fullTable);
+        allTables.add(SizedBox(
+          height: 10,
+        ));
       }
     }
-    return Column(children: childs);
+
+    return Column(children: allTables);
   }
 
   Widget futurify(Widget Function(RoomPage) widgetBuilder) {

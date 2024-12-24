@@ -20,7 +20,7 @@ class RoomPlan {
     return cookie;
   }
 
-  static Future<List<List<String>>> getRoomPlan(String roomID,
+  static Future<List<List<List<String>>>> getRoomPlan(String roomID,
       {String token = ""}) async {
     final uri = Uri.parse('$baseURL/raum/$roomID');
 
@@ -44,54 +44,43 @@ class RoomPlan {
     }
   }
 
-  static List<List<String>> getTableContentFromBody(String body) {
+  static List<List<List<String>>> getTableContentFromBody(String body) {
     var htmlDocument = HTMLData.fromBody(body).document;
 
-    print("--------------------------");
-
-    var allTables = htmlDocument.querySelectorAll("table");
+    final allTables = htmlDocument.querySelectorAll("table");
     allTables.removeAt(0);
 
-    List<List<String>> x = [];
+    List<List<List<String>>> x = [];
 
-    for (var tableBody in allTables) {
-      List<String> entries = [];
+    // Parse Table into array
+    for (final tableBody in allTables) {
+      // table
+      List<List<String>> entries =
+          []; // Uhrzeit: Tag1Vorlesung, Tag2Vorlesung,.. Tag7Vorlesung
       for (var trTag in tableBody.children) {
+        // tbody
         for (var y in trTag.children) {
-          entries.add(y.text);
+          // tr
+          List<String> rowEntries = [];
+          for (var th in y.children) {
+            if (th.children.length > 1) {
+              /*
+              div: title
+              span: Person, Fach
+              */
+              // print("th: $th, ${th.children[0].text}");
+              rowEntries.add(th.children[0].text);
+            } else {
+              rowEntries.add(th.text);
+            }
+          }
+          if (rowEntries.sublist(1).join("").isNotEmpty) {
+            entries.add(rowEntries);
+          }
         }
-        print(entries);
       }
       x.add(entries);
     }
     return x;
   }
 }
-/*
-class SearchResultObject {
-  final String name;
-  final String identifier;
-
-  const SearchResultObject({
-    required this.name,
-    required this.identifier,
-  });
-
-  factory SearchResultObject.fromJson(List<dynamic> json) {
-    String name = json[0];
-    name = name
-        .replaceAll(" <span class='sml'>(", " | ")
-        .replaceAll(")</span>", "");
-
-    return SearchResultObject(
-      name: name,
-      identifier: json[1],
-    );
-  }
-
-  static listFromJson(List<dynamic> json) {
-    return json
-        .map((jsonEntry) => SearchResultObject.fromJson(jsonEntry))
-        .toList();
-  }
-}*/

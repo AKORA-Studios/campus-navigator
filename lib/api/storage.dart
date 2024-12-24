@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class Storage {
   static const keyUsername = "Username";
   static const keyPassword = "Password";
+  static const keyUniversity = "University";
   static final Storage Shared = Storage();
 
   Storage();
@@ -26,6 +27,14 @@ class Storage {
 
   Future<void> editpassword(String newValue) async {
     return await storage.write(key: keyPassword, value: newValue);
+  }
+
+  Future<String?> getUniversity() {
+    return storage.read(key: keyUniversity);
+  }
+
+  Future<void> editUniversity(String newValue) async {
+    return await storage.write(key: keyUniversity, value: newValue);
   }
 
   void deleteData() async {

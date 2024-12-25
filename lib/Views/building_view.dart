@@ -1,8 +1,8 @@
-import 'package:campus_navigator/api/building/room_page.dart';
+import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/painter.dart';
 import 'package:flutter/material.dart';
 
-Widget interactiveBuildingView(RoomPage roomResult,
+Widget interactiveBuildingView(BuildingPageData roomResult,
     {Size size = const Size(300, 300)}) {
   return InteractiveViewer(
       boundaryMargin: const EdgeInsets.all(34.0),
@@ -12,9 +12,9 @@ Widget interactiveBuildingView(RoomPage roomResult,
           CustomPaint(painter: MapPainter(roomResult: roomResult), size: size));
 }
 
-Widget asyncInteractiveBuildingView(Future<RoomPage> roomResult,
+Widget asyncInteractiveBuildingView(Future<BuildingPageData> roomResult,
     {Size size = const Size(300, 300)}) {
-  return FutureBuilder<RoomPage>(
+  return FutureBuilder<BuildingPageData>(
     future: roomResult,
     builder: (context, snapshot) {
       if (snapshot.hasData) {

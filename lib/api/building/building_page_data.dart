@@ -20,7 +20,7 @@ final RegExp pngFileNameExp =
 final RegExp highlightedRoomExp =
     RegExp(r"ETplan\.permahighlightRaum\((\d+), (\w+)\);", multiLine: true);
 
-class RoomPage {
+class BuildingPageData {
   final HTMLData htmlData;
   final RaumBezData raumBezData;
   final Map<String, double> numberVariables;
@@ -31,7 +31,7 @@ class RoomPage {
   final BuildingData buildingData;
   final List<String> queryParts;
 
-  RoomPage(
+  BuildingPageData(
       {required this.htmlData,
       required this.raumBezData,
       required this.numberVariables,
@@ -41,10 +41,10 @@ class RoomPage {
       required this.buildingData,
       required this.queryParts});
 
-  factory RoomPage.fromHTMLText(String body, List<String> queryParts) {
-    var htmlData = HTMLData.fromBody(body);
+  factory BuildingPageData.fromHTMLText(String body, List<String> queryParts) {
+    final htmlData = HTMLData.fromBody(body);
 
-    var buildingInfo = BuildingData.fromHTMLDocument(htmlData.document);
+    final buildingInfo = BuildingData.fromHTMLDocument(htmlData.document);
 
     // Parse room labels
     final raumBezMatch = raumbezExp.firstMatch(htmlData.script)!;
@@ -93,7 +93,7 @@ class RoomPage {
     // The file name for the background image
     String pngFileName = htmlData.stringVariables["png_file_name"]!;
 
-    return RoomPage(
+    return BuildingPageData(
         htmlData: htmlData,
         raumBezData: raumBezData,
         pngFileName: pngFileName,
@@ -104,7 +104,7 @@ class RoomPage {
         queryParts: queryParts);
   }
 
-  static Future<RoomPage> fetchRoom(String query) async {
+  static Future<BuildingPageData> fetchQuery(String query) async {
     final queryParts = query.split("/");
     final uri = Uri.parse("$baseURL/etplan/$query");
 
@@ -130,7 +130,7 @@ class RoomPage {
 
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    var roomResult = RoomPage.fromHTMLText(body, queryParts);
+    var roomResult = BuildingPageData.fromHTMLText(body, queryParts);
 
     // Start loading process for images
     roomResult.backgroundImageData = PageImageData.fetchLevelImages(

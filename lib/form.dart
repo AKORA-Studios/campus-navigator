@@ -1,6 +1,6 @@
 // Define a custom Form widget.
 import 'package:campus_navigator/Views/RoomView.dart';
-import 'package:campus_navigator/api/building/room_page.dart';
+import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/search.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +18,7 @@ class MyCustomForm extends StatefulWidget {
 class _MyCustomFormState extends State<MyCustomForm> {
   final myController = TextEditingController();
   Future<SearchResult>? searchResult;
-  Future<RoomPage>? roomResult;
+  Future<BuildingPageData>? roomResult;
 
   @override
   void dispose() {
@@ -36,7 +36,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
       ),
       onPressed: () {
         setState(() {
-          roomResult = RoomPage.fetchRoom(r.identifier);
+          roomResult = BuildingPageData.fetchQuery(r.identifier);
           roomResult!.then((v) {
             Navigator.push(
               context,
@@ -106,7 +106,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                           if (result == null) return;
 
                           setState(() {
-                            roomResult = RoomPage.fetchRoom(result.identifier);
+                            roomResult =
+                                BuildingPageData.fetchQuery(result.identifier);
                           });
                         });
                       });

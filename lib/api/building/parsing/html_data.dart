@@ -8,7 +8,7 @@ final RegExp variableDeclarationExp =
 
 /// Matches variables assignments that assign a JS object
 final RegExp variableAssignmentsExp =
-    RegExp(r"^(\w+) = ({[^;]+)", multiLine: true);
+    RegExp(r"^(\w+) = (({|\[)[^;]+)", multiLine: true);
 
 final RegExp stringVariableExp =
     RegExp(r'var ([\w_]+) = "([^"]+)";', multiLine: true);

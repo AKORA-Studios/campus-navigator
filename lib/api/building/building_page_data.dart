@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
+import 'package:campus_navigator/api/building/parsing/campus_map.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
@@ -108,25 +109,14 @@ class BuildingPageData {
     final queryParts = query.split("/");
     final uri = Uri.parse("$baseURL/etplan/$query");
 
-    final cachedResponse =
-        await DefaultCacheManager().getFileFromCache(uri.toString());
-
-    String body;
-    if (cachedResponse != null) {
-      body = await cachedResponse.file.readAsString();
-    } else {
-      final response = await http.get(uri);
-
-      if (response.statusCode != 200) {
-        // If the server did not return a 200 OK response,
-        // then throw an exception.
-        throw Exception('Failed to load search results');
-      }
-
-      body = response.body;
-      // Save response in cache
-      DefaultCacheManager().putFile(uri.toString(), response.bodyBytes);
+    String? body = await fetchHMTL(uri);
+    if (body == null) {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load search results');
     }
+
+    await CampusMapData.fetch();
 
     // If the server did return a 200 OK response,
     // then parse the JSON.

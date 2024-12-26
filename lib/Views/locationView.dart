@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 
 class LocationView extends StatefulWidget {
   LocationView({super.key, required this.name});
@@ -10,20 +11,59 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationViewState extends State<LocationView> {
-  bool errorOccured = false;
-  String? errrorMessage;
+  Location location = new Location();
+  bool _serviceEnabled = false;
+  PermissionStatus _permissionGranted = PermissionStatus.denied;
+  LocationData? _locationData;
 
   @override
   void initState() {
     super.initState();
 
-    /*  _determinePosition().then((value) {
-      print(value);
-    }).catchError(onError);*/
+    location.serviceEnabled().then((value) {
+      _serviceEnabled = value;
+      if (!_serviceEnabled) {
+        location.requestService().then((value2) {
+          _serviceEnabled = value2;
+          if (!_serviceEnabled) {
+            return;
+          }
+        }).catchError(onError);
+      }
+    }).catchError(onError);
+
+    location.hasPermission().then((value) {
+      _permissionGranted = value;
+      if (_permissionGranted == PermissionStatus.denied) {
+        location.requestPermission().then((value2) {
+          _permissionGranted = value2;
+          if (_permissionGranted != PermissionStatus.granted) {
+            return;
+          }
+        }).catchError(onError);
+      }
+    }).catchError(onError);
+
+    location.getLocation().then((value) {
+      _locationData = value;
+      print("----------------");
+      print(_locationData);
+    }).catchError(onError);
+  }
+
+  Widget errorWidget() {
+    var style = const TextStyle(color: Colors.red, fontWeight: FontWeight.bold);
+    if (!_serviceEnabled) {
+      return Text("Location not enabled :c", style: style);
+    } else if (_permissionGranted != PermissionStatus.granted ||
+        _permissionGranted != PermissionStatus.grantedLimited) {
+      return Text(_permissionGranted.toString(), style: style);
+    } else {
+      return Text("${_locationData?.latitude} ${_locationData?.longitude}");
+    }
   }
 
   void onError(var e) {
-    errorOccured = true;
     print(e);
   }
 
@@ -37,11 +77,8 @@ class _LocationViewState extends State<LocationView> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
-              Text("hhhhh"),
-              Text(
-                errorOccured ? errrorMessage! : "",
-                style: TextStyle(color: Colors.red),
-              )
+              Text("Get plan of the building your currently in:"),
+              Center(child: errorWidget()),
             ])));
   }
 }

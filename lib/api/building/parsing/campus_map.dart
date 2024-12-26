@@ -111,79 +111,33 @@ class CampusMapData {
         centerLat: centerLat);
   }
 
-  static (double, double) offsetCoordinates(
-      {required double centerLong,
-      required double centerLat,
-      required double xPos,
-      required double yPos,
-      int quali_cur = 12}) {
-    double long2tile(lon, zo) {
-      return ((lon + 180) / 360) * pow(2, zo);
-    }
+  static (double, double) offsetCoordinates({
+    required double centerLong,
+    required double centerLat,
+    required double xPos,
+    required double yPos,
+  }) {
+    // Pre scaled and flipped axises
+    final x = xPos;
+    final y = -yPos;
 
-    double lat2tile(lat, zo) {
-      return (((1 -
-                  log(tan((lat * pi) / 180) + 1 / cos((lat * pi) / 180)) / pi) /
-              2) *
-          pow(2, zo));
-    }
+    // Scaling point, northes corner of MS1
+    final xScaling = -1.7921564444444964;
+    final yScaling = -0.6142086473036215;
 
-    final g_tilex = long2tile(centerLong, quali_cur);
-    final g_tiley = lat2tile(centerLat, quali_cur);
-
-    final g_xtrans = g_tilex - g_tilex.floor();
-    final g_ytrans = g_tiley - g_tiley.floor();
-
-    //final g_tilex = g_tilex.floor();
-    //final g_tiley = g_tiley.floor();
-
-    // var quali_size = subpics_size / quali_steps[quali_cur];
-    final subpics_size = 265;
-    final quali_steps = [
-      1,
-      2,
-      4,
-      8,
-      16,
-      32,
-      64,
-      128,
-      256,
-      512,
-      1024,
-      2048,
-      4096,
-      8192,
-      16384,
-      32768,
-      65536,
-      131072,
-      262144,
-      524288,
-      1048576,
-    ];
-    ;
-    final quali_size = subpics_size / quali_steps[quali_cur];
-
-    // final xCorrected = (xPos - g_tilex - g_xtrans) * quali_size;
-    // final yCorrected = (yPos - g_tiley - g_ytrans) * quali_size;
-
-    // final yCorrected = yPos - ((g_ytrans - 0.5) * quali_size);
-
-    // final xOff = ((g_xtrans - 0.5) * quali_size);
-    // final yOff = ((g_ytrans - 0.5) * quali_size);
-
-    // final xCorrected = (xPos * 0.01) - 0.1; // - xOff;
-    // final yCorrected = (yPos * 0.01) - 1.0; // - yOff;
-
+    // Offsets to correct map translation
     final xOff = -0.728;
     final yOff = 0.071;
 
-    final xCorrected = ((xPos + xOff) * 0.01); // - xOff;
-    final yCorrected = ((-yPos + yOff) * 0.01); // - yOff;
+    final scale = 0.01 * 1;
 
-    // return (xCorrected, yCorrected);
-    return (xCorrected, yCorrected);
+    final xRel = x - xScaling;
+    final yRel = y - yScaling;
+
+    final xCorrected = ((((xRel) * 1) + xScaling) + xOff); // - xOff;
+    final yCorrected = ((((yRel) * 1) + yScaling) + yOff); // - xOff;
+
+    return (xCorrected * 0.01, yCorrected * 0.01);
   }
 
   static Future<CampusMapData> fetch() async {

@@ -1,13 +1,6 @@
 import 'dart:async';
-import 'dart:math';
-
-import 'package:campus_navigator/api/building/parsing/common.dart';
-import 'package:campus_navigator/api/building/parsing/room_polygon.dart';
-import 'package:campus_navigator/painter.dart';
-import 'package:flutter/services.dart';
-
 import 'html_data.dart';
-import 'position.dart';
+import 'package:campus_navigator/api/building/parsing/common.dart';
 
 class CampusBuilding {
   /// kurzz
@@ -29,62 +22,30 @@ class CampusBuilding {
         points: points.map((e) => (e as num).toDouble()).toList(),
         shortName: shortName);
   }
-}
 
-class CampusMapData {
-  final HTMLData htmlData;
+  /// Translates the building points to latitude and longitude values
+  List<(double, double)> translatePoints({
+    required double centerLong,
+    required double centerLat,
+  }) {
+    List<(double, double)> coords = [];
 
-  /// Longitude of map center
-  final double centerLong;
+    for (int i = 0; i < (points.length - 1); i += 2) {
+      final xPos = points[i];
+      final yPos = points[i + 1];
 
-  /// Latitude of map center
-  final double centerLat;
+      coords.add(translateCoordinates(
+          centerLong: centerLong,
+          centerLat: centerLat,
+          xPos: xPos,
+          yPos: yPos));
+    }
 
-  /// List of all buildings
-  final List<CampusBuilding> buildings;
-
-  CampusMapData({
-    required this.htmlData,
-    required this.centerLong,
-    required this.centerLat,
-    required this.buildings,
-  });
-
-  factory CampusMapData.fromHTMLText(String body) {
-    final htmlData = HTMLData.fromBody(body);
-
-    // Parse building polygon data
-    final gebaeudeData =
-        htmlData.assignedVariables["gebaeudeData"] as List<dynamic>;
-    final buildings = gebaeudeData
-        .map((e) => CampusBuilding.fromJson(e as Map<String, dynamic>))
-        .toList();
-
-    // Parse center coordinates
-    final centerLong = htmlData.numberVariables["s_long"]!;
-    final centerLat = htmlData.numberVariables["s_lat"]!;
-
-    final buildingName = "MS1";
-    final building =
-        buildings.firstWhere((element) => element.shortName == buildingName);
-    final i = 0;
-    final x = building.points[i];
-    final y = building.points[i + 1];
-
-    final (bLong, bLat) = offsetCoordinates(
-        centerLong: centerLong, centerLat: centerLat, xPos: x, yPos: y);
-
-    print(
-        "https://navigator.tu-dresden.de/~$bLong,$bLat,$buildingName@$bLong,$bLat,20.z");
-
-    return CampusMapData(
-        htmlData: htmlData,
-        buildings: buildings,
-        centerLong: centerLong,
-        centerLat: centerLat);
+    return coords;
   }
 
-  static (double, double) offsetCoordinates({
+  /// Converts the given x and y values to a pair of (long, lat)
+  static (double, double) translateCoordinates({
     required double centerLong,
     required double centerLat,
     required double xPos,
@@ -128,6 +89,92 @@ class CampusMapData {
     final lat = centerLat + latOffset;
 
     return (long, lat);
+  }
+}
+
+class CampusMapData {
+  final HTMLData htmlData;
+
+  /// Longitude of map center
+  final double centerLong;
+
+  /// Latitude of map center
+  final double centerLat;
+
+  /// List of all buildings
+  final List<CampusBuilding> buildings;
+
+  CampusMapData({
+    required this.htmlData,
+    required this.centerLong,
+    required this.centerLat,
+    required this.buildings,
+  });
+
+  factory CampusMapData.fromHTMLText(String body) {
+    final htmlData = HTMLData.fromBody(body);
+
+    // Parse building polygon data
+    final gebaeudeData =
+        htmlData.assignedVariables["gebaeudeData"] as List<dynamic>;
+    final buildings = gebaeudeData
+        .map((e) => CampusBuilding.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    // Parse center coordinates
+    final centerLong = htmlData.numberVariables["s_long"]!;
+    final centerLat = htmlData.numberVariables["s_lat"]!;
+
+    // Separate multi polygons
+    /*
+    {
+      for (final (i, b) in buildings.indexed) {
+        final duplicatedPoints = b.points.indexed
+            .map((p) {
+              final pIndex = p.$1;
+              final pValue = p.$2;
+
+              final isX = (pIndex % 2) == 0;
+              // Coordinates that are also x | y
+              final sameCoordPoints = b.points.indexed
+                  .where((p) => (p.$1 % 2 == 0) == isX)
+                  .map((e) => e.$2);
+
+              return (p.$1, sameCoordPoints.where((pp) => p.$2 == pp).length);
+            })
+            .where((p) => p.$2 > 1)
+            .toList();
+
+        if (duplicatedPoints.isEmpty) continue;
+
+        // Filter for points where the x and y coordinates are duplicated
+        final duplicatedEnds = duplicatedPoints.where((e) {
+          final pIndex = e.$1;
+          final pValue = e.$2;
+          return duplicatedPoints.any((element) =>
+              ((element.$1 == (pIndex + 2)) || (element.$1 == (pIndex - 2))) &&
+              element.$2 == pValue);
+        });
+
+        print("${b.shortName} ${duplicatedEnds.map((e) => e.$1)}");
+      }
+    }
+
+    for (final b in buildings) {
+      final c = b.points
+          .map((p) => b.points.where((pp) => p == pp).length)
+          .where((element) => element > 1)
+          .length;
+
+      // print("${b.shortName}: $c");
+    }
+    */
+
+    return CampusMapData(
+        htmlData: htmlData,
+        buildings: buildings,
+        centerLong: centerLong,
+        centerLat: centerLat);
   }
 
   static Future<CampusMapData> fetch() async {

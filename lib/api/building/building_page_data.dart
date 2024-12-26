@@ -116,8 +116,6 @@ class BuildingPageData {
       throw Exception('Failed to load search results');
     }
 
-    await CampusMapData.fetch();
-
     // If the server did return a 200 OK response,
     // then parse the JSON.
     var roomResult = BuildingPageData.fromHTMLText(body, queryParts);

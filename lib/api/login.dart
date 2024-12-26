@@ -23,11 +23,11 @@ class LoginResponse {
     int university = int.parse(await Storage.Shared.getUniversity() ?? "1");
 
     if (user == null) {
-      throw Exception('Failed to login: Invalid Username');
+      throw Exception('Failed to login: No Username set');
     }
 
     if (passwd == null) {
-      throw Exception('Failed to login: Invalid Username');
+      throw Exception('Failed to login: No Password set');
     }
 
     //application/x-www-form-urlencoded;charset=UTF-8
@@ -51,13 +51,11 @@ class LoginResponse {
         await http.post(uri, headers: headers, body: jsonEncode(jsonBody));
 
     if (response.statusCode == 200) {
-      // TODO: create cookie, save cookie
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
       return LoginResponse.fromJson(jsonDecode(response.body));
     } else {
       print(response.body);
-      throw Exception('Failed to login');
+      String? msg = json.decode(response.body)["message"];
+      throw Exception('Failed to login: ${msg}');
     }
   }
 }

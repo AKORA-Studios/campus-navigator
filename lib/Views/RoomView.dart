@@ -34,6 +34,8 @@ class _RoomViewState extends State<RoomView> {
   String? roomURL;
   List<List<List<String>>>? roomPlan;
   bool showOccupancyTable = false;
+  String? errorMessageOccupancyTable;
+  bool updateView = false;
 
   @override
   void dispose() {
@@ -65,8 +67,14 @@ class _RoomViewState extends State<RoomView> {
               roomPlan = value;
             });
           });
-        });
+        }).catchError(onError);
       }
+    });
+  }
+
+  void onError(var e) {
+    setState(() {
+      errorMessageOccupancyTable = e.toString();
     });
   }
 
@@ -191,6 +199,11 @@ class _RoomViewState extends State<RoomView> {
                   onPressed: isRoomSelected ? loadOccupancyTable : null,
                   child: Text(
                       "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
+              Text(
+                errorMessageOccupancyTable ?? "",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.red),
+              ),
               futurify(buildingAddressBlock)
             ])));
   }

@@ -5,6 +5,7 @@ import 'package:campus_navigator/api/search.dart';
 import 'package:flutter/material.dart';
 
 import 'Views/building_view.dart';
+import 'Views/locationView.dart';
 import 'Views/settingsView.dart';
 
 class MyCustomForm extends StatefulWidget {
@@ -68,6 +69,17 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => SettingsView(name: "Settings")),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.map),
+              tooltip: 'Open Location',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => LocationView(name: "Location")),
                 );
               },
             ),

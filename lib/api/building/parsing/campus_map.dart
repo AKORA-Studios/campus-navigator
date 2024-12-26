@@ -64,43 +64,15 @@ class CampusMapData {
     final centerLong = htmlData.numberVariables["s_long"]!;
     final centerLat = htmlData.numberVariables["s_lat"]!;
 
-    final l = ["MS1", "SCH", "BAR", "JUD", "WÜR", "POT", "HEM"];
-
-    String csv = "lat,long\n";
-    for (final b in buildings.where((b) => l.contains(b.shortName))) {
-      for (int i = 0; i < (b.points.length - 1); i += 2) {
-        final (corrX, corrY) = offsetCoordinates(
-            centerLong: centerLong,
-            centerLat: centerLat,
-            xPos: b.points[i],
-            yPos: b.points[i + 1]);
-        final bLong = centerLong + corrX;
-        final bLat = centerLat + corrY;
-        csv += "$bLat,$bLong\n";
-      }
-    }
-
-    Clipboard.setData(ClipboardData(text: csv))
-        .then((value) => print("copied"));
-
-    /*
-
-
-
-  */
-
-    final buildingName = "JUD";
+    final buildingName = "MS1";
     final building =
         buildings.firstWhere((element) => element.shortName == buildingName);
     final i = 0;
     final x = building.points[i];
     final y = building.points[i + 1];
 
-    final (corrX, corrY) = offsetCoordinates(
+    final (bLong, bLat) = offsetCoordinates(
         centerLong: centerLong, centerLat: centerLat, xPos: x, yPos: y);
-
-    final bLong = centerLong + corrX;
-    final bLat = centerLat + corrY;
 
     print(
         "https://navigator.tu-dresden.de/~$bLong,$bLat,$buildingName@$bLong,$bLat,20.z");
@@ -118,29 +90,44 @@ class CampusMapData {
     required double xPos,
     required double yPos,
   }) {
-    // Pre scaled and flipped axises
+    // Flipp y axis for some reason
     final x = xPos;
     final y = -yPos;
 
-    // Scaling point, northes corner of MS1
-    final xScalingOff = -1.7921564444444964;
-    final yScalingOff = -0.6142086473036215;
+    // Scaling point, this can in theory be an arbitraty point (even 0,0)
+    // In this case it is the northest corner of MS1, as seen in the link
+    // https://navigator.tu-dresden.de/~13.72979843,51.032567,ScalingOff@13.729798,51.032539,20.z
+    const xScalingPoint = -1.7921564444444964;
+    const yScalingPoint = -0.6142086473036215;
 
     // Offsets to correct map translation
     // Found by manually adjusting them until they fit
-    final xOff = -0.728;
-    final yOff = 0.071;
+    const xOff = -0.728;
+    const yOff = 0.071;
 
-    final scale = 0.01 * 1;
+    // This is used because the provided x and y positions
+    // Are in the map local coordinate system and not in the
+    // Global lat/long coordinate system
+    const scale = 0.01;
 
-    // x and y positions relative to sclaing offset
-    final xRel = x - xScalingOff;
-    final yRel = y - yScalingOff;
+    // x and y positions relative to scaling offset
+    final xRel = x - xScalingPoint;
+    final yRel = y - yScalingPoint;
 
-    final xCorrected = ((((xRel) * 1.4062) + xScalingOff) + xOff);
-    final yCorrected = ((((yRel) * 0.884) + yScalingOff) + yOff);
+    // This scales the x and y corrdinates realtive from the scaling point,
+    // to achieve relative latitude and longitude
+    // The scaling amounts are found by trial and error.
+    // Using the return values of this function print the following:
+    // print("https://navigator.tu-dresden.de/~$long,$lat,$buildingName@$long,$lat,20.z");
+    // Do this with a known building corner and adjust the scaliong values accordingly
+    final longOffset = (((xRel * 1.40627) + xScalingPoint) + xOff) * scale;
+    final latOffset = (((yRel * 0.88485) + yScalingPoint) + yOff) * scale;
 
-    return (xCorrected * 0.01, yCorrected * 0.01);
+    // Translate local coordinates to global coordinates
+    final long = centerLong + longOffset;
+    final lat = centerLat + latOffset;
+
+    return (long, lat);
   }
 
   static Future<CampusMapData> fetch() async {

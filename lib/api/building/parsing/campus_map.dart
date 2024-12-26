@@ -64,7 +64,7 @@ class CampusMapData {
     final centerLong = htmlData.numberVariables["s_long"]!;
     final centerLat = htmlData.numberVariables["s_lat"]!;
 
-    final l = ["MS1", "SCH", "BAR", "POT", "HEM"];
+    final l = ["MS1", "SCH", "BAR", "JUD", "WÜR", "POT", "HEM"];
 
     String csv = "lat,long\n";
     for (final b in buildings.where((b) => l.contains(b.shortName))) {
@@ -89,10 +89,10 @@ class CampusMapData {
 
   */
 
-    final buildingName = "MS1";
+    final buildingName = "JUD";
     final building =
         buildings.firstWhere((element) => element.shortName == buildingName);
-    final i = 8;
+    final i = 0;
     final x = building.points[i];
     final y = building.points[i + 1];
 
@@ -123,8 +123,8 @@ class CampusMapData {
     final y = -yPos;
 
     // Scaling point, northes corner of MS1
-    final xScaling = -1.7921564444444964;
-    final yScaling = -0.6142086473036215;
+    final xScalingOff = -1.7921564444444964;
+    final yScalingOff = -0.6142086473036215;
 
     // Offsets to correct map translation
     // Found by manually adjusting them until they fit
@@ -134,11 +134,11 @@ class CampusMapData {
     final scale = 0.01 * 1;
 
     // x and y positions relative to sclaing offset
-    final xRel = x - xScaling;
-    final yRel = y - yScaling;
+    final xRel = x - xScalingOff;
+    final yRel = y - yScalingOff;
 
-    final xCorrected = ((((xRel) * 1.389) + xScaling) + xOff);
-    final yCorrected = ((((yRel) * 0.883) + yScaling) + yOff);
+    final xCorrected = ((((xRel) * 1.4062) + xScalingOff) + xOff);
+    final yCorrected = ((((yRel) * 0.884) + yScalingOff) + yOff);
 
     return (xCorrected * 0.01, yCorrected * 0.01);
   }

@@ -92,8 +92,9 @@ class CampusMapData {
     final buildingName = "MS1";
     final building =
         buildings.firstWhere((element) => element.shortName == buildingName);
-    final x = building.points[0];
-    final y = building.points[1];
+    final i = 8;
+    final x = building.points[i];
+    final y = building.points[i + 1];
 
     final (corrX, corrY) = offsetCoordinates(
         centerLong: centerLong, centerLat: centerLat, xPos: x, yPos: y);
@@ -126,16 +127,18 @@ class CampusMapData {
     final yScaling = -0.6142086473036215;
 
     // Offsets to correct map translation
+    // Found by manually adjusting them until they fit
     final xOff = -0.728;
     final yOff = 0.071;
 
     final scale = 0.01 * 1;
 
+    // x and y positions relative to sclaing offset
     final xRel = x - xScaling;
     final yRel = y - yScaling;
 
-    final xCorrected = ((((xRel) * 1) + xScaling) + xOff); // - xOff;
-    final yCorrected = ((((yRel) * 1) + yScaling) + yOff); // - xOff;
+    final xCorrected = ((((xRel) * 1.389) + xScaling) + xOff);
+    final yCorrected = ((((yRel) * 0.883) + yScaling) + yOff);
 
     return (xCorrected * 0.01, yCorrected * 0.01);
   }

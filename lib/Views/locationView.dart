@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
@@ -16,46 +18,59 @@ class _LocationViewState extends State<LocationView> {
   PermissionStatus _permissionGranted = PermissionStatus.denied;
   LocationData? _locationData;
 
+  StreamSubscription<LocationData>? locationListener;
+
   @override
   void initState() {
     super.initState();
 
-    location.serviceEnabled().then((value) {
-      _serviceEnabled = value;
+    requestServices();
+
+    locationListener =
+        location.onLocationChanged.listen((LocationData currentLocation) {
+      setState(() {
+        _locationData = currentLocation;
+      });
+      locationListener?.cancel();
+    });
+  }
+
+  void requestServices() async {
+    _serviceEnabled = await location.serviceEnabled();
+    setState(() {
+      _serviceEnabled = _serviceEnabled;
+    });
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      setState(() {
+        _serviceEnabled = _serviceEnabled;
+      });
+
       if (!_serviceEnabled) {
-        location.requestService().then((value2) {
-          _serviceEnabled = value2;
-          if (!_serviceEnabled) {
-            return;
-          }
-        }).catchError(onError);
+        return;
       }
-    }).catchError(onError);
+    }
 
-    location.hasPermission().then((value) {
-      _permissionGranted = value;
-      if (_permissionGranted == PermissionStatus.denied) {
-        location.requestPermission().then((value2) {
-          _permissionGranted = value2;
-          if (_permissionGranted != PermissionStatus.granted) {
-            return;
-          }
-        }).catchError(onError);
+    _permissionGranted = await location.hasPermission();
+    setState(() {
+      _permissionGranted = _permissionGranted;
+    });
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      setState(() {
+        _permissionGranted = _permissionGranted;
+      });
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
       }
-    }).catchError(onError);
-
-    location.getLocation().then((value) {
-      _locationData = value;
-      print("----------------");
-      print(_locationData);
-    }).catchError(onError);
+    }
   }
 
   Widget errorWidget() {
     var style = const TextStyle(color: Colors.red, fontWeight: FontWeight.bold);
     if (!_serviceEnabled) {
       return Text("Location not enabled :c", style: style);
-    } else if (_permissionGranted != PermissionStatus.granted ||
+    } else if (_permissionGranted != PermissionStatus.granted &&
         _permissionGranted != PermissionStatus.grantedLimited) {
       return Text(_permissionGranted.toString(), style: style);
     } else {
@@ -78,7 +93,13 @@ class _LocationViewState extends State<LocationView> {
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
               Text("Get plan of the building your currently in:"),
+              ElevatedButton(
+                  onPressed: () {
+                    requestServices();
+                  },
+                  child: Text("Update Permissions?")),
               Center(child: errorWidget()),
+              Text(_locationData.toString()),
             ])));
   }
 }

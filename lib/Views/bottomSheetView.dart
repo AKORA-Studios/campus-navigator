@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-class MyDraggableSheet extends StatefulWidget {
-  const MyDraggableSheet({super.key, required this.name, required this.child});
+class DraggableBottomSheet extends StatefulWidget {
+  const DraggableBottomSheet(
+      {super.key, required this.name, required this.child});
   final String name;
   final Widget child;
 
   @override
-  State<MyDraggableSheet> createState() => _MyDraggableSheetState();
+  State<DraggableBottomSheet> createState() => _DraggableBottomSheetState();
 }
 
-class _MyDraggableSheetState extends State<MyDraggableSheet> {
+class _DraggableBottomSheetState extends State<DraggableBottomSheet> {
   final _sheet = GlobalKey();
   final _controller = DraggableScrollableController();
 
@@ -74,7 +75,7 @@ class _MyDraggableSheetState extends State<MyDraggableSheet> {
               ),
             ],
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(12),
               topRight: Radius.circular(12),
             ),
@@ -84,9 +85,9 @@ class _MyDraggableSheetState extends State<MyDraggableSheet> {
             slivers: [
               SliverList.list(
                 children: [
-                  Grabber(),
+                  const Grabber(),
                   Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     child: widget.child,
                   )
                 ],

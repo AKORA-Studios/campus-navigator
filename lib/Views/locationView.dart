@@ -1,6 +1,12 @@
 import 'dart:async';
 
+import 'package:campus_navigator/Views/building_view.dart';
+import 'package:campus_navigator/api/building/building_page_data.dart';
+import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:campus_navigator/api/building/parsing/campus_map.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
@@ -27,6 +33,8 @@ class _LocationViewState extends State<LocationView> {
   /// The building the current `_locationData` lies in
   CampusBuilding? currentBuilding;
 
+  Future<BuildingPageData>? buildingPageData;
+
   @override
   void initState() {
     super.initState();
@@ -40,8 +48,14 @@ class _LocationViewState extends State<LocationView> {
       if (lat != null && long != null) {
         campusMapData.then((map) {
           final foundBuilding = map.checkLocation(long, lat);
+
           setState(() {
             currentBuilding = foundBuilding;
+
+            if (foundBuilding != null) {
+              buildingPageData =
+                  BuildingPageData.fetchQuery(foundBuilding.query);
+            }
           });
         });
       }
@@ -49,7 +63,7 @@ class _LocationViewState extends State<LocationView> {
       setState(() {
         _locationData = currentLocation;
       });
-      locationListener?.cancel();
+      //locationListener?.cancel();
     });
 
     //requestServices();
@@ -122,7 +136,21 @@ class _LocationViewState extends State<LocationView> {
                   child: const Text("Update Permissions?")),
               Center(child: errorWidget()),
               Text(_locationData.toString()),
-              Text("In building ${currentBuilding?.shortName}")
+              Text("In building ${currentBuilding?.shortName}"),
+              RichText(
+                text: TextSpan(
+                  text: 'but this is',
+                  style: const TextStyle(color: Colors.blue),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      launchUrl(Uri.parse(
+                          '$baseURL/etplan/${currentBuilding?.query}'));
+                    },
+                ),
+              ),
+              buildingPageData != null
+                  ? asyncInteractiveBuildingView(buildingPageData!)
+                  : const Text("nodata")
             ])));
   }
 }

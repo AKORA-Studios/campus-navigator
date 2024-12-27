@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
 class LocationView extends StatefulWidget {
-  LocationView({super.key, required this.name});
+  const LocationView({super.key, required this.name});
 
   final String name;
 
@@ -13,7 +13,7 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationViewState extends State<LocationView> {
-  Location location = new Location();
+  Location location = Location();
   bool _serviceEnabled = false;
   PermissionStatus _permissionGranted = PermissionStatus.denied;
   LocationData? _locationData;
@@ -92,12 +92,12 @@ class _LocationViewState extends State<LocationView> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
-              Text("Get plan of the building your currently in:"),
+              const Text("Get plan of the building your currently in:"),
               ElevatedButton(
                   onPressed: () {
                     requestServices();
                   },
-                  child: Text("Update Permissions?")),
+                  child: const Text("Update Permissions?")),
               Center(child: errorWidget()),
               Text(_locationData.toString()),
             ])));

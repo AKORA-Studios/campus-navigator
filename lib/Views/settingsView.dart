@@ -2,7 +2,7 @@ import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
 class SettingsView extends StatefulWidget {
-  SettingsView({super.key, required this.name});
+  const SettingsView({super.key, required this.name});
 
   final String name;
 

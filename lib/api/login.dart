@@ -55,7 +55,7 @@ class LoginResponse {
     } else {
       print(response.body);
       String? msg = json.decode(response.body)["message"];
-      throw Exception('Failed to login: ${msg}');
+      throw Exception('Failed to login: $msg');
     }
   }
 }

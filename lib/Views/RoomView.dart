@@ -202,7 +202,7 @@ class _RoomViewState extends State<RoomView> {
               Text(
                 errorMessageOccupancyTable ?? "",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
               futurify(buildingAddressBlock)
             ])));

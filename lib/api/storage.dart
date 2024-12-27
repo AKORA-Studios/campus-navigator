@@ -11,7 +11,7 @@ class Storage {
 
   int university = 1; //1=TUD, 2=HTW
 
-  final storage = new FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
 
   Future<String?> getUsername() {
     return storage.read(key: keyUsername);

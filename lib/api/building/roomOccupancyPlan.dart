@@ -15,7 +15,7 @@ class RoomOccupancyPlan {
     String cookie = "";
 
     for (var key in cookies.keys) {
-      if (cookie.length > 0) cookie += ";";
+      if (cookie.isNotEmpty) cookie += ";";
       cookie += key + "=" + cookies[key]!;
     }
 

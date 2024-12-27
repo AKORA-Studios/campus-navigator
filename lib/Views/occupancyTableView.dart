@@ -12,7 +12,7 @@ Widget occupancyTableView(
     return const Column(children: []);
   }
 
-  roomPlan!.forEachIndexed((i, table) {
+  roomPlan.forEachIndexed((i, table) {
     //  for (var table in roomPlan!) {
     List<TableRow> tableRows = [];
 
@@ -57,9 +57,9 @@ Widget occupancyTableView(
     // Add completed table to Widget List
     var fullTable = Table(
       border: TableBorder.symmetric(
-          inside: BorderSide(
-              width: 0.5, color: const Color.fromARGB(255, 117, 117, 117)),
-          outside: BorderSide(width: 1.0, color: Colors.grey)),
+          inside: const BorderSide(
+              width: 0.5, color: Color.fromARGB(255, 117, 117, 117)),
+          outside: const BorderSide(width: 1.0, color: Colors.grey)),
       children: tableRows,
     );
     if (tableRows.isNotEmpty) {

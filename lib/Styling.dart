@@ -13,7 +13,7 @@ class AppTheme {
         scaffoldBackgroundColor: colorScheme.background,
         highlightColor: Colors.transparent,
         useMaterial3: true,
-        focusColor: Color(0xff88ccb4));
+        focusColor: const Color(0xff88ccb4));
   }
 
   static const ColorScheme lightColorScheme = ColorScheme(

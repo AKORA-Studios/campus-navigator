@@ -2,10 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
-import 'package:campus_navigator/api/building/parsing/campus_map.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:http/http.dart' as http;
 
 import 'page_image_data.dart';
 import 'parsing/html_data.dart';

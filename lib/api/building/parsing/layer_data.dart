@@ -98,7 +98,7 @@ class LayerData {
   }
 
   Uri getSymbolUri() {
-    return Uri.parse("${baseURL}/images/symbols/$symbolPNG");
+    return Uri.parse("$baseURL/images/symbols/$symbolPNG");
   }
 
   static const symbolOffset = Offset(30, 30);

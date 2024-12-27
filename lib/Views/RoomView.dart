@@ -187,19 +187,32 @@ class _RoomViewState extends State<RoomView> {
         ],
       ),
       body: Stack(children: [
-        SingleChildScrollView(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Column(children: [
-              Row(
+        Column(children: [
+          DecoratedBox(
+            decoration: BoxDecoration(boxShadow: [
+              // Blur only on bottom
+              BoxShadow(
+                blurRadius: 2.5,
+                blurStyle: BlurStyle.normal,
+                color: Theme.of(context).shadowColor.withAlpha(100),
+                offset: const Offset(0, 2.5),
+                spreadRadius: 0,
+              ),
+            ], color: Theme.of(context).colorScheme.surface),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Row(
                 children: [
                   const Text("Etage wechseln:"),
                   futurify(dropDown),
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),
-              asyncInteractiveBuildingView(widget.room,
-                  size: MediaQuery.sizeOf(context).smallestSquare()),
-            ])),
+            ),
+          ),
+          asyncInteractiveBuildingView(widget.room,
+              size: MediaQuery.sizeOf(context)),
+        ]),
         DraggableBottomSheet(
           name: "Location",
           child: Column(

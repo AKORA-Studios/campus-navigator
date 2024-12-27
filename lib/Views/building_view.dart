@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 Widget interactiveBuildingView(BuildingPageData roomResult,
     {Size size = const Size(300, 300)}) {
   return InteractiveViewer(
-      boundaryMargin: const EdgeInsets.all(34.0),
+      // How much empty space there is until the user cant scroll out even further
+      boundaryMargin: const EdgeInsets.all(300.0),
       minScale: 0.001,
       maxScale: 16.0,
       child:

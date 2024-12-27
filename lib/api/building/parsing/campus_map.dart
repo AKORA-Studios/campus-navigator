@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:maps_toolkit/maps_toolkit.dart';
+
 import 'html_data.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 
@@ -23,7 +25,7 @@ class CampusBuilding {
         shortName: shortName);
   }
 
-  /// Translates the building points to latitude and longitude values
+  /// Translates the building points to (longitude,latitude) values
   List<(double, double)> translatePoints({
     required double centerLong,
     required double centerLat,
@@ -125,6 +127,34 @@ class CampusMapData {
     final centerLong = htmlData.numberVariables["s_long"]!;
     final centerLat = htmlData.numberVariables["s_lat"]!;
 
+    return CampusMapData(
+        htmlData: htmlData,
+        buildings: buildings,
+        centerLong: centerLong,
+        centerLat: centerLat);
+  }
+
+  /// Returns the cmapus building the given coordinates lie in, if any
+  CampusBuilding? checkLocation(double long, double lat) {
+    for (final b in buildings) {
+      List<LatLng> coordsPolygon = b
+          .translatePoints(centerLong: centerLong, centerLat: centerLat)
+          .map((coordinatePair) => LatLng(coordinatePair.$2, coordinatePair.$1))
+          .toList();
+
+      final isClosed = PolygonUtil.isClosedPolygon(coordsPolygon);
+      if (!isClosed) continue;
+
+      final locationInPolygon =
+          PolygonUtil.containsLocation(LatLng(lat, long), coordsPolygon, true);
+
+      if (!locationInPolygon) continue;
+
+      return b;
+    }
+
+    return null;
+
     // Separate multi polygons
     /*
     {
@@ -169,12 +199,6 @@ class CampusMapData {
       // print("${b.shortName}: $c");
     }
     */
-
-    return CampusMapData(
-        htmlData: htmlData,
-        buildings: buildings,
-        centerLong: centerLong,
-        centerLat: centerLat);
   }
 
   static Future<CampusMapData> fetch() async {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:campus_navigator/api/building/parsing/campus_map.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
@@ -20,19 +21,38 @@ class _LocationViewState extends State<LocationView> {
 
   StreamSubscription<LocationData>? locationListener;
 
+  /// Future to fetch the entire campus map
+  Future<CampusMapData> campusMapData = CampusMapData.fetch();
+
+  /// The building the current `_locationData` lies in
+  CampusBuilding? currentBuilding;
+
   @override
   void initState() {
     super.initState();
 
-    requestServices();
-
     locationListener =
         location.onLocationChanged.listen((LocationData currentLocation) {
+      // If the received location contains a latitude and longitude we check
+      // if it lies in one of he buildings
+      final lat = currentLocation.latitude;
+      final long = currentLocation.longitude;
+      if (lat != null && long != null) {
+        campusMapData.then((map) {
+          final foundBuilding = map.checkLocation(long, lat);
+          setState(() {
+            currentBuilding = foundBuilding;
+          });
+        });
+      }
+
       setState(() {
         _locationData = currentLocation;
       });
       locationListener?.cancel();
     });
+
+    //requestServices();
   }
 
   void requestServices() async {
@@ -65,6 +85,8 @@ class _LocationViewState extends State<LocationView> {
       }
     }
   }
+
+  void checkIfInBuilding() {}
 
   Widget errorWidget() {
     var style = const TextStyle(color: Colors.red, fontWeight: FontWeight.bold);
@@ -100,6 +122,7 @@ class _LocationViewState extends State<LocationView> {
                   child: const Text("Update Permissions?")),
               Center(child: errorWidget()),
               Text(_locationData.toString()),
+              Text("In building ${currentBuilding?.shortName}")
             ])));
   }
 }

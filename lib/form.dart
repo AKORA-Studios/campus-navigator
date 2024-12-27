@@ -68,7 +68,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SettingsView(name: "Settings")),
+                      builder: (context) =>
+                          const SettingsView(name: "Settings")),
                 );
               },
             ),
@@ -79,7 +80,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => LocationView(name: "Location")),
+                      builder: (context) =>
+                          const LocationView(name: "Location")),
                 );
               },
             ),

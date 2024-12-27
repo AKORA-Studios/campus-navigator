@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:maps_toolkit/maps_toolkit.dart';
+
 import 'html_data.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 
@@ -6,24 +8,30 @@ class CampusBuilding {
   /// kurzz
   final String shortName;
 
+  /// Part of the query used to open the map of this building
+  final String query;
+
   /// points
   final List<double> points;
 
   CampusBuilding({
     required this.shortName,
+    required this.query,
     required this.points,
   });
 
-  factory CampusBuilding.fromJson(Map<String, dynamic> json) {
+  factory CampusBuilding.fromJson(
+      Map<String, dynamic> json, String queryParts) {
     final shortName = json["kurzz"] as String;
     final points = json["points"] as List<dynamic>;
 
     return CampusBuilding(
         points: points.map((e) => (e as num).toDouble()).toList(),
-        shortName: shortName);
+        shortName: shortName,
+        query: queryParts);
   }
 
-  /// Translates the building points to latitude and longitude values
+  /// Translates the building points to (longitude,latitude) values
   List<(double, double)> translatePoints({
     required double centerLong,
     required double centerLat,
@@ -92,6 +100,10 @@ class CampusBuilding {
   }
 }
 
+/// Used to parse the `this.gebclick` variable
+final RegExp gebauedeClickVariableExp =
+    RegExp(r"this\.(gebclick) = ({[^;]+)", multiLine: true);
+
 class CampusMapData {
   final HTMLData htmlData;
 
@@ -114,16 +126,55 @@ class CampusMapData {
   factory CampusMapData.fromHTMLText(String body) {
     final htmlData = HTMLData.fromBody(body);
 
-    // Parse building polygon data
+    // Parse gebclick
+    final gebclick =
+        parseJSVariables(gebauedeClickVariableExp, htmlData.script)["gebclick"];
+
+    // Parse data to map buildings to their individual pages
     final gebaeudeData =
         htmlData.assignedVariables["gebaeudeData"] as List<dynamic>;
-    final buildings = gebaeudeData
-        .map((e) => CampusBuilding.fromJson(e as Map<String, dynamic>))
-        .toList();
+
+    // Parse building polygon data
+    final buildings = gebaeudeData.indexed.map((e) {
+      final i = e.$1;
+      final json = e.$2;
+      String? query = gebclick["$i"];
+      String shortName = json["kurzz"] as String;
+      return CampusBuilding.fromJson(json as Map<String, dynamic>,
+          query ?? "${shortName.toLowerCase()}/00");
+    }).toList();
 
     // Parse center coordinates
     final centerLong = htmlData.numberVariables["s_long"]!;
     final centerLat = htmlData.numberVariables["s_lat"]!;
+
+    return CampusMapData(
+        htmlData: htmlData,
+        buildings: buildings,
+        centerLong: centerLong,
+        centerLat: centerLat);
+  }
+
+  /// Returns the cmapus building the given coordinates lie in, if any
+  CampusBuilding? checkLocation(double long, double lat) {
+    for (final b in buildings) {
+      List<LatLng> coordsPolygon = b
+          .translatePoints(centerLong: centerLong, centerLat: centerLat)
+          .map((coordinatePair) => LatLng(coordinatePair.$2, coordinatePair.$1))
+          .toList();
+
+      // final isClosed = PolygonUtil.isClosedPolygon(coordsPolygon);
+      // if (!isClosed) continue;
+
+      final locationInPolygon =
+          PolygonUtil.containsLocation(LatLng(lat, long), coordsPolygon, true);
+
+      if (!locationInPolygon) continue;
+
+      return b;
+    }
+
+    return null;
 
     // Separate multi polygons
     /*
@@ -169,12 +220,6 @@ class CampusMapData {
       // print("${b.shortName}: $c");
     }
     */
-
-    return CampusMapData(
-        htmlData: htmlData,
-        buildings: buildings,
-        centerLong: centerLong,
-        centerLat: centerLat);
   }
 
   static Future<CampusMapData> fetch() async {

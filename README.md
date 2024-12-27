@@ -62,3 +62,4 @@ Go to `projectFolder\build\app\outputs\apk\releases`
 * flutter_cache_manager: ^3.3.1 [License](https://pub.dev/packages/flutter_cache_manager/license)
 * flutter_secure_storage: ^9.2.2 [License](https://pub.dev/packages/flutter_secure_storage/license)
 * flutter_launcher_icons: ^0.13.1
+* maps_toolkit: ^3.0.0 [License](https://pub.dev/packages/maps_toolkit/license)

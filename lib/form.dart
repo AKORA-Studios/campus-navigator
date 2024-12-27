@@ -92,6 +92,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   TextField(
+                    enableInteractiveSelection: true,
+                    autocorrect: false,
                     controller: myController,
                     decoration: const InputDecoration(
                         hintText: 'Raumabkürzung hier eingeben'),

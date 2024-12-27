@@ -25,11 +25,16 @@ Widget occupancyTableView(
       row.forEachIndexed((index2, entry) {
         if (index2 == 0 || index == 0) {
           //  Left side
-          rowEntries.add(Text(entry, style: boldStyle));
+          rowEntries.add(Text(
+            entry,
+            style: boldStyle,
+            textAlign: TextAlign.center,
+          ));
         } else {
           rowEntries.add(Text(
             entry,
             style: basicStyle,
+            textAlign: TextAlign.center,
           ));
         }
       });
@@ -51,7 +56,10 @@ Widget occupancyTableView(
 
     // Add completed table to Widget List
     var fullTable = Table(
-      border: TableBorder.all(),
+      border: TableBorder.symmetric(
+          inside: BorderSide(
+              width: 0.5, color: const Color.fromARGB(255, 117, 117, 117)),
+          outside: BorderSide(width: 1.0, color: Colors.grey)),
       children: tableRows,
     );
     if (tableRows.isNotEmpty) {

@@ -188,14 +188,14 @@ class _RoomViewState extends State<RoomView> {
       ),
       body: Stack(children: [
         SingleChildScrollView(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.only(left: 10, right: 10),
             child: Column(children: [
               Row(
                 children: [
                   const Text("Etage wechseln:"),
                   futurify(dropDown),
                 ],
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
@@ -218,7 +218,7 @@ class _RoomViewState extends State<RoomView> {
                   )
                 ],
               ),
-              errorMessageOccupancyTable == null
+              errorMessageOccupancyTable != null
                   ? Text(
                       errorMessageOccupancyTable ?? "",
                       textAlign: TextAlign.center,
@@ -226,7 +226,7 @@ class _RoomViewState extends State<RoomView> {
                     )
                   : const SizedBox(),
               Divider(
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
               ),
               futurify(buildingAddressBlock)
             ],

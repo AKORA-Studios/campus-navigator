@@ -8,21 +8,27 @@ class CampusBuilding {
   /// kurzz
   final String shortName;
 
+  /// Part of the query used to open the map of this building
+  final String query;
+
   /// points
   final List<double> points;
 
   CampusBuilding({
     required this.shortName,
+    required this.query,
     required this.points,
   });
 
-  factory CampusBuilding.fromJson(Map<String, dynamic> json) {
+  factory CampusBuilding.fromJson(
+      Map<String, dynamic> json, String queryParts) {
     final shortName = json["kurzz"] as String;
     final points = json["points"] as List<dynamic>;
 
     return CampusBuilding(
         points: points.map((e) => (e as num).toDouble()).toList(),
-        shortName: shortName);
+        shortName: shortName,
+        query: queryParts);
   }
 
   /// Translates the building points to (longitude,latitude) values
@@ -94,6 +100,10 @@ class CampusBuilding {
   }
 }
 
+/// Used to parse the `this.gebclick` variable
+final RegExp gebauedeClickVariableExp =
+    RegExp(r"this\.(gebclick) = ({[^;]+)", multiLine: true);
+
 class CampusMapData {
   final HTMLData htmlData;
 
@@ -116,12 +126,23 @@ class CampusMapData {
   factory CampusMapData.fromHTMLText(String body) {
     final htmlData = HTMLData.fromBody(body);
 
-    // Parse building polygon data
+    // Parse gebclick
+    final gebclick =
+        parseJSVariables(gebauedeClickVariableExp, htmlData.script)["gebclick"];
+
+    // Parse data to map buildings to their individual pages
     final gebaeudeData =
         htmlData.assignedVariables["gebaeudeData"] as List<dynamic>;
-    final buildings = gebaeudeData
-        .map((e) => CampusBuilding.fromJson(e as Map<String, dynamic>))
-        .toList();
+
+    // Parse building polygon data
+    final buildings = gebaeudeData.indexed.map((e) {
+      final i = e.$1;
+      final json = e.$2;
+      String? query = gebclick["$i"];
+      String shortName = json["kurzz"] as String;
+      return CampusBuilding.fromJson(json as Map<String, dynamic>,
+          query ?? "${shortName.toLowerCase()}/00");
+    }).toList();
 
     // Parse center coordinates
     final centerLong = htmlData.numberVariables["s_long"]!;
@@ -142,8 +163,8 @@ class CampusMapData {
           .map((coordinatePair) => LatLng(coordinatePair.$2, coordinatePair.$1))
           .toList();
 
-      final isClosed = PolygonUtil.isClosedPolygon(coordsPolygon);
-      if (!isClosed) continue;
+      // final isClosed = PolygonUtil.isClosedPolygon(coordsPolygon);
+      // if (!isClosed) continue;
 
       final locationInPolygon =
           PolygonUtil.containsLocation(LatLng(lat, long), coordsPolygon, true);

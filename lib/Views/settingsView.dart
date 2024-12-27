@@ -1,5 +1,9 @@
 import 'package:campus_navigator/api/storage.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../Styling.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key, required this.name});
@@ -47,6 +51,55 @@ class _SettingsViewState extends State<SettingsView> {
     setState(() {
       updateView = !updateView;
     });
+  }
+
+  Map<String, String> licences = {
+    "cupertino_icons": "https://pub.dev/packages/cupertino_icons/license",
+    "http": "https://pub.dev/packages/http/license",
+    "html": "https://pub.dev/packages/html/license",
+    "share_plus": "https://pub.dev/packages/share_plus/license",
+    "maps_launcher": "https://pub.dev/packages/maps_launcher/license",
+    "flutter_cache_manager":
+        "https://pub.dev/packages/flutter_cache_manager/license",
+    "flutter_secure_storage":
+        "https://pub.dev/packages/flutter_secure_storage/license",
+    "flutter_launcher_icons":
+        "https://pub.dev/packages/flutter_launcher_icons/license",
+    "maps_toolkit": "https://pub.dev/packages/maps_toolkit/license"
+  };
+
+  Widget licenceView() {
+    List<Widget> childs = [];
+
+    childs.add(const Text(
+      "Dependencies licences",
+      style: TextStyle(fontWeight: FontWeight.bold),
+    ));
+
+    for (String key in licences.keys) {
+      childs.add(SelectableText.rich(TextSpan(children: [
+        TextSpan(
+            text: key,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Styling.primaryColor,
+                decorationColor: Styling.primaryColor,
+                decoration: TextDecoration.underline),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                openlicence(licences[key]!);
+              }),
+      ])));
+    }
+
+    return Column(children: childs);
+  }
+
+  void openlicence(String url) async {
+    final Uri _url = Uri.parse(url);
+    if (!await launchUrl(_url)) {
+      launchUrl(_url);
+    }
   }
 
   @override
@@ -121,6 +174,11 @@ class _SettingsViewState extends State<SettingsView> {
                     saveData();
                   },
                   child: const Text("Daten löschen")),
+              SizedBox(
+                height: 20,
+              ),
+              const Divider(),
+              licenceView()
             ])));
   }
 }

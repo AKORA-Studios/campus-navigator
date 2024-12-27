@@ -1,9 +1,9 @@
 import 'package:campus_navigator/Styling.dart';
+import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
-import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api/login.dart';
+import 'BottomSheetView.dart';
 import 'building_view.dart';
 import 'occupancyTableView.dart';
 
@@ -163,22 +164,23 @@ class _RoomViewState extends State<RoomView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.name),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.share),
-              tooltip: 'Open in Web',
-              onPressed: () {
-                widget.room.then((value) {
-                  Share.share('$baseURL/etplan/${value.queryParts.join("/")}');
-                });
-              },
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Open in Web',
+            onPressed: () {
+              widget.room.then((value) {
+                Share.share('$baseURL/etplan/${value.queryParts.join("/")}');
+              });
+            },
+          ),
+        ],
+      ),
+      body: Stack(children: [
+        SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
               Row(
@@ -190,21 +192,35 @@ class _RoomViewState extends State<RoomView> {
               ),
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
+            ])),
+        MyDraggableSheet(
+          name: "Location",
+          child: Column(
+            children: [
               occupancyTableView(roomPlan, showOccupancyTable),
-              ElevatedButton.icon(
-                  onPressed: isRoomSelected ? openRoomPlan : null,
-                  icon: const Icon(Icons.share),
-                  label: const Text("Raumbelegungsplan im Web ansehen")),
-              ElevatedButton(
-                  onPressed: isRoomSelected ? loadOccupancyTable : null,
-                  child: Text(
-                      "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                      onPressed: isRoomSelected ? loadOccupancyTable : null,
+                      child: Text(
+                          "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
+                  ElevatedButton.icon(
+                      onPressed: isRoomSelected ? openRoomPlan : null,
+                      icon: const Icon(Icons.share),
+                      label: const Text("")),
+                ],
+              ),
               Text(
                 errorMessageOccupancyTable ?? "",
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.red),
               ),
               futurify(buildingAddressBlock)
-            ])));
+            ],
+          ),
+        )
+      ]),
+    );
   }
 }

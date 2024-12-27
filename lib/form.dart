@@ -69,7 +69,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SettingsView(name: "Settings")),
+                      builder: (context) =>
+                          const SettingsView(name: "Settings")),
                 );
               },
             ),
@@ -80,18 +81,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const LocationView(name: "Location")),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.map),
-              tooltip: 'Open Location',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MyDraggableSheet(name: "Location")),
+                      builder: (context) =>
+                          const LocationView(name: "Location")),
                 );
               },
             ),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MyDraggableSheet extends StatefulWidget {
-  const MyDraggableSheet({super.key, required this.name});
+  const MyDraggableSheet({super.key, required this.name, required this.child});
   final String name;
+  final Widget child;
 
   @override
   State<MyDraggableSheet> createState() => _MyDraggableSheetState();
@@ -52,17 +53,27 @@ class _MyDraggableSheetState extends State<MyDraggableSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       key: _sheet,
-      initialChildSize: 0.5,
-      maxChildSize: 1,
-      minChildSize: 0,
+      initialChildSize: 0.3,
+      maxChildSize: 0.9,
+      minChildSize: 0.2,
       expand: true,
       snap: true,
-      snapSizes: const [0.5],
+      snapSizes: const [0.2, 0.3, 0.5, 0.7],
       controller: _controller,
       builder: (BuildContext context, ScrollController scrollController) {
         return DecoratedBox(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            // border: Border.all(color: Colors.grey),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 5,
+                blurStyle: BlurStyle.normal,
+                color: Theme.of(context).shadowColor.withAlpha(100),
+                offset: Offset.zero,
+                spreadRadius: 2,
+              ),
+            ],
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(12),
               topRight: Radius.circular(12),
@@ -71,18 +82,45 @@ class _MyDraggableSheetState extends State<MyDraggableSheet> {
           child: CustomScrollView(
             controller: scrollController,
             slivers: [
-              const SliverToBoxAdapter(
-                child: Text('Title'),
-              ),
               SliverList.list(
-                children: const [
-                  Text('Content'),
+                children: [
+                  Grabber(),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: widget.child,
+                  )
                 ],
               ),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class Grabber extends StatelessWidget {
+  const Grabber({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      color: Colors.transparent,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          width: 32.0,
+          height: 4.0,
+          decoration: BoxDecoration(
+            color: colorScheme.onSurface,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+      ),
     );
   }
 }

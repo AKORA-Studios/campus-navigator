@@ -1,6 +1,7 @@
 import 'package:campus_navigator/api/building/parsing/common.dart';
-import 'package:campus_navigator/api/building/room_page.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:html/parser.dart';
 
 class RoomOccupancyPlan {
   final String table;
@@ -46,7 +47,7 @@ class RoomOccupancyPlan {
   }
 
   static List<List<List<String>>> getTableContentFromBody(String body) {
-    var htmlDocument = HTMLData.fromBody(body).document;
+    var htmlDocument = parse(body);
     RoomOccupancyPlan.tableNames = [];
 
     final allTables = htmlDocument.querySelectorAll("table");

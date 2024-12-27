@@ -3,7 +3,7 @@ import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
-import 'package:campus_navigator/api/building/room_page.dart';
+import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -21,7 +21,7 @@ class RoomView extends StatefulWidget {
       required this.room,
       required this.name});
   final TextEditingController myController;
-  Future<RoomPage> room;
+  Future<BuildingPageData> room;
   final String name;
 
   @override
@@ -87,8 +87,8 @@ class _RoomViewState extends State<RoomView> {
     }
   }
 
-  Widget futurify(Widget Function(RoomPage) widgetBuilder) {
-    return FutureBuilder<RoomPage>(
+  Widget futurify(Widget Function(BuildingPageData) widgetBuilder) {
+    return FutureBuilder<BuildingPageData>(
         future: widget.room,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -102,7 +102,7 @@ class _RoomViewState extends State<RoomView> {
         });
   }
 
-  Widget dropDown(RoomPage roomPage) {
+  Widget dropDown(BuildingPageData roomPage) {
     List<DropdownMenuItem> options = [];
 
     for (BuildingLevel lev in roomPage.buildingData.levels) {
@@ -117,13 +117,13 @@ class _RoomViewState extends State<RoomView> {
         onChanged: (value) {
           setState(() {
             selectedLevel = value;
-            widget.room = RoomPage.fetchRoom(
+            widget.room = BuildingPageData.fetchQuery(
                 "${roomPage.queryParts.first}/${value.split(" ").last}");
           });
         });
   }
 
-  Widget buildingAddressBlock(RoomPage roomPage) {
+  Widget buildingAddressBlock(BuildingPageData roomPage) {
     List<Widget> arr = [
       const SizedBox(
           child: Text("Gebäudeadressen",

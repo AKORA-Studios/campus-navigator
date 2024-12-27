@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:campus_navigator/api/building/room_page.dart';
+import 'package:campus_navigator/api/building/building_page_data.dart';
 
 import 'api/building/parsing/layer_data.dart';
 import 'api/building/parsing/position.dart';
@@ -16,7 +16,7 @@ Color fromHex(String hexString) {
 }
 
 class MapPainter extends CustomPainter {
-  final RoomPage roomResult;
+  final BuildingPageData roomResult;
 
   MapPainter({
     required this.roomResult,

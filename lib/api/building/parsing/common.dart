@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -33,6 +34,36 @@ Future<ui.Image?> fetchImage(Uri uri) async {
   if (imageBytes.isEmpty) return null;
 
   return await decodeImage(imageBytes);
+}
+
+/// This is a helper method for loading fetching string data and automatically cache it
+/// The fetched URI is assumed to contain UTF8 data
+Future<String?> fetchHMTL(Uri uri) async {
+  final cachedDataFile =
+      await DefaultCacheManager().getFileFromCache(uri.toString());
+
+  String responseString;
+  if (cachedDataFile != null) {
+    responseString = await cachedDataFile.file.readAsString();
+  } else {
+    final response = await http.get(uri);
+    final eTag = response.headers["etag"];
+
+    if (response.statusCode != 200) {
+      return null;
+    }
+
+    responseString = response.body;
+// Ensure that cached text is always in utf8 format
+    final encodedString = utf8.encode(responseString);
+
+    await DefaultCacheManager().putFile(uri.toString(), encodedString,
+        fileExtension: 'html', maxAge: const Duration(days: 1), eTag: eTag);
+  }
+
+  if (responseString.isEmpty) return null;
+
+  return responseString;
 }
 
 Future<ui.Image> decodeImage(Uint8List bytes) async {

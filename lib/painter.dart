@@ -17,9 +17,11 @@ Color fromHex(String hexString) {
 
 class MapPainter extends CustomPainter {
   final BuildingPageData roomResult;
+  final BuildContext context;
 
   MapPainter({
     required this.roomResult,
+    required this.context,
   }) : super(repaint: roomResult.backgroundImageData);
 
   @override
@@ -32,6 +34,10 @@ class MapPainter extends CustomPainter {
     // Translate & Scale coordinate system
     canvas.scale(scale);
     canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
+
+    // Adjust paints accoding to current theme
+    final theme = Theme.of(context);
+    final darkModeEnabled = theme.brightness == Brightness.dark;
 
     void drawRoom(RoomPolygon roomData, {Color? fillColor}) {
       for (int i = 0; i < roomData.points.length; i++) {
@@ -49,10 +55,12 @@ class MapPainter extends CustomPainter {
             color = fromHex(fill);
 
             // Check if this is the highlighed room
-            if (color != fromHex("#ae0000")) {
+            if (color == fromHex("#ae0000")) {
+              // Highlighted color is supposed to be more aggresive
+              color = color.withAlpha(darkModeEnabled ? 150 : 200);
+            } else {
               // Make color less aggresive
-              // if (color.red == 240) color = Colors.grey;
-              color = color.withAlpha(100);
+              color = color.withAlpha(darkModeEnabled ? 50 : 100);
             }
           } else {
             color = Colors.transparent;
@@ -84,9 +92,8 @@ class MapPainter extends CustomPainter {
       drawRoom(roomPolygon);
     }
 
-    var symbolPaint = Paint()
-      ..strokeWidth = 4
-      ..color = Colors.teal;
+    // Invert symbols (black -> white) when using dark theme
+    var symbolPaint = Paint()..invertColors = darkModeEnabled;
 
     for (final LayerData l in roomResult.layers) {
       for (final pos in l.getSymbolOffsets()) {
@@ -102,6 +109,35 @@ class MapPainter extends CustomPainter {
 
     // Paint background image
     if (roomResult.backgroundImageData != null) {
+      var imagePaint = Paint();
+
+      // Apply color filter in dark mode so that the black lines become white
+      // and orange details become blue
+      if (darkModeEnabled) {
+        imagePaint.colorFilter = const ColorFilter.matrix([
+          0.000,
+          1.000,
+          1.000,
+          0.000,
+          0.000,
+          1.000,
+          0.000,
+          1.000,
+          0.000,
+          0.000,
+          1.000,
+          0.000,
+          1.000,
+          0.000,
+          0.000,
+          0.000,
+          0.000,
+          0.000,
+          1.000,
+          0.000
+        ]);
+      }
+
       final imageData = roomResult.backgroundImageData!;
       int qualiStep = imageData.qualiStep;
       double qualiStepD = qualiStep.toDouble();
@@ -121,7 +157,7 @@ class MapPainter extends CustomPainter {
           final image = imageData.getBackgroundImage(x, y);
           if (image == null) continue;
           canvas.drawImage(
-              image, imageOffset.scale(qualiStepD, qualiStepD), Paint());
+              image, imageOffset.scale(qualiStepD, qualiStepD), imagePaint);
         }
       }
 
@@ -135,14 +171,24 @@ class MapPainter extends CustomPainter {
 
       const width = 100.0;
 
-      //const fontSize = 15.0;
       double fontSize = min(entry.my, entry.mx / entry.qy.length);
+
+      // This is done to improve text readability over complex shapes like chairs
+      Shadow textShadow;
+      if (darkModeEnabled) {
+        textShadow = const Shadow(color: Colors.black, blurRadius: 20.0);
+      } else {
+        textShadow = const Shadow(color: Colors.white, blurRadius: 10.0);
+      }
 
       final textPainter = TextPainter(
           text: TextSpan(
             text: txt,
             style: TextStyle(
-              color: Colors.grey.shade900,
+              shadows: [textShadow],
+              color: darkModeEnabled
+                  ? Colors.grey.shade100
+                  : theme.colorScheme.onSurface,
               fontSize: fontSize,
             ),
           ),

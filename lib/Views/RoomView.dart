@@ -144,20 +144,27 @@ class _RoomViewState extends State<RoomView> {
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Styling.primaryColor,
+                decorationColor: Styling.primaryColor,
                 decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 MapsLauncher.launchQuery(child.adress.replaceAll("<br>", " "));
-              })
+              }),
       ])));
+      arr.add(const SizedBox(
+        height: 10,
+      ));
     }
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        // border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: Column(children: arr),
+      child: Column(
+        children: arr,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      ),
     );
   }
 
@@ -193,7 +200,7 @@ class _RoomViewState extends State<RoomView> {
               asyncInteractiveBuildingView(widget.room,
                   size: MediaQuery.sizeOf(context).smallestSquare()),
             ])),
-        MyDraggableSheet(
+        DraggableBottomSheet(
           name: "Location",
           child: Column(
             children: [
@@ -211,10 +218,15 @@ class _RoomViewState extends State<RoomView> {
                   )
                 ],
               ),
-              Text(
-                errorMessageOccupancyTable ?? "",
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red),
+              errorMessageOccupancyTable == null
+                  ? Text(
+                      errorMessageOccupancyTable ?? "",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    )
+                  : const SizedBox(),
+              Divider(
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               futurify(buildingAddressBlock)
             ],

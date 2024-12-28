@@ -8,14 +8,14 @@ import 'Views/building_view.dart';
 import 'Views/locationView.dart';
 import 'Views/settingsView.dart';
 
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({super.key});
+class SearchView extends StatefulWidget {
+  const SearchView({super.key});
 
   @override
-  State<MyCustomForm> createState() => _MyCustomFormState();
+  State<SearchView> createState() => _SearchViewState();
 }
 
-class _MyCustomFormState extends State<MyCustomForm> {
+class _SearchViewState extends State<SearchView> {
   final myController = TextEditingController();
   Future<SearchResult>? searchResult;
   Future<BuildingPageData>? roomResult;

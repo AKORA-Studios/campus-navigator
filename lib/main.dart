@@ -33,7 +33,7 @@ class FirstPage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData(AppTheme.lightColorScheme),
       darkTheme: AppTheme.themeData(AppTheme.darkColorScheme),
-      home: const MyCustomForm(),
+      home: const SearchView(),
     );
   }
 }

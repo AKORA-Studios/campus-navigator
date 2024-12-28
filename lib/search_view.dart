@@ -1,4 +1,5 @@
 // Define a custom Form widget.
+import 'package:campus_navigator/Styling.dart';
 import 'package:campus_navigator/Views/RoomView.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/search.dart';
@@ -8,14 +9,14 @@ import 'Views/building_view.dart';
 import 'Views/locationView.dart';
 import 'Views/settingsView.dart';
 
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({super.key});
+class SearchView extends StatefulWidget {
+  const SearchView({super.key});
 
   @override
-  State<MyCustomForm> createState() => _MyCustomFormState();
+  State<SearchView> createState() => _SearchViewState();
 }
 
-class _MyCustomFormState extends State<MyCustomForm> {
+class _SearchViewState extends State<SearchView> {
   final myController = TextEditingController();
   Future<SearchResult>? searchResult;
   Future<BuildingPageData>? roomResult;
@@ -27,12 +28,48 @@ class _MyCustomFormState extends State<MyCustomForm> {
     super.dispose();
   }
 
-  Widget getResultButton(r) {
+  Widget searchResultList(SearchResult result) {
+    final roomButtons =
+        result.resultsRooms.take(8).map(roomResultButton).toList();
+
+    final children = roomButtons;
+    if (result.resultsRooms.length > 8) {
+      children.add(const Text(
+        ". . . . . ",
+        style: TextStyle(color: Styling.primaryColor),
+      ));
+    }
+
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [...roomButtons]);
+  }
+
+  Widget roomResultButton(SearchResultObject r) {
     return TextButton(
-      child: Text(
-        r.name,
-        textAlign: TextAlign.left,
-        style: const TextStyle(fontSize: 18),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            r.name,
+            style: const TextStyle(
+              fontSize: 20,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          r.subName != null
+              ? Text(
+                  r.subName!,
+                  style: TextStyle(
+                      fontSize: 17, color: Styling.primaryColor.withAlpha(200)),
+                )
+              : const SizedBox.shrink()
+        ],
       ),
       onPressed: () {
         setState(() {
@@ -52,6 +89,22 @@ class _MyCustomFormState extends State<MyCustomForm> {
         });
       },
     );
+  }
+
+  void onSearchChanged(String newQuery) {
+    var searchFuture = SearchResult.searchRoom(myController.text);
+    setState(() {
+      searchResult = searchFuture;
+    });
+
+    searchFuture.then((results) {
+      var firstResult = results.resultsRooms.firstOrNull;
+      if (firstResult == null) return;
+
+      setState(() {
+        roomResult = BuildingPageData.fetchQuery(firstResult.identifier);
+      });
+    });
   }
 
   @override
@@ -92,46 +145,30 @@ class _MyCustomFormState extends State<MyCustomForm> {
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
+                children: [
                   TextField(
                     enableInteractiveSelection: true,
                     autocorrect: false,
                     controller: myController,
                     decoration: const InputDecoration(
-                        hintText: 'Raumabkürzung hier eingeben'),
-                    onChanged: (text) {
-                      setState(() {
-                        var searchFuture =
-                            SearchResult.searchRoom(myController.text);
-                        searchResult = searchFuture;
-
-                        searchFuture.then((value) {
-                          var result = value.resultsRooms.firstOrNull;
-                          if (result == null) return;
-
-                          setState(() {
-                            roomResult =
-                                BuildingPageData.fetchQuery(result.identifier);
-                          });
-                        });
-                      });
-                    },
+                      hintText: 'Raumabkürzung hier eingeben',
+                    ),
+                    onChanged: onSearchChanged,
                   ),
-                  FutureBuilder<SearchResult>(
+                  // Spacing
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  FutureBuilder(
                     future: searchResult,
                     builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: snapshot.data!.resultsRooms
-                                .take(8)
-                                .map((r) => getResultButton(r))
-                                .toList());
-                      } else if (snapshot.hasError) {
+                      if (snapshot.hasError) {
                         return Text('${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return const SizedBox.shrink();
                       }
-                      // By default, show a loading spinner.
-                      return const SizedBox.shrink();
+
+                      return searchResultList(snapshot.data!);
                     },
                   ),
                   const SizedBox(height: 100),

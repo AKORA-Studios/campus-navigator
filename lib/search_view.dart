@@ -28,7 +28,24 @@ class _SearchViewState extends State<SearchView> {
     super.dispose();
   }
 
-  Widget getResultButton(SearchResultObject r) {
+  Widget searchResultList(SearchResult result) {
+    final roomButtons =
+        result.resultsRooms.take(8).map(roomResultButton).toList();
+
+    final children = roomButtons;
+    if (result.resultsRooms.length > 8) {
+      children.add(const Text(
+        ". . . . . ",
+        style: TextStyle(color: Styling.primaryColor),
+      ));
+    }
+
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [...roomButtons]);
+  }
+
+  Widget roomResultButton(SearchResultObject r) {
     return TextButton(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -74,7 +91,7 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
-  void onSearchCahnged(String newQuery) {
+  void onSearchChanged(String newQuery) {
     var searchFuture = SearchResult.searchRoom(myController.text);
     setState(() {
       searchResult = searchFuture;
@@ -134,8 +151,9 @@ class _SearchViewState extends State<SearchView> {
                     autocorrect: false,
                     controller: myController,
                     decoration: const InputDecoration(
-                        hintText: 'Raumabkürzung hier eingeben'),
-                    onChanged: onSearchCahnged,
+                      hintText: 'Raumabkürzung hier eingeben',
+                    ),
+                    onChanged: onSearchChanged,
                   ),
                   // Spacing
                   const SizedBox(
@@ -150,12 +168,7 @@ class _SearchViewState extends State<SearchView> {
                         return const SizedBox.shrink();
                       }
 
-                      return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: snapshot.data!.resultsRooms
-                              .take(8)
-                              .map(getResultButton)
-                              .toList());
+                      return searchResultList(snapshot.data!);
                     },
                   ),
                   const SizedBox(height: 100),

@@ -1,4 +1,4 @@
-import 'package:campus_navigator/form.dart';
+import 'package:campus_navigator/search_view.dart';
 import 'package:flutter/material.dart';
 
 import 'Styling.dart';

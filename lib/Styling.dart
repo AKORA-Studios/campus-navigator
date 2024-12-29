@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 class Styling {
   static const primaryColor = Color(0xff51bcb6);
   static const secondaryColor = Color(0xff6da4ce);
+
+  static const settingsHeadingStyle =
+      TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
 }
 
 class AppTheme {

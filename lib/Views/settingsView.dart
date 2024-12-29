@@ -87,7 +87,7 @@ class _SettingsViewState extends State<SettingsView> {
 
     childs.add(const Text(
       "Dependencies licences",
-      style: TextStyle(fontWeight: FontWeight.bold),
+      style: Styling.settingsHeadingStyle,
     ));
 
     for (String key in licences.keys) {
@@ -118,6 +118,11 @@ class _SettingsViewState extends State<SettingsView> {
 
   List<Widget> settingsForm() {
     return [
+      Text(
+        "Anmeldedaten",
+        style: Styling.settingsHeadingStyle,
+      ),
+      Text("ZIH Login Daten zum abrufen des Raumbelegungsplans"),
       TextField(
         maxLines: 1,
         autocorrect: false,
@@ -145,36 +150,59 @@ class _SettingsViewState extends State<SettingsView> {
                   });
                 })),
       ),
+      const SizedBox(height: 20),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const Text("HTW"),
-          Switch(
-            value: tudSelected,
-            onChanged: (value) {
+          Text("Ausgewählte Universität: "),
+          SegmentedButton(
+            segments: const [
+              ButtonSegment(
+                value: true,
+                label: Text("TUD"),
+              ),
+              ButtonSegment(
+                value: false,
+                label: Text("HTW"),
+              )
+            ],
+            selected: <bool>{tudSelected},
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
+              ),
+            ),
+            onSelectionChanged: (newSelection) {
               setState(() {
-                tudSelected = value;
+                tudSelected = newSelection.first;
               });
             },
-          ),
-          const Text("TUD"),
+          )
         ],
       ),
       const SizedBox(height: 20),
-      ElevatedButton(
-          onPressed: () {
-            FocusScope.of(context).unfocus();
-            saveData();
-          },
-          child: const Text("Daten aktualisieren")),
-      ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red[200], foregroundColor: Colors.black),
-          onPressed: () {
-            FocusScope.of(context).unfocus();
-            saveData();
-          },
-          child: const Text("Daten löschen")),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                saveData();
+              },
+              child: const Text("Daten aktualisieren")),
+          ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[200],
+                  foregroundColor: Colors.black),
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                saveData();
+              },
+              child: const Text("Daten löschen"))
+        ],
+      ),
     ];
   }
 

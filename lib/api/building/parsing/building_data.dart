@@ -8,18 +8,26 @@ import 'room_info.dart';
 class BuildingData {
   /// Levels in this building
   final List<BuildingLevel> levels;
+  String? currLevel;
 
   final List<RoomInfo> rooms;
 
   BuildingData(this.levels, this.rooms);
 
+  BuildingData.withLevel(this.levels, this.rooms, this.currLevel);
+
   BuildingLevel? getCurrentLevel() {
+    if (currLevel != null) {
+      return BuildingLevel(currLevel!);
+    }
     return levels.where((element) => element.rooms.isNotEmpty).first;
   }
 
   static BuildingData fromHTMLDocument(Document document) {
     // Gebäude/Etagenpläne/Lehrräume
     List<BuildingLevel> buildingLevelInfo = [];
+    String? selectedLevel;
+
     var leftMenuParent = document
         .querySelector("#menu_cont")
         ?.children
@@ -47,6 +55,11 @@ class BuildingData {
                 }
               }
             }
+
+            if (level.classes.contains("open")) {
+              selectedLevel = level.children[0].innerHtml;
+            }
+
             buildingLevelInfo.add(BuildingLevel.fromRooms(
                 level.children[0].innerHtml, roomInfos));
           } else {
@@ -91,6 +104,6 @@ class BuildingData {
       }
     }
 
-    return BuildingData(buildingLevelInfo, adressInfo);
+    return BuildingData.withLevel(buildingLevelInfo, adressInfo, selectedLevel);
   }
 }

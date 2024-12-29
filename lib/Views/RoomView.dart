@@ -16,12 +16,8 @@ import 'building_view.dart';
 import 'occupancyTableView.dart';
 
 class RoomView extends StatefulWidget {
-  RoomView(
-      {super.key,
-      required this.myController,
-      required this.room,
-      required this.name});
-  final TextEditingController myController;
+  RoomView({super.key, required this.room, required this.name});
+
   Future<BuildingPageData> room;
   final String name;
 

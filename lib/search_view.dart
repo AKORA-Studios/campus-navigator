@@ -16,16 +16,10 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
-  final myController = TextEditingController();
   Future<SearchResult>? searchResult;
   Future<BuildingPageData>? roomResult;
 
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-    super.dispose();
-  }
+  String hintText = "";
 
   Widget searchResultList(SearchResult result) {
     final roomButtons =
@@ -77,10 +71,8 @@ class _SearchViewState extends State<SearchView> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => RoomView(
-                      myController: myController,
-                      room: roomResult!,
-                      name: r.name)),
+                  builder: (context) =>
+                      RoomView(room: roomResult!, name: r.name)),
             );
           }, onError: (e) {
             print(e);
@@ -91,13 +83,17 @@ class _SearchViewState extends State<SearchView> {
   }
 
   void onSearchChanged(String newQuery) {
-    var searchFuture = SearchResult.searchRoom(myController.text);
+    var searchFuture = SearchResult.searchRoom(newQuery);
     setState(() {
       searchResult = searchFuture;
     });
 
     searchFuture.then((results) {
       var firstResult = results.resultsRooms.firstOrNull;
+
+      setState(() {
+        hintText = results.assist;
+      });
       if (firstResult == null) return;
 
       setState(() {
@@ -145,15 +141,25 @@ class _SearchViewState extends State<SearchView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextField(
-                    enableInteractiveSelection: true,
-                    autocorrect: false,
-                    controller: myController,
-                    decoration: const InputDecoration(
-                      hintText: 'Raumabkürzung hier eingeben',
-                    ),
-                    onChanged: onSearchChanged,
+                  Stack(
+                    children: [
+                      TextField(
+                        enabled: false,
+                        decoration: InputDecoration(
+                          hintText: hintText,
+                        ),
+                      ),
+                      TextField(
+                        enableInteractiveSelection: true,
+                        autocorrect: false,
+                        decoration: const InputDecoration(
+                          hintText: 'Raumabkürzung hier eingeben',
+                        ),
+                        onChanged: onSearchChanged,
+                      ),
+                    ],
                   ),
+
                   // Spacing
                   const SizedBox(
                     height: 20,
@@ -166,7 +172,6 @@ class _SearchViewState extends State<SearchView> {
                       } else if (!snapshot.hasData) {
                         return const SizedBox.shrink();
                       }
-
                       return searchResultList(snapshot.data!);
                     },
                   )

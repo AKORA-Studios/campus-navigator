@@ -146,7 +146,6 @@ class _LocationViewState extends State<LocationView> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => RoomView(
-                              myController: TextEditingController(),
                               room: BuildingPageData.fetchQuery("pot/00"),
                               name: "aha!")),
                     );

@@ -85,18 +85,13 @@ class _SettingsViewState extends State<SettingsView> {
   Widget licenceView() {
     List<Widget> childs = [];
 
-    childs.add(const Text(
-      "Dependencies licences",
-      style: Styling.settingsHeadingStyle,
-    ));
+    childs.add(settingsHeading("Dependencies licences"));
 
     for (String key in licences.keys) {
       childs.add(SelectableText.rich(TextSpan(children: [
         TextSpan(
             text: key,
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Styling.primaryColor,
                 decorationColor: Styling.primaryColor,
                 decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
@@ -105,7 +100,10 @@ class _SettingsViewState extends State<SettingsView> {
               }),
       ])));
     }
-
+    childs.add(SizedBox(
+      height: 20,
+    ));
+    childs.add(const Text("Powerd by Flutter"));
     return Column(children: childs);
   }
 
@@ -116,12 +114,19 @@ class _SettingsViewState extends State<SettingsView> {
     }
   }
 
-  List<Widget> settingsForm() {
-    return [
-      Text(
-        "Anmeldedaten",
+  Widget settingsHeading(String title) {
+    return SizedBox(
+      child: Text(
+        title,
         style: Styling.settingsHeadingStyle,
       ),
+      width: double.infinity,
+    );
+  }
+
+  List<Widget> settingsForm() {
+    return [
+      settingsHeading("Anmeldedaten"),
       Text("ZIH Login Daten zum abrufen des Raumbelegungsplans"),
       TextField(
         maxLines: 1,
@@ -228,6 +233,7 @@ class _SettingsViewState extends State<SettingsView> {
               ...sectionSpacing(),
               licenceView(),
               ...sectionSpacing(),
+              Text("App version"),
               Text(appVersion)
             ])));
   }

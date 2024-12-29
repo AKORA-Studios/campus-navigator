@@ -5,7 +5,7 @@ class Styling {
   static const secondaryColor = Color(0xff6da4ce);
 
   static const settingsHeadingStyle =
-      TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
+      TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: primaryColor);
 }
 
 class AppTheme {

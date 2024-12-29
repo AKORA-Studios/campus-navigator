@@ -103,6 +103,20 @@ class BuildingPageData {
         queryParts: queryParts);
   }
 
+  /// Only fetch and cache the initial request without parsing the actual HTML data
+  /// This does not download the associated images of the page and is only used
+  /// to reduce latency
+  static Future<void> preFetchQuery(String query) async {
+    final uri = Uri.parse("$baseURL/etplan/$query");
+
+    String? body = await fetchHMTL(uri);
+    if (body == null) {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to pre fetch query');
+    }
+  }
+
   static Future<BuildingPageData> fetchQuery(String query) async {
     final queryParts = query.split("/");
     final uri = Uri.parse("$baseURL/etplan/$query");

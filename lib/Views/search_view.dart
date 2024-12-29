@@ -3,6 +3,7 @@ import 'package:campus_navigator/Styling.dart';
 import 'package:campus_navigator/Views/RoomView.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/search.dart';
+import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
 import 'locationView.dart';
@@ -17,7 +18,6 @@ class SearchView extends StatefulWidget {
 
 class _SearchViewState extends State<SearchView> {
   Future<SearchResult>? searchResult;
-  Future<BuildingPageData>? roomResult;
 
   String hintText = "";
 
@@ -38,7 +38,7 @@ class _SearchViewState extends State<SearchView> {
         children: [...roomButtons]);
   }
 
-  Widget roomResultButton(SearchResultObject r) {
+  Widget roomResultButton(SearchResultObject resultEntry) {
     return TextButton(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -47,7 +47,7 @@ class _SearchViewState extends State<SearchView> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            r.name,
+            resultEntry.name,
             style: const TextStyle(
               fontSize: 20,
             ),
@@ -55,9 +55,9 @@ class _SearchViewState extends State<SearchView> {
           const SizedBox(
             width: 10,
           ),
-          r.subName != null
+          resultEntry.subName != null
               ? Text(
-                  r.subName!,
+                  resultEntry.subName!,
                   style: TextStyle(
                       fontSize: 17, color: Styling.primaryColor.withAlpha(200)),
                 )
@@ -65,41 +65,44 @@ class _SearchViewState extends State<SearchView> {
         ],
       ),
       onPressed: () {
-        setState(() {
-          roomResult = BuildingPageData.fetchQuery(r.identifier);
-          roomResult!.then((v) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      RoomView(room: roomResult!, name: r.name)),
-            );
-          }, onError: (e) {
-            print(e);
-          });
-        });
+        final roomResult = BuildingPageData.fetchQuery(resultEntry.identifier);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  RoomView(room: roomResult, name: resultEntry.name)),
+        );
       },
     );
   }
 
-  void onSearchChanged(String newQuery) {
-    var searchFuture = SearchResult.searchRoom(newQuery);
+  void onSearchChanged(String newQuery) async {
+    final searchFuture = SearchResult.searchRoom(newQuery);
     setState(() {
       searchResult = searchFuture;
     });
 
-    searchFuture.then((results) {
-      var firstResult = results.resultsRooms.firstOrNull;
+    final results = await searchFuture;
+    final firstResult = results.resultsRooms.firstOrNull;
 
-      setState(() {
-        hintText = results.assist;
-      });
-      if (firstResult == null) return;
-
-      setState(() {
-        roomResult = BuildingPageData.fetchQuery(firstResult.identifier);
-      });
+    setState(() {
+      hintText = results.assist;
     });
+    if (firstResult == null) return;
+
+    // Prefetching for better UX
+    final preFetchingLevel = await Storage.Shared.getPrefetchingLevel();
+
+    switch (preFetchingLevel) {
+      case PrefetchingLevel.allResults:
+        results.resultsRooms
+            .map((e) => BuildingPageData.preFetchQuery(e.identifier));
+      case PrefetchingLevel.firstResult:
+        BuildingPageData.preFetchQuery(firstResult.identifier);
+      case PrefetchingLevel.none:
+        break;
+    }
   }
 
   @override
@@ -143,6 +146,7 @@ class _SearchViewState extends State<SearchView> {
                 children: [
                   Stack(
                     children: [
+                      // Show searcch suggestion below actual search text field
                       TextField(
                         enabled: false,
                         decoration: InputDecoration(

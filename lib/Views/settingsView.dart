@@ -160,9 +160,10 @@ class _SettingsViewState extends State<SettingsView> {
 
   List<Widget> cacheDurationSection() {
     return settingsSection(
-        title: "Cache Duration",
+        title: "Cache Zeitspanne",
         description:
-            'This controls for how long search resulst should be cached, selecting longer durations reduces data usage and improves perfomance but might lead to inaccurate results',
+            'Damit wird festgelegt, wie lange die Suchergebnisse zwischengespeichert werden sollen. Die Auswahl'
+            ' slängerer Zeiträume verringert den Datenverbrauch und verbessert die Leistung, kann aber zu ungenauen Ergebnissen führen.',
         children: [
           SegmentedButton<CacheDuration>(
             multiSelectionEnabled: false,
@@ -170,19 +171,19 @@ class _SettingsViewState extends State<SettingsView> {
             segments: const <ButtonSegment<CacheDuration>>[
               ButtonSegment<CacheDuration>(
                   value: CacheDuration.day,
-                  label: Text('Day'),
+                  label: Text('Tag'),
                   icon: Icon(Icons.calendar_view_day)),
               ButtonSegment<CacheDuration>(
                   value: CacheDuration.week,
-                  label: Text('Week'),
+                  label: Text('Woche'),
                   icon: Icon(Icons.calendar_view_week)),
               ButtonSegment<CacheDuration>(
                   value: CacheDuration.month,
-                  label: Text('Month'),
+                  label: Text('Monat'),
                   icon: Icon(Icons.calendar_view_month)),
               ButtonSegment<CacheDuration>(
                   value: CacheDuration.year,
-                  label: Text('Year'),
+                  label: Text('Jahr'),
                   icon: Icon(Icons.calendar_today)),
             ],
             selected: <CacheDuration>{cacheDuration},
@@ -210,15 +211,15 @@ class _SettingsViewState extends State<SettingsView> {
             segments: const <ButtonSegment<PrefetchingLevel>>[
               ButtonSegment<PrefetchingLevel>(
                   value: PrefetchingLevel.none,
-                  label: Text('None'),
+                  label: Text('Keine'),
                   icon: Icon(Icons.not_interested)),
               ButtonSegment<PrefetchingLevel>(
                   value: PrefetchingLevel.firstResult,
-                  label: Text('First Result'),
+                  label: Text('Erstes Ergebniss'),
                   icon: Icon(Icons.rule)),
               ButtonSegment<PrefetchingLevel>(
                   value: PrefetchingLevel.allResults,
-                  label: Text('All Results'),
+                  label: Text('Alle Ergebnisse'),
                   icon: Icon(Icons.checklist)),
             ],
             selected: <PrefetchingLevel>{prefetchingLevel},

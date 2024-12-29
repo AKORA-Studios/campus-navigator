@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/storage.dart';
 
 import 'page_image_data.dart';
 import 'parsing/html_data.dart';
@@ -117,9 +118,13 @@ class BuildingPageData {
     // then parse the JSON.
     var roomResult = BuildingPageData.fromHTMLText(body, queryParts);
 
+    // Get quality index from settings
+    final qualityLevel = await Storage.Shared.getQualityLevel();
+
     // Start loading process for images
     roomResult.backgroundImageData = PageImageData.fetchLevelImages(
-        roomResult.pngFileName, roomResult.layers);
+        roomResult.pngFileName, roomResult.layers,
+        qualiIndex: (qualityLevel - 1));
 
     return roomResult;
   }

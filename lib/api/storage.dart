@@ -107,7 +107,7 @@ class Storage {
 
     // Default value
     if (storedValue == null) {
-      await setCacheDuration(const Duration(days: 1));
+      await setCacheDuration(const Duration(days: 7));
       return await getCacheDuration();
     }
 

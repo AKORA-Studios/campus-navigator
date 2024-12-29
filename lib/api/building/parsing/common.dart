@@ -6,6 +6,8 @@ import 'dart:ui' as ui;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 
+import '../../storage.dart';
+
 const baseURL = "https://navigator.tu-dresden.de";
 
 /// This is a helper method for loading images that
@@ -26,7 +28,9 @@ Future<ui.Image?> fetchImage(Uri uri) async {
     }
 
     await DefaultCacheManager().putFile(uri.toString(), response.bodyBytes,
-        maxAge: const Duration(days: 1), fileExtension: 'png', eTag: eTag);
+        maxAge: await Storage.Shared.getCacheDuration(),
+        fileExtension: 'png',
+        eTag: eTag);
 
     imageBytes = response.bodyBytes;
   }
@@ -58,7 +62,9 @@ Future<String?> fetchHMTL(Uri uri) async {
     final encodedString = utf8.encode(responseString);
 
     await DefaultCacheManager().putFile(uri.toString(), encodedString,
-        fileExtension: 'html', maxAge: const Duration(days: 1), eTag: eTag);
+        fileExtension: 'html',
+        maxAge: await Storage.Shared.getCacheDuration(),
+        eTag: eTag);
   }
 
   if (responseString.isEmpty) return null;

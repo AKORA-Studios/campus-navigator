@@ -1,6 +1,6 @@
-import 'package:campus_navigator/api/building/building_page_data.dart';
-import 'package:campus_navigator/painter.dart';
 import 'package:flutter/material.dart';
+import 'package:campus_navigator/api/building/building_page_data.dart';
+import 'painter.dart';
 
 Widget interactiveBuildingView(
     BuildingPageData roomResult, BuildContext context,

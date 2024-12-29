@@ -1,5 +1,5 @@
-import 'package:campus_navigator/search_view.dart';
 import 'package:flutter/material.dart';
+import 'Views/search_view.dart';
 
 import 'Styling.dart';
 

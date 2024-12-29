@@ -5,8 +5,8 @@ import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/search.dart';
 import 'package:flutter/material.dart';
 
-import 'Views/locationView.dart';
-import 'Views/settingsView.dart';
+import 'locationView.dart';
+import 'settingsView.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({super.key});

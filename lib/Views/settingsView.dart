@@ -25,6 +25,7 @@ class _SettingsViewState extends State<SettingsView> {
   bool updateView = false;
 
   CacheDuration cacheDuration = CacheDuration.day;
+  PrefetchingLevel prefetchingLevel = PrefetchingLevel.none;
   double qualityLevel = 1;
 
   String appVersion = "?.?.? (?.?)";
@@ -40,6 +41,7 @@ class _SettingsViewState extends State<SettingsView> {
       final tudSelectedValue = await Storage.Shared.getUniversity();
 
       final cacheDurationValue = await Storage.Shared.getCacheDuration();
+      final prefetchingLevelValue = await Storage.Shared.getPrefetchingLevel();
       final qualityLevelValue = await Storage.Shared.getQualityLevel();
 
       final packageInfo = await PackageInfo.fromPlatform();
@@ -55,6 +57,7 @@ class _SettingsViewState extends State<SettingsView> {
         tudSelected = tudSelectedValue == "1";
 
         cacheDuration = cacheDurationValue;
+        prefetchingLevel = prefetchingLevelValue;
         qualityLevel = qualityLevelValue.toDouble();
 
         appVersion = version + "(" + buildNumber + ")";
@@ -194,6 +197,42 @@ class _SettingsViewState extends State<SettingsView> {
         ]);
   }
 
+  List<Widget> prefetchSection() {
+    return settingsSection(
+        title: "Prefetching",
+        description:
+            'Kontrolliert wie viele der Sucheregebnisse vorgeladen werden, umso mehr Ergebnisse vorgeladen werden um so höher ist die chance das der gesuchte Raum beim öffnen bereits'
+            ' geladen ist (Das Laden eines ungecachten Suchergebniss transferiert ca. 30kB)',
+        children: [
+          SegmentedButton<PrefetchingLevel>(
+            multiSelectionEnabled: false,
+            style: ButtonStyle(backgroundColor: backgroundColorProperty()),
+            segments: const <ButtonSegment<PrefetchingLevel>>[
+              ButtonSegment<PrefetchingLevel>(
+                  value: PrefetchingLevel.none,
+                  label: Text('None'),
+                  icon: Icon(Icons.not_interested)),
+              ButtonSegment<PrefetchingLevel>(
+                  value: PrefetchingLevel.firstResult,
+                  label: Text('First Result'),
+                  icon: Icon(Icons.rule)),
+              ButtonSegment<PrefetchingLevel>(
+                  value: PrefetchingLevel.allResults,
+                  label: Text('All Results'),
+                  icon: Icon(Icons.checklist)),
+            ],
+            selected: <PrefetchingLevel>{prefetchingLevel},
+            onSelectionChanged: (Set<PrefetchingLevel> newSelection) async {
+              Storage.Shared.setPrefetchingLevel(newSelection.first);
+
+              setState(() {
+                prefetchingLevel = newSelection.first;
+              });
+            },
+          ),
+        ]);
+  }
+
   List<Widget> qualityLevelSection() {
     // TODO: Show example images of the quality steps, maybe using POT background
     return settingsSection(
@@ -286,6 +325,7 @@ class _SettingsViewState extends State<SettingsView> {
             ),
           ]),
       ...cacheDurationSection(),
+      ...prefetchSection(),
       ...qualityLevelSection(),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

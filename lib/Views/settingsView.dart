@@ -136,11 +136,11 @@ class _SettingsViewState extends State<SettingsView> {
     return [
       settingsHeading(title),
       Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(15),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: children),
       ),
-      const SizedBox(height: 10)
+      const SizedBox(height: 30)
     ];
   }
 
@@ -152,6 +152,45 @@ class _SettingsViewState extends State<SettingsView> {
         return Colors.transparent;
       }
     });
+  }
+
+  List<Widget> cacheDurationSection() {
+    return settingsSection(
+        title: "Cache Duration",
+        description:
+            'This controls for how long search resulst should be cached, selecting longer durations reduces data usage and improves perfomance but might lead to inaccurate results',
+        children: [
+          SegmentedButton<CacheDuration>(
+            multiSelectionEnabled: false,
+            style: ButtonStyle(backgroundColor: backgroundColorProperty()),
+            segments: const <ButtonSegment<CacheDuration>>[
+              ButtonSegment<CacheDuration>(
+                  value: CacheDuration.day,
+                  label: Text('Day'),
+                  icon: Icon(Icons.calendar_view_day)),
+              ButtonSegment<CacheDuration>(
+                  value: CacheDuration.week,
+                  label: Text('Week'),
+                  icon: Icon(Icons.calendar_view_week)),
+              ButtonSegment<CacheDuration>(
+                  value: CacheDuration.month,
+                  label: Text('Month'),
+                  icon: Icon(Icons.calendar_view_month)),
+              ButtonSegment<CacheDuration>(
+                  value: CacheDuration.year,
+                  label: Text('Year'),
+                  icon: Icon(Icons.calendar_today)),
+            ],
+            selected: <CacheDuration>{cacheDuration},
+            onSelectionChanged: (Set<CacheDuration> newSelection) async {
+              await Storage.Shared.setCacheDuration(newSelection.first);
+
+              setState(() {
+                cacheDuration = newSelection.first;
+              });
+            },
+          ),
+        ]);
   }
 
   List<Widget> settingsForm() {
@@ -222,44 +261,7 @@ class _SettingsViewState extends State<SettingsView> {
               ],
             ),
           ]),
-      const SizedBox(height: 20),
-      ...settingsSection(
-          title: "Cache Duration",
-          description:
-              'This controls for how long search resulst should be cached, selecting longer durations reduces data usage and improves perfomance but might lead to inaccurate results',
-          children: [
-            SegmentedButton<CacheDuration>(
-              multiSelectionEnabled: false,
-              style: ButtonStyle(backgroundColor: backgroundColorProperty()),
-              segments: const <ButtonSegment<CacheDuration>>[
-                ButtonSegment<CacheDuration>(
-                    value: CacheDuration.day,
-                    label: Text('Day'),
-                    icon: Icon(Icons.calendar_view_day)),
-                ButtonSegment<CacheDuration>(
-                    value: CacheDuration.week,
-                    label: Text('Week'),
-                    icon: Icon(Icons.calendar_view_week)),
-                ButtonSegment<CacheDuration>(
-                    value: CacheDuration.month,
-                    label: Text('Month'),
-                    icon: Icon(Icons.calendar_view_month)),
-                ButtonSegment<CacheDuration>(
-                    value: CacheDuration.year,
-                    label: Text('Year'),
-                    icon: Icon(Icons.calendar_today)),
-              ],
-              selected: <CacheDuration>{cacheDuration},
-              onSelectionChanged: (Set<CacheDuration> newSelection) async {
-                await Storage.Shared.setCacheDuration(newSelection.first);
-
-                setState(() {
-                  cacheDuration = newSelection.first;
-                });
-              },
-            ),
-          ]),
-      const SizedBox(height: 30),
+      ...cacheDurationSection(),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

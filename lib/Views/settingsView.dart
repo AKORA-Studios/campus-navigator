@@ -133,8 +133,27 @@ class _SettingsViewState extends State<SettingsView> {
       String? description,
       required List<Widget> children}) {
     if (description != null) {
-      children.insert(0, Text(description));
-      children.insert(1, const SizedBox(height: 10));
+      children = [
+        RichText(
+          text: TextSpan(
+            children: [
+              WidgetSpan(
+                child: Icon(Icons.info,
+                    size: 15,
+                    color: Theme.of(context).colorScheme.onBackground),
+              ),
+              const WidgetSpan(child: SizedBox(width: 5)),
+              TextSpan(
+                text: description,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 15),
+        ...children,
+      ];
     }
 
     return [

@@ -207,7 +207,10 @@ class _RoomViewState extends State<RoomView> {
             ),
           ),
           asyncInteractiveBuildingView(widget.room,
-              size: MediaQuery.sizeOf(context)),
+              size: Size(
+                  MediaQuery.sizeOf(context).width,
+                  // Necessary to prevent overflow
+                  MediaQuery.sizeOf(context).height * 0.9)),
         ]),
         DraggableBottomSheet(
           name: "Location",

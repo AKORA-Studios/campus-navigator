@@ -19,6 +19,28 @@ enum PrefetchingLevel {
   }
 }
 
+enum CacheDuration {
+  day(value: Duration(days: 1)),
+  week(value: Duration(days: 7)),
+  month(value: Duration(days: 30)),
+  year(value: Duration(days: 365));
+
+  final Duration value;
+
+  const CacheDuration({required this.value});
+
+  String serialize() {
+    return value.inDays.toString();
+  }
+
+  static CacheDuration deserialize(String value) {
+    final daysInt = int.parse(value);
+
+    return CacheDuration.values
+        .firstWhere((element) => element.value.inDays == daysInt);
+  }
+}
+
 // TODO: https://pub.dev/packages/flutter_secure_storage#configure-web-version
 class Storage {
   static const keyUsername = "Username";
@@ -102,21 +124,21 @@ class Storage {
   }
 
   // Cache duration
-  Future<Duration> getCacheDuration() async {
+  Future<CacheDuration> getCacheDuration() async {
     final storedValue = await storage.read(key: keyCacheDuration);
 
     // Default value
     if (storedValue == null) {
-      await setCacheDuration(const Duration(days: 7));
+      await setCacheDuration(CacheDuration.day);
       return await getCacheDuration();
     }
 
-    return Duration(days: int.parse(storedValue));
+    return CacheDuration.deserialize(storedValue);
   }
 
-  Future<void> setCacheDuration(Duration newValue) async {
+  Future<void> setCacheDuration(CacheDuration newValue) async {
     return await storage.write(
-        key: keyCacheDuration, value: newValue.inDays.toString());
+        key: keyCacheDuration, value: newValue.serialize());
   }
 
   void deleteData() async {

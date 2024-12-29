@@ -59,7 +59,7 @@ class SearchResult {
       body = response.body;
       await DefaultCacheManager().putFile(cacheKey, utf8.encode(body),
           fileExtension: 'json',
-          maxAge: await Storage.Shared.getCacheDuration());
+          maxAge: (await Storage.Shared.getCacheDuration()).value);
     }
 
     // If the server did return a 200 OK response,

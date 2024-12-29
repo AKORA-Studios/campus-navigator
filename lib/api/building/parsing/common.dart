@@ -28,7 +28,7 @@ Future<ui.Image?> fetchImage(Uri uri) async {
     }
 
     await DefaultCacheManager().putFile(uri.toString(), response.bodyBytes,
-        maxAge: await Storage.Shared.getCacheDuration(),
+        maxAge: (await Storage.Shared.getCacheDuration()).value,
         fileExtension: 'png',
         eTag: eTag);
 
@@ -63,7 +63,7 @@ Future<String?> fetchHMTL(Uri uri) async {
 
     await DefaultCacheManager().putFile(uri.toString(), encodedString,
         fileExtension: 'html',
-        maxAge: await Storage.Shared.getCacheDuration(),
+        maxAge: (await Storage.Shared.getCacheDuration()).value,
         eTag: eTag);
   }
 

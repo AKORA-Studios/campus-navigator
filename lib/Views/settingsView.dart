@@ -24,6 +24,8 @@ class _SettingsViewState extends State<SettingsView> {
   bool passwordInvisible = true;
   bool updateView = false;
 
+  CacheDuration cacheDuration = CacheDuration.day;
+
   String appVersion = "?.?.? (?.?)";
 
   @override
@@ -36,6 +38,8 @@ class _SettingsViewState extends State<SettingsView> {
       final passwordValue = await Storage.Shared.getPassword();
       final tudSelectedValue = await Storage.Shared.getUniversity();
 
+      final cacheDurationValue = await Storage.Shared.getCacheDuration();
+
       final packageInfo = await PackageInfo.fromPlatform();
       // String appName = packageInfo.appName;
       // String packageName = packageInfo.packageName;
@@ -47,6 +51,8 @@ class _SettingsViewState extends State<SettingsView> {
         _passwordController.text = passwordValue ?? "";
 
         tudSelected = tudSelectedValue == "1";
+
+        cacheDuration = cacheDurationValue;
 
         appVersion = version + "(" + buildNumber + ")";
       });
@@ -100,9 +106,7 @@ class _SettingsViewState extends State<SettingsView> {
               }),
       ])));
     }
-    childs.add(SizedBox(
-      height: 20,
-    ));
+    childs.add(const SizedBox(height: 20));
     childs.add(const Text("Powerd by Flutter"));
     return Column(children: childs);
   }
@@ -116,78 +120,146 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget settingsHeading(String title) {
     return SizedBox(
-      child: Text(
-        title,
-        style: Styling.settingsHeadingStyle,
-      ),
-      width: double.infinity,
+      child: Text(title, style: Styling.settingsHeadingStyle),
     );
+  }
+
+  List<Widget> settingsSection(
+      {required String title,
+      String? description,
+      required List<Widget> children}) {
+    if (description != null) {
+      children.insert(0, Text(description));
+      children.insert(1, const SizedBox(height: 10));
+    }
+
+    return [
+      settingsHeading(title),
+      Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, children: children),
+      ),
+      const SizedBox(height: 10)
+    ];
+  }
+
+  MaterialStateProperty<Color?> backgroundColorProperty() {
+    return MaterialStateProperty.resolveWith((states) {
+      if (states.firstOrNull == MaterialState.selected) {
+        return Styling.primaryColor;
+      } else {
+        return Colors.transparent;
+      }
+    });
   }
 
   List<Widget> settingsForm() {
     return [
-      settingsHeading("Anmeldedaten"),
-      Text("ZIH Login Daten zum abrufen des Raumbelegungsplans"),
-      TextField(
-        maxLines: 1,
-        autocorrect: false,
-        controller: _usernameController,
-        decoration: const InputDecoration(
-            labelText: 'Benutzername',
-            hintText: 'Neuen Benutzernamen hier eingeben'),
-      ),
-      TextField(
-        maxLines: 1,
-        autocorrect: false,
-        obscureText: passwordInvisible,
-        controller: _passwordController,
-        decoration: InputDecoration(
-            hintText: 'Neues Passwort hier eingeben',
-            labelText: 'Passwort',
-            // this button is used to toggle the password visibility
-            suffixIcon: IconButton(
-                icon: Icon(passwordInvisible
-                    ? Icons.visibility
-                    : Icons.visibility_off),
-                onPressed: () {
-                  setState(() {
-                    passwordInvisible = !passwordInvisible;
-                  });
-                })),
-      ),
-      const SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text("Ausgewählte Universität: "),
-          SegmentedButton(
-            segments: const [
-              ButtonSegment(
-                value: true,
-                label: Text("TUD"),
-              ),
-              ButtonSegment(
-                value: false,
-                label: Text("HTW"),
-              )
-            ],
-            selected: <bool>{tudSelected},
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                ),
-              ),
+      ...settingsSection(
+          title: "Anmeldedaten",
+          description: "ZIH Login Daten zum abrufen des Raumbelegungsplans",
+          children: [
+            TextField(
+              maxLines: 1,
+              autocorrect: false,
+              controller: _usernameController,
+              decoration: const InputDecoration(
+                  labelText: 'Benutzername',
+                  hintText: 'Neuen Benutzernamen hier eingeben'),
             ),
-            onSelectionChanged: (newSelection) {
-              setState(() {
-                tudSelected = newSelection.first;
-              });
-            },
-          )
-        ],
-      ),
+            TextField(
+              maxLines: 1,
+              autocorrect: false,
+              obscureText: passwordInvisible,
+              controller: _passwordController,
+              decoration: InputDecoration(
+                  hintText: 'Neues Passwort hier eingeben',
+                  labelText: 'Passwort',
+                  // this button is used to toggle the password visibility
+                  suffixIcon: IconButton(
+                      icon: Icon(passwordInvisible
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          passwordInvisible = !passwordInvisible;
+                        });
+                      })),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                const Text("Ausgewählte Universität: "),
+                const SizedBox(
+                  width: 20,
+                ),
+                SegmentedButton(
+                  segments: const [
+                    ButtonSegment(
+                      value: true,
+                      label: Text("TUD"),
+                    ),
+                    ButtonSegment(
+                      value: false,
+                      label: Text("HTW"),
+                    )
+                  ],
+                  selected: <bool>{tudSelected},
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      ),
+                    ),
+                  ),
+                  onSelectionChanged: (newSelection) {
+                    setState(() {
+                      tudSelected = newSelection.first;
+                    });
+                  },
+                )
+              ],
+            ),
+          ]),
       const SizedBox(height: 20),
+      ...settingsSection(
+          title: "Cache Duration",
+          description:
+              'This controls for how long search resulst should be cached, selecting longer durations reduces data usage and improves perfomance but might lead to inaccurate results',
+          children: [
+            SegmentedButton<CacheDuration>(
+              multiSelectionEnabled: false,
+              style: ButtonStyle(backgroundColor: backgroundColorProperty()),
+              segments: const <ButtonSegment<CacheDuration>>[
+                ButtonSegment<CacheDuration>(
+                    value: CacheDuration.day,
+                    label: Text('Day'),
+                    icon: Icon(Icons.calendar_view_day)),
+                ButtonSegment<CacheDuration>(
+                    value: CacheDuration.week,
+                    label: Text('Week'),
+                    icon: Icon(Icons.calendar_view_week)),
+                ButtonSegment<CacheDuration>(
+                    value: CacheDuration.month,
+                    label: Text('Month'),
+                    icon: Icon(Icons.calendar_view_month)),
+                ButtonSegment<CacheDuration>(
+                    value: CacheDuration.year,
+                    label: Text('Year'),
+                    icon: Icon(Icons.calendar_today)),
+              ],
+              selected: <CacheDuration>{cacheDuration},
+              onSelectionChanged: (Set<CacheDuration> newSelection) async {
+                await Storage.Shared.setCacheDuration(newSelection.first);
+
+                setState(() {
+                  cacheDuration = newSelection.first;
+                });
+              },
+            ),
+          ]),
+      const SizedBox(height: 30),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -228,12 +300,13 @@ class _SettingsViewState extends State<SettingsView> {
         ),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
-            child: Column(children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               ...settingsForm(),
               ...sectionSpacing(),
               licenceView(),
               ...sectionSpacing(),
-              Text("App version"),
+              const Text("App version"),
               Text(appVersion)
             ])));
   }

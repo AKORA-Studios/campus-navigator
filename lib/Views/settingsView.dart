@@ -25,6 +25,7 @@ class _SettingsViewState extends State<SettingsView> {
   bool updateView = false;
 
   CacheDuration cacheDuration = CacheDuration.day;
+  double qualityLevel = 1;
 
   String appVersion = "?.?.? (?.?)";
 
@@ -39,6 +40,7 @@ class _SettingsViewState extends State<SettingsView> {
       final tudSelectedValue = await Storage.Shared.getUniversity();
 
       final cacheDurationValue = await Storage.Shared.getCacheDuration();
+      final qualityLevelValue = await Storage.Shared.getQualityLevel();
 
       final packageInfo = await PackageInfo.fromPlatform();
       // String appName = packageInfo.appName;
@@ -53,6 +55,7 @@ class _SettingsViewState extends State<SettingsView> {
         tudSelected = tudSelectedValue == "1";
 
         cacheDuration = cacheDurationValue;
+        qualityLevel = qualityLevelValue.toDouble();
 
         appVersion = version + "(" + buildNumber + ")";
       });
@@ -88,13 +91,11 @@ class _SettingsViewState extends State<SettingsView> {
     "package_info_plus": "https://pub.dev/packages/package_info_plus/license"
   };
 
-  Widget licenceView() {
-    List<Widget> childs = [];
-
-    childs.add(settingsHeading("Dependencies licences"));
+  List<Widget> licenceView() {
+    List<Widget> children = [];
 
     for (String key in licences.keys) {
-      childs.add(SelectableText.rich(TextSpan(children: [
+      children.add(SelectableText.rich(TextSpan(children: [
         TextSpan(
             text: key,
             style: const TextStyle(
@@ -106,9 +107,9 @@ class _SettingsViewState extends State<SettingsView> {
               }),
       ])));
     }
-    childs.add(const SizedBox(height: 20));
-    childs.add(const Text("Powerd by Flutter"));
-    return Column(children: childs);
+    children.add(const SizedBox(height: 20));
+    children.add(const Text("Powerd by Flutter"));
+    return settingsSection(title: "Dependencies licences", children: children);
   }
 
   void openLicence(String url) async {
@@ -183,13 +184,36 @@ class _SettingsViewState extends State<SettingsView> {
             ],
             selected: <CacheDuration>{cacheDuration},
             onSelectionChanged: (Set<CacheDuration> newSelection) async {
-              await Storage.Shared.setCacheDuration(newSelection.first);
+              Storage.Shared.setCacheDuration(newSelection.first);
 
               setState(() {
                 cacheDuration = newSelection.first;
               });
             },
           ),
+        ]);
+  }
+
+  List<Widget> qualityLevelSection() {
+    // TODO: Show example images of the quality steps, maybe using POT background
+    return settingsSection(
+        title: "Quality Level",
+        description:
+            'Entscheidet wie hoch die Auflösung der Details in der Gebäudeansicht sind, die Datennutzung steigt exponentiell mit jeder Detailstufe',
+        children: [
+          Slider(
+            value: qualityLevel,
+            min: 1,
+            max: 4,
+            divisions: 4,
+            label: qualityLevel.round().toString(),
+            onChanged: (double value) async {
+              Storage.Shared.setQualityLevel(value.round());
+              setState(() {
+                qualityLevel = value;
+              });
+            },
+          )
         ]);
   }
 
@@ -262,6 +286,7 @@ class _SettingsViewState extends State<SettingsView> {
             ),
           ]),
       ...cacheDurationSection(),
+      ...qualityLevelSection(),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -306,10 +331,12 @@ class _SettingsViewState extends State<SettingsView> {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               ...settingsForm(),
               ...sectionSpacing(),
-              licenceView(),
-              ...sectionSpacing(),
-              const Text("App version"),
-              Text(appVersion)
+              ...licenceView(),
+              Center(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [const Text("App version"), Text(appVersion)],
+              ))
             ])));
   }
 }

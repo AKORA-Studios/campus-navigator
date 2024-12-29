@@ -16,7 +16,13 @@ class AppTheme {
         scaffoldBackgroundColor: colorScheme.background,
         highlightColor: Colors.transparent,
         useMaterial3: true,
-        focusColor: const Color(0xff88ccb4));
+        focusColor: const Color(0xff88ccb4),
+        sliderTheme: SliderThemeData.fromPrimaryColors(
+            primaryColor: colorScheme.primary,
+            primaryColorDark: darkColorScheme.primary,
+            primaryColorLight: lightColorScheme.primary,
+            // This should maybe be onPrimary?
+            valueIndicatorTextStyle: const TextStyle(color: Colors.white)));
   }
 
   static const ColorScheme lightColorScheme = ColorScheme(
@@ -27,7 +33,7 @@ class AppTheme {
     error: Colors.redAccent,
     onError: Colors.white,
     background: Color(0xFFFFFFFF),
-    onBackground: Colors.white,
+    onBackground: Colors.grey,
     surface: Color(0xFFFAFBFB),
     onSurface: Color(0xFF545454),
     brightness: Brightness.light,

@@ -16,8 +16,9 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
-  String username = "";
-  String password = "";
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   bool tudSelected = true;
 
   bool passwordInvisible = true;
@@ -42,8 +43,8 @@ class _SettingsViewState extends State<SettingsView> {
       String buildNumber = packageInfo.buildNumber;
 
       setState(() {
-        username = usernameValue ?? "";
-        password = passwordValue ?? "";
+        _usernameController.text = usernameValue ?? "";
+        _passwordController.text = passwordValue ?? "";
 
         tudSelected = tudSelectedValue == "1";
 
@@ -52,9 +53,12 @@ class _SettingsViewState extends State<SettingsView> {
     })();
   }
 
+  String get username => _usernameController.text;
+  String get password => _passwordController.text;
+
   void saveData() async {
-    await Storage.Shared.editUsername(username);
-    await Storage.Shared.editpassword(password);
+    await Storage.Shared.editUsername(_usernameController.text);
+    await Storage.Shared.editpassword(_passwordController.text);
     await Storage.Shared.editUniversity(tudSelected ? "1" : "2");
 
     setState(() {
@@ -117,20 +121,19 @@ class _SettingsViewState extends State<SettingsView> {
       TextField(
         maxLines: 1,
         autocorrect: false,
-        decoration: InputDecoration(
-            labelText: 'Benutzername: $username',
+        controller: _usernameController,
+        decoration: const InputDecoration(
+            labelText: 'Benutzername',
             hintText: 'Neuen Benutzernamen hier eingeben'),
-        onChanged: (newValue) {
-          username = newValue;
-        },
       ),
       TextField(
         maxLines: 1,
         autocorrect: false,
         obscureText: passwordInvisible,
+        controller: _passwordController,
         decoration: InputDecoration(
             hintText: 'Neues Passwort hier eingeben',
-            labelText: 'Passwort ${password.length}',
+            labelText: 'Passwort',
             // this button is used to toggle the password visibility
             suffixIcon: IconButton(
                 icon: Icon(passwordInvisible
@@ -141,9 +144,6 @@ class _SettingsViewState extends State<SettingsView> {
                     passwordInvisible = !passwordInvisible;
                   });
                 })),
-        onChanged: (newValue) {
-          password = newValue;
-        },
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

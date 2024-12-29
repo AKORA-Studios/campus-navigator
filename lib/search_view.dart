@@ -5,7 +5,6 @@ import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/search.dart';
 import 'package:flutter/material.dart';
 
-import 'Views/building_view.dart';
 import 'Views/locationView.dart';
 import 'Views/settingsView.dart';
 
@@ -170,11 +169,7 @@ class _SearchViewState extends State<SearchView> {
 
                       return searchResultList(snapshot.data!);
                     },
-                  ),
-                  const SizedBox(height: 100),
-                  roomResult != null
-                      ? asyncInteractiveBuildingView(roomResult!)
-                      : const Text("No room selected")
+                  )
                 ],
               ),
             )));

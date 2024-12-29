@@ -29,32 +29,27 @@ class _SettingsViewState extends State<SettingsView> {
   void initState() {
     super.initState();
 
-    Storage.Shared.getUsername().then((value) {
-      setState(() {
-        username = value ?? "";
-      });
-    });
-    Storage.Shared.getPassword().then((value) {
-      setState(() {
-        password = value ?? "";
-      });
-    });
-    Storage.Shared.getUniversity().then((value) {
-      setState(() {
-        tudSelected = value == "1";
-      });
-    });
+    (() async {
+      final usernameValue = await Storage.Shared.getUsername();
 
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      print("fff");
-      String appName = packageInfo.appName;
-      String packageName = packageInfo.packageName;
+      final passwordValue = await Storage.Shared.getPassword();
+      final tudSelectedValue = await Storage.Shared.getUniversity();
+
+      final packageInfo = await PackageInfo.fromPlatform();
+      // String appName = packageInfo.appName;
+      // String packageName = packageInfo.packageName;
       String version = packageInfo.version;
       String buildNumber = packageInfo.buildNumber;
+
       setState(() {
+        username = usernameValue ?? "";
+        password = passwordValue ?? "";
+
+        tudSelected = tudSelectedValue == "1";
+
         appVersion = version + "(" + buildNumber + ")";
       });
-    });
+    })();
   }
 
   void saveData() async {
@@ -102,7 +97,7 @@ class _SettingsViewState extends State<SettingsView> {
                 decoration: TextDecoration.underline),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                openlicence(licences[key]!);
+                openLicence(licences[key]!);
               }),
       ])));
     }
@@ -110,11 +105,85 @@ class _SettingsViewState extends State<SettingsView> {
     return Column(children: childs);
   }
 
-  void openlicence(String url) async {
+  void openLicence(String url) async {
     final Uri _url = Uri.parse(url);
     if (!await launchUrl(_url)) {
       launchUrl(_url);
     }
+  }
+
+  List<Widget> settingsForm() {
+    return [
+      TextField(
+        maxLines: 1,
+        autocorrect: false,
+        decoration: InputDecoration(
+            labelText: 'Benutzername: $username',
+            hintText: 'Neuen Benutzernamen hier eingeben'),
+        onChanged: (newValue) {
+          username = newValue;
+        },
+      ),
+      TextField(
+        maxLines: 1,
+        autocorrect: false,
+        obscureText: passwordInvisible,
+        decoration: InputDecoration(
+            hintText: 'Neues Passwort hier eingeben',
+            labelText: 'Passwort ${password.length}',
+            // this button is used to toggle the password visibility
+            suffixIcon: IconButton(
+                icon: Icon(passwordInvisible
+                    ? Icons.visibility
+                    : Icons.visibility_off),
+                onPressed: () {
+                  setState(() {
+                    passwordInvisible = !passwordInvisible;
+                  });
+                })),
+        onChanged: (newValue) {
+          password = newValue;
+        },
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          const Text("HTW"),
+          Switch(
+            value: tudSelected,
+            onChanged: (value) {
+              setState(() {
+                tudSelected = value;
+              });
+            },
+          ),
+          const Text("TUD"),
+        ],
+      ),
+      const SizedBox(height: 20),
+      ElevatedButton(
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            saveData();
+          },
+          child: const Text("Daten aktualisieren")),
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[200], foregroundColor: Colors.black),
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            saveData();
+          },
+          child: const Text("Daten löschen")),
+    ];
+  }
+
+  List<Widget> sectionSpacing() {
+    return [
+      const SizedBox(height: 20),
+      const Divider(),
+      const SizedBox(height: 20),
+    ];
   }
 
   @override
@@ -127,77 +196,10 @@ class _SettingsViewState extends State<SettingsView> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
-              TextField(
-                maxLines: 1,
-                autocorrect: false,
-                decoration: InputDecoration(
-                    labelText: 'Benutzername: $username',
-                    hintText: 'Neuen Benutzernamen hier eingeben'),
-                onChanged: (newValue) {
-                  username = newValue;
-                },
-              ),
-              TextField(
-                maxLines: 1,
-                autocorrect: false,
-                obscureText: passwordInvisible,
-                decoration: InputDecoration(
-                    hintText: 'Neues Passwort hier eingeben',
-                    labelText: 'Passwort ${password.length}',
-                    // this button is used to toggle the password visibility
-                    suffixIcon: IconButton(
-                        icon: Icon(passwordInvisible
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () {
-                          setState(() {
-                            passwordInvisible = !passwordInvisible;
-                          });
-                        })),
-                onChanged: (newValue) {
-                  password = newValue;
-                },
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text("HTW"),
-                  Switch(
-                    value: tudSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        tudSelected = value;
-                      });
-                    },
-                  ),
-                  const Text("TUD"),
-                ],
-              ),
-              const Padding(padding: EdgeInsets.all(10)),
-              ElevatedButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    saveData();
-                  },
-                  child: const Text("Daten aktualisieren")),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red[200],
-                      foregroundColor: Colors.black),
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    saveData();
-                  },
-                  child: const Text("Daten löschen")),
-              SizedBox(
-                height: 20,
-              ),
-              const Divider(),
+              ...settingsForm(),
+              ...sectionSpacing(),
               licenceView(),
-              SizedBox(
-                height: 20,
-              ),
-              const Divider(),
+              ...sectionSpacing(),
               Text(appVersion)
             ])));
   }

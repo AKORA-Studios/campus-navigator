@@ -1,6 +1,7 @@
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Styling.dart';
@@ -22,6 +23,8 @@ class _SettingsViewState extends State<SettingsView> {
   bool passwordInvisible = true;
   bool updateView = false;
 
+  String appVersion = "?.?.? (?.?)";
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +42,17 @@ class _SettingsViewState extends State<SettingsView> {
     Storage.Shared.getUniversity().then((value) {
       setState(() {
         tudSelected = value == "1";
+      });
+    });
+
+    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      print("fff");
+      String appName = packageInfo.appName;
+      String packageName = packageInfo.packageName;
+      String version = packageInfo.version;
+      String buildNumber = packageInfo.buildNumber;
+      setState(() {
+        appVersion = version + "(" + buildNumber + ")";
       });
     });
   }
@@ -65,7 +79,8 @@ class _SettingsViewState extends State<SettingsView> {
         "https://pub.dev/packages/flutter_secure_storage/license",
     "flutter_launcher_icons":
         "https://pub.dev/packages/flutter_launcher_icons/license",
-    "maps_toolkit": "https://pub.dev/packages/maps_toolkit/license"
+    "maps_toolkit": "https://pub.dev/packages/maps_toolkit/license",
+    "package_info_plus": "https://pub.dev/packages/package_info_plus/license"
   };
 
   Widget licenceView() {
@@ -178,7 +193,12 @@ class _SettingsViewState extends State<SettingsView> {
                 height: 20,
               ),
               const Divider(),
-              licenceView()
+              licenceView(),
+              SizedBox(
+                height: 20,
+              ),
+              const Divider(),
+              Text(appVersion)
             ])));
   }
 }

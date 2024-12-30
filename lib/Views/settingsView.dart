@@ -33,16 +33,25 @@ class _SettingsViewState extends State<SettingsView> {
     super.initState();
 
     (() async {
-      final usernameValue = await Storage.Shared.getUsername();
+      // The tuple is used so that the functions will be executed in parallel
+      final (
+        usernameValue,
+        passwordValue,
+        tudSelectedValue,
+        cacheDurationValue,
+        prefetchingLevelValue,
+        qualityLevelValue,
+        packageInfo
+      ) = await (
+        Storage.Shared.getUsername(),
+        Storage.Shared.getPassword(),
+        Storage.Shared.getUniversity(),
+        Storage.Shared.getCacheDuration(),
+        Storage.Shared.getPrefetchingLevel(),
+        Storage.Shared.getQualityLevel(),
+        PackageInfo.fromPlatform()
+      ).wait;
 
-      final passwordValue = await Storage.Shared.getPassword();
-      final tudSelectedValue = await Storage.Shared.getUniversity();
-
-      final cacheDurationValue = await Storage.Shared.getCacheDuration();
-      final prefetchingLevelValue = await Storage.Shared.getPrefetchingLevel();
-      final qualityLevelValue = await Storage.Shared.getQualityLevel();
-
-      final packageInfo = await PackageInfo.fromPlatform();
       // String appName = packageInfo.appName;
       // String packageName = packageInfo.packageName;
       String version = packageInfo.version;

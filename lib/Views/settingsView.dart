@@ -409,7 +409,7 @@ class _SettingsViewState extends State<SettingsView> {
           title: const Text("Einstellungen"),
         ),
         body: SingleChildScrollView(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(15.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               ...settingsForm(),

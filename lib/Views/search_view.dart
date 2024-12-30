@@ -118,9 +118,7 @@ class _SearchViewState extends State<SearchView> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const SettingsView(name: "Settings")),
+                  MaterialPageRoute(builder: (context) => const SettingsView()),
                 );
               },
             ),

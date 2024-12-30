@@ -7,9 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../Styling.dart';
 
 class SettingsView extends StatefulWidget {
-  const SettingsView({super.key, required this.name});
-
-  final String name;
+  const SettingsView({super.key});
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
@@ -140,13 +138,15 @@ class _SettingsViewState extends State<SettingsView> {
               WidgetSpan(
                 child: Icon(Icons.info,
                     size: 15,
-                    color: Theme.of(context).colorScheme.onBackground),
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withAlpha(150)),
               ),
               const WidgetSpan(child: SizedBox(width: 5)),
               TextSpan(
                 text: description,
                 style: TextStyle(
-                    color: Theme.of(context).colorScheme.onBackground),
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withAlpha(150)),
               ),
             ],
           ),
@@ -383,7 +383,7 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.name),
+          title: const Text("Einstellungen"),
         ),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),

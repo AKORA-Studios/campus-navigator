@@ -377,7 +377,7 @@ class _SettingsViewState extends State<SettingsView> {
                     child: const Text("Daten aktualisieren")),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[200],
+                        backgroundColor: Theme.of(context).colorScheme.error,
                         foregroundColor: Colors.black),
                     onPressed: () {
                       FocusScope.of(context).unfocus();

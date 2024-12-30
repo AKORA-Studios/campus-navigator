@@ -85,6 +85,16 @@ class _SettingsViewState extends State<SettingsView> {
     });
   }
 
+  void deleteData() async {
+    await Storage.Shared.editUsername("");
+    await Storage.Shared.editpassword("");
+    await Storage.Shared.editUniversity("1");
+
+    setState(() {
+      updateView = !updateView;
+    });
+  }
+
   Map<String, String> licences = {
     "cupertino_icons": "https://pub.dev/packages/cupertino_icons/license",
     "http": "https://pub.dev/packages/http/license",
@@ -289,7 +299,7 @@ class _SettingsViewState extends State<SettingsView> {
     return [
       ...settingsSection(
           title: "Anmeldedaten",
-          description: "ZIH Login Daten zum abrufen des Raumbelegungsplans",
+          description: "ZIH Login Daten zum Abrufen des Raumbelegungsplans",
           children: [
             TextField(
               maxLines: 1,
@@ -322,9 +332,6 @@ class _SettingsViewState extends State<SettingsView> {
             Row(
               children: [
                 const Text("Ausgewählte Universität: "),
-                const SizedBox(
-                  width: 20,
-                ),
                 SegmentedButton(
                   segments: const [
                     ButtonSegment(
@@ -352,30 +359,31 @@ class _SettingsViewState extends State<SettingsView> {
                 )
               ],
             ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      saveData();
+                    },
+                    child: const Text("Daten aktualisieren")),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[200],
+                        foregroundColor: Colors.black),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      deleteData();
+                    },
+                    child: const Text("Daten löschen"))
+              ],
+            ),
           ]),
       ...cacheDurationSection(),
       ...prefetchSection(),
       ...qualityLevelSection(),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ElevatedButton(
-              onPressed: () {
-                FocusScope.of(context).unfocus();
-                saveData();
-              },
-              child: const Text("Daten aktualisieren")),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[200],
-                  foregroundColor: Colors.black),
-              onPressed: () {
-                FocusScope.of(context).unfocus();
-                saveData();
-              },
-              child: const Text("Daten löschen"))
-        ],
-      ),
     ];
   }
 

@@ -6,6 +6,21 @@ class Styling {
 
   static const settingsHeadingStyle =
       TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: primaryColor);
+
+  static final settingsSegmentedButtonStyle = ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith((states) {
+        if (states.firstOrNull == MaterialState.selected) {
+          return Styling.primaryColor;
+        } else {
+          return Colors.transparent;
+        }
+      }),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+        ),
+      ),
+      alignment: Alignment.center);
 }
 
 class AppTheme {

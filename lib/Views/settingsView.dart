@@ -186,16 +186,6 @@ class _SettingsViewState extends State<SettingsView> {
     ];
   }
 
-  MaterialStateProperty<Color?> backgroundColorProperty() {
-    return MaterialStateProperty.resolveWith((states) {
-      if (states.firstOrNull == MaterialState.selected) {
-        return Styling.primaryColor;
-      } else {
-        return Colors.transparent;
-      }
-    });
-  }
-
   List<Widget> cacheDurationSection() {
     return settingsSection(
         title: "Cache Zeitspanne",
@@ -206,7 +196,7 @@ class _SettingsViewState extends State<SettingsView> {
           SegmentedButton<CacheDuration>(
             multiSelectionEnabled: false,
             showSelectedIcon: false,
-            style: ButtonStyle(backgroundColor: backgroundColorProperty()),
+            style: Styling.settingsSegmentedButtonStyle,
             segments: const <ButtonSegment<CacheDuration>>[
               ButtonSegment<CacheDuration>(
                 value: CacheDuration.day,
@@ -267,28 +257,17 @@ class _SettingsViewState extends State<SettingsView> {
           SegmentedButton<PrefetchingLevel>(
             multiSelectionEnabled: false,
             showSelectedIcon: false,
-            style: ButtonStyle(backgroundColor: backgroundColorProperty()),
+            style: Styling.settingsSegmentedButtonStyle,
             segments: const <ButtonSegment<PrefetchingLevel>>[
               ButtonSegment<PrefetchingLevel>(
-                value: PrefetchingLevel.none,
-                label: Column(
-                  children: [Icon(Icons.not_interested), Text('Keine')],
-                ),
-              ),
+                  value: PrefetchingLevel.none,
+                  label: Text('Keine', textAlign: TextAlign.center)),
               ButtonSegment<PrefetchingLevel>(
-                value: PrefetchingLevel.firstResult,
-                label: Column(
-                  children: [Icon(Icons.rule), Text('Erstes Ergebniss')],
-                ),
-              ),
+                  value: PrefetchingLevel.firstResult,
+                  label: Text('Erstes Ergebniss', textAlign: TextAlign.center)),
               ButtonSegment<PrefetchingLevel>(
                 value: PrefetchingLevel.allResults,
-                label: Column(
-                  children: [
-                    Icon(Icons.checklist),
-                    Text('Alle Ergebnisse'),
-                  ],
-                ),
+                label: Text('Alle Ergebnisse', textAlign: TextAlign.center),
               ),
             ],
             selected: <PrefetchingLevel>{prefetchingLevel},
@@ -361,9 +340,11 @@ class _SettingsViewState extends State<SettingsView> {
             ),
             const SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 const Text("Ausgewählte Universität: "),
                 SegmentedButton(
+                  showSelectedIcon: false,
                   segments: const [
                     ButtonSegment(
                       value: true,
@@ -375,13 +356,7 @@ class _SettingsViewState extends State<SettingsView> {
                     )
                   ],
                   selected: <bool>{tudSelected},
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                      ),
-                    ),
-                  ),
+                  style: Styling.settingsSegmentedButtonStyle,
                   onSelectionChanged: (newSelection) {
                     setState(() {
                       tudSelected = newSelection.first;

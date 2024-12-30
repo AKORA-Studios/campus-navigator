@@ -205,24 +205,45 @@ class _SettingsViewState extends State<SettingsView> {
         children: [
           SegmentedButton<CacheDuration>(
             multiSelectionEnabled: false,
+            showSelectedIcon: false,
             style: ButtonStyle(backgroundColor: backgroundColorProperty()),
             segments: const <ButtonSegment<CacheDuration>>[
               ButtonSegment<CacheDuration>(
-                  value: CacheDuration.day,
-                  label: Text('Tag'),
-                  icon: Icon(Icons.calendar_view_day)),
+                value: CacheDuration.day,
+                label: Column(
+                  children: [
+                    Icon(Icons.calendar_view_day),
+                    Text('Tag'),
+                  ],
+                ),
+              ),
               ButtonSegment<CacheDuration>(
-                  value: CacheDuration.week,
-                  label: Text('Woche'),
-                  icon: Icon(Icons.calendar_view_week)),
+                value: CacheDuration.week,
+                label: Column(
+                  children: [
+                    Icon(Icons.calendar_view_week),
+                    Text('Woche'),
+                  ],
+                ),
+              ),
               ButtonSegment<CacheDuration>(
-                  value: CacheDuration.month,
-                  label: Text('Monat'),
-                  icon: Icon(Icons.calendar_view_month)),
+                value: CacheDuration.month,
+                label: Column(
+                  children: [
+                    Icon(Icons.calendar_view_month),
+                    Text('Monat'),
+                  ],
+                ),
+              ),
               ButtonSegment<CacheDuration>(
-                  value: CacheDuration.year,
-                  label: Text('Jahr'),
-                  icon: Icon(Icons.calendar_today)),
+                value: CacheDuration.year,
+                label: Column(
+                  children: [
+                    Icon(Icons.calendar_today),
+                    Text('Jahr'),
+                  ],
+                ),
+              ),
             ],
             selected: <CacheDuration>{cacheDuration},
             onSelectionChanged: (Set<CacheDuration> newSelection) async {
@@ -245,20 +266,30 @@ class _SettingsViewState extends State<SettingsView> {
         children: [
           SegmentedButton<PrefetchingLevel>(
             multiSelectionEnabled: false,
+            showSelectedIcon: false,
             style: ButtonStyle(backgroundColor: backgroundColorProperty()),
             segments: const <ButtonSegment<PrefetchingLevel>>[
               ButtonSegment<PrefetchingLevel>(
-                  value: PrefetchingLevel.none,
-                  label: Text('Keine'),
-                  icon: Icon(Icons.not_interested)),
+                value: PrefetchingLevel.none,
+                label: Column(
+                  children: [Icon(Icons.not_interested), Text('Keine')],
+                ),
+              ),
               ButtonSegment<PrefetchingLevel>(
-                  value: PrefetchingLevel.firstResult,
-                  label: Text('Erstes Ergebniss'),
-                  icon: Icon(Icons.rule)),
+                value: PrefetchingLevel.firstResult,
+                label: Column(
+                  children: [Icon(Icons.rule), Text('Erstes Ergebniss')],
+                ),
+              ),
               ButtonSegment<PrefetchingLevel>(
-                  value: PrefetchingLevel.allResults,
-                  label: Text('Alle Ergebnisse'),
-                  icon: Icon(Icons.checklist)),
+                value: PrefetchingLevel.allResults,
+                label: Column(
+                  children: [
+                    Icon(Icons.checklist),
+                    Text('Alle Ergebnisse'),
+                  ],
+                ),
+              ),
             ],
             selected: <PrefetchingLevel>{prefetchingLevel},
             onSelectionChanged: (Set<PrefetchingLevel> newSelection) async {

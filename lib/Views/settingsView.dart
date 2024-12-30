@@ -413,7 +413,6 @@ class _SettingsViewState extends State<SettingsView> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               ...settingsForm(),
-              ...sectionSpacing(),
               ...licenceView(),
               Center(
                   child: Column(

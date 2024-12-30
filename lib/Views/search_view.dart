@@ -123,7 +123,7 @@ class _SearchViewState extends State<SearchView> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.map),
+              icon: const Icon(Icons.location_on),
               tooltip: 'Open Location',
               onPressed: () {
                 Navigator.push(

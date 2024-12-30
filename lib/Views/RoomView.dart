@@ -226,7 +226,7 @@ class _RoomViewState extends State<RoomView> {
                           "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
                   ElevatedButton(
                     onPressed: isRoomSelected ? openRoomPlan : null,
-                    child: const Icon(Icons.share),
+                    child: const Icon(Icons.open_in_browser),
                   )
                 ],
               ),

@@ -1,5 +1,4 @@
 import 'package:campus_navigator/api/storage.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -96,41 +95,16 @@ class _SettingsViewState extends State<SettingsView> {
     });
   }
 
-  Map<String, String> licences = {
-    "cupertino_icons": "https://pub.dev/packages/cupertino_icons/license",
-    "http": "https://pub.dev/packages/http/license",
-    "html": "https://pub.dev/packages/html/license",
-    "share_plus": "https://pub.dev/packages/share_plus/license",
-    "maps_launcher": "https://pub.dev/packages/maps_launcher/license",
-    "flutter_cache_manager":
-        "https://pub.dev/packages/flutter_cache_manager/license",
-    "flutter_secure_storage":
-        "https://pub.dev/packages/flutter_secure_storage/license",
-    "flutter_launcher_icons":
-        "https://pub.dev/packages/flutter_launcher_icons/license",
-    "maps_toolkit": "https://pub.dev/packages/maps_toolkit/license",
-    "package_info_plus": "https://pub.dev/packages/package_info_plus/license"
-  };
-
   List<Widget> licenceView() {
-    List<Widget> children = [];
-
-    for (String key in licences.keys) {
-      children.add(SelectableText.rich(TextSpan(children: [
-        TextSpan(
-            text: key,
-            style: const TextStyle(
-                decorationColor: Styling.primaryColor,
-                decoration: TextDecoration.underline),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                openLicence(licences[key]!);
-              }),
-      ])));
-    }
-    children.add(const SizedBox(height: 20));
-    children.add(const Text("Powerd by Flutter"));
-    return settingsSection(title: "Dependencies licences", children: children);
+    return settingsSection(title: "Dependencies licences", children: [
+      TextButton.icon(
+          onPressed: () {
+            showLicensePage(
+                context: context, applicationName: "Campus Navigator");
+          },
+          icon: const Icon(Icons.receipt_long_outlined),
+          label: const Text("Show licenses"))
+    ]);
   }
 
   void openLicence(String url) async {

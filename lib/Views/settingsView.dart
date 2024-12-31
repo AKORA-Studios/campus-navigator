@@ -1,6 +1,7 @@
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -75,7 +76,7 @@ class _SettingsViewState extends State<SettingsView> {
   String get username => _usernameController.text;
   String get password => _passwordController.text;
 
-  void saveData() async {
+  saveData() async {
     await Storage.Shared.editUsername(_usernameController.text);
     await Storage.Shared.editpassword(_passwordController.text);
     await Storage.Shared.editUniversity(tudSelected ? "1" : "2");
@@ -85,7 +86,7 @@ class _SettingsViewState extends State<SettingsView> {
     });
   }
 
-  void deleteData() async {
+  deleteData() async {
     await Storage.Shared.editUsername("");
     await Storage.Shared.editpassword("");
     await Storage.Shared.editUniversity("1");
@@ -145,31 +146,33 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
+  Widget descriptionWidget(BuildContext context, String description) {
+    return RichText(
+      text: TextSpan(
+        children: [
+          WidgetSpan(
+            child: Icon(Icons.info,
+                size: 15,
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(150)),
+          ),
+          const WidgetSpan(child: SizedBox(width: 5)),
+          TextSpan(
+            text: description,
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(150)),
+          ),
+        ],
+      ),
+    );
+  }
+
   List<Widget> settingsSection(
       {required String title,
       String? description,
       required List<Widget> children}) {
     if (description != null) {
       children = [
-        RichText(
-          text: TextSpan(
-            children: [
-              WidgetSpan(
-                child: Icon(Icons.info,
-                    size: 15,
-                    color:
-                        Theme.of(context).colorScheme.onSurface.withAlpha(150)),
-              ),
-              const WidgetSpan(child: SizedBox(width: 5)),
-              TextSpan(
-                text: description,
-                style: TextStyle(
-                    color:
-                        Theme.of(context).colorScheme.onSurface.withAlpha(150)),
-              ),
-            ],
-          ),
-        ),
+        descriptionWidget(context, description),
         const SizedBox(height: 15),
         ...children,
       ];
@@ -186,12 +189,12 @@ class _SettingsViewState extends State<SettingsView> {
     ];
   }
 
-  List<Widget> cacheDurationSection() {
+  List<Widget> cacheSettingsSection() {
     return settingsSection(
-        title: "Cache Zeitspanne",
+        title: "Cache Optionen",
         description:
             'Damit wird festgelegt, wie lange die Suchergebnisse zwischengespeichert werden sollen. Die Auswahl'
-            ' slängerer Zeiträume verringert den Datenverbrauch und verbessert die Leistung, kann aber zu ungenauen Ergebnissen führen.',
+            ' längerer Zeiträume verringert den Datenverbrauch und verbessert die Leistung, kann aber zu veralteten Ergebnissen führen.',
         children: [
           SegmentedButton<CacheDuration>(
             multiSelectionEnabled: false,
@@ -244,6 +247,14 @@ class _SettingsViewState extends State<SettingsView> {
               });
             },
           ),
+          const SizedBox(height: 15),
+          desctructiveDialogButton(context,
+              title: "Cache leeren",
+              content:
+                  "Entfernt alle zuvor zwischengespeicherten Resourcen aus dem Cache",
+              confirmText: "Leeren", onConfirm: () async {
+            await DefaultCacheManager().emptyCache();
+          })
         ]);
   }
 
@@ -289,7 +300,7 @@ class _SettingsViewState extends State<SettingsView> {
         description:
             'Entscheidet wie hoch die Auflösung der Details in der Gebäudeansicht sind, die Datennutzung steigt exponentiell mit jeder Detailstufe',
         children: [
-          Slider(
+          Slider.adaptive(
             value: qualityLevel,
             min: 1,
             max: 4,
@@ -375,19 +386,16 @@ class _SettingsViewState extends State<SettingsView> {
                       saveData();
                     },
                     child: const Text("Daten aktualisieren")),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.error,
-                        foregroundColor: Colors.black),
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      deleteData();
-                    },
-                    child: const Text("Daten löschen"))
+                desctructiveDialogButton(context,
+                    title: "Daten löschen",
+                    content: "Setzt die Zugangsdaten zurück",
+                    confirmText: "Löschen", onConfirm: () async {
+                  await deleteData();
+                })
               ],
             ),
           ]),
-      ...cacheDurationSection(),
+      ...cacheSettingsSection(),
       ...prefetchSection(),
       ...qualityLevelSection(),
     ];
@@ -421,4 +429,44 @@ class _SettingsViewState extends State<SettingsView> {
               ))
             ])));
   }
+}
+
+Widget desctructiveDialogButton(BuildContext context,
+    {required String title,
+    required String content,
+    String abortText = "Abbrechen",
+    String confirmText = "Bestätigen",
+    Future<void> Function()? onConfirm}) {
+  return ElevatedButton.icon(
+      style: Styling.desctructiveButtonStyle(context),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog.adaptive(
+                title: Text(title),
+                content: Text(content),
+                actions: [
+                  TextButton(
+                    child: Text(abortText),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    style: Styling.desctructiveButtonStyle(context),
+                    child: Text(confirmText),
+                    onPressed: () async {
+                      if (onConfirm != null) {
+                        await onConfirm();
+                      }
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      },
+      icon: const Icon(Icons.delete),
+      label: Text(title));
 }

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'RoomView.dart';
+import 'roomView.dart';
 
 class LocationView extends StatefulWidget {
   const LocationView({super.key, required this.name});

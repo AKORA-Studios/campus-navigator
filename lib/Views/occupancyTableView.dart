@@ -1,3 +1,4 @@
+import 'package:campus_navigator/Styling.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -26,16 +27,24 @@ Widget occupancyTableView(
         if (index2 == 0 || index == 0) {
           //  Left side
           rowEntries.add(Text(
-            entry,
+            entry.replaceAll("-", "\n"),
             style: boldStyle,
             textAlign: TextAlign.center,
           ));
         } else {
-          rowEntries.add(Text(
-            entry,
-            style: basicStyle,
-            textAlign: TextAlign.center,
-          ));
+          rowEntries.add(
+            TableCell(
+                verticalAlignment: TableCellVerticalAlignment.fill,
+                child: Container(
+                    color: entry.isNotEmpty
+                        ? Colors.grey.withAlpha(40)
+                        : Colors.transparent,
+                    child: Text(
+                      entry,
+                      style: basicStyle,
+                      textAlign: TextAlign.center,
+                    ))),
+          );
         }
       });
 
@@ -43,7 +52,7 @@ Widget occupancyTableView(
       if (index == 0) {
         tableRows.add(TableRow(
             children: rowEntries,
-            decoration: BoxDecoration(color: Colors.blue[300])));
+            decoration: BoxDecoration(color: Styling.primaryColor)));
       } else {
         tableRows.add(TableRow(children: rowEntries));
       }

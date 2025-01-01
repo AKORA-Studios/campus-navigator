@@ -21,6 +21,12 @@ class Styling {
         ),
       ),
       alignment: Alignment.center);
+
+  static desctructiveButtonStyle(BuildContext context) {
+    return ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.error,
+        foregroundColor: Colors.black);
+  }
 }
 
 class AppTheme {

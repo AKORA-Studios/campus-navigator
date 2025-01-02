@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class FreiraumsucheResult {
+class FreeroomSearchResult {
   final List<String> rooms;
   final Map<String, HtwRoominfo> htwRoominfo;
   final List<List<int>> htwTaken;
@@ -8,7 +8,7 @@ class FreiraumsucheResult {
   final List<List<int>> taken;
   final Map<String, Roominfo> roominfo;
 
-  FreiraumsucheResult({
+  FreeroomSearchResult({
     required this.rooms,
     required this.htwRoominfo,
     required this.htwTaken,
@@ -17,13 +17,13 @@ class FreiraumsucheResult {
     required this.roominfo,
   });
 
-  factory FreiraumsucheResult.fromRawJson(String str) =>
-      FreiraumsucheResult.fromJson(json.decode(str));
+  factory FreeroomSearchResult.fromRawJson(String str) =>
+      FreeroomSearchResult.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory FreiraumsucheResult.fromJson(Map<String, dynamic> json) =>
-      FreiraumsucheResult(
+  factory FreeroomSearchResult.fromJson(Map<String, dynamic> json) =>
+      FreeroomSearchResult(
         rooms: List<String>.from(json["rooms"].map((x) => x)),
         htwRoominfo: Map.from(json["htw_roominfo"]).map((k, v) =>
             MapEntry<String, HtwRoominfo>(k, HtwRoominfo.fromJson(v))),

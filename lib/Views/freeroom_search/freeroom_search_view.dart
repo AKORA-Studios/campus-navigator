@@ -1,22 +1,22 @@
 import 'dart:convert';
 
-import 'package:campus_navigator/api/freiraumsuche/search_options.dart';
+import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:flutter/material.dart';
 
-import '../Styling.dart';
-import '../api/freiraumsuche/search.dart';
-import '../api/freiraumsuche/search_result.dart';
-import '../api/storage.dart';
+import '../../Styling.dart';
+import '../../api/freeroom_search/search.dart';
+import '../../api/freeroom_search/search_result.dart';
+import '../../api/storage.dart';
 
-class FreiraumSucheView extends StatefulWidget {
-  const FreiraumSucheView({super.key});
+class FreeroomSearchView extends StatefulWidget {
+  const FreeroomSearchView({super.key});
 
   @override
-  State<FreiraumSucheView> createState() => _FreiraumSucheViewState();
+  State<FreeroomSearchView> createState() => _FreeroomSearchViewState();
 }
 
-class _FreiraumSucheViewState extends State<FreiraumSucheView> {
-  Future<FreiraumsucheResult>? result;
+class _FreeroomSearchViewState extends State<FreeroomSearchView> {
+  Future<FreeroomSearchResult>? result;
   Set<UserUniversity> selectedUniversities = {...UserUniversity.values};
   RangeValues weekRange = const RangeValues(1, 52);
   Repetition repetition = Repetition.once;
@@ -25,7 +25,15 @@ class _FreiraumSucheViewState extends State<FreiraumSucheView> {
   void initState() {
     super.initState();
 
-    result = searchFreeRooms();
+    updateSearch();
+  }
+
+  updateSearch() {
+    result = searchFreeRooms(
+        startWeek: weekRange.start.round(),
+        endWeek: weekRange.end.round(),
+        universities: selectedUniversities,
+        repetition: repetition);
   }
 
   @override
@@ -63,7 +71,7 @@ class _FreiraumSucheViewState extends State<FreiraumSucheView> {
                       });
                     },
                   ),
-
+                  const SizedBox(height: 20),
                   SegmentedButton<Repetition>(
                     multiSelectionEnabled: false,
                     showSelectedIcon: false,
@@ -89,6 +97,7 @@ class _FreiraumSucheViewState extends State<FreiraumSucheView> {
                       });
                     },
                   ),
+                  const SizedBox(height: 20),
                   // TODO: Use slider theme to gray out ends when they're at the max
                   RangeSlider(
                       values: weekRange,
@@ -105,10 +114,11 @@ class _FreiraumSucheViewState extends State<FreiraumSucheView> {
                           weekRange = newValue;
                         });
                       }),
+                  const SizedBox(height: 20),
                   TextButton.icon(
                       onPressed: () {
                         setState(() {
-                          result = searchFreeRooms();
+                          updateSearch();
                         });
                       },
                       icon: const Icon(Icons.search),
@@ -124,7 +134,7 @@ class _FreiraumSucheViewState extends State<FreiraumSucheView> {
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         throw snapshot.error!;
-                        return Text('${snapshot.error}');
+                        //return Text('${snapshot.error}');
                       } else if (!snapshot.hasData) {
                         return const SizedBox.shrink();
                       }

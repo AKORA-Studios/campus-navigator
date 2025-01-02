@@ -41,13 +41,41 @@ enum CacheDuration {
   }
 }
 
+enum UserUniversity {
+  TUD(1),
+  HTW(2);
+
+  const UserUniversity(this.value);
+  final num value;
+
+  factory UserUniversity.fromValue(int val) {
+    return values.firstWhere((e) => e.value == val);
+  }
+
+  @override
+  String toString() => this.value.toString();
+}
+
+enum layerFilterOptions {
+  Labeling,
+  Seminarrooms,
+  Toilets,
+  Barrier_free_wc,
+  Staircase,
+  Elevator,
+  otherRooms,
+  WLAN_Accesspoints,
+  Defirbilator,
+  Changing_table;
+}
+
 // TODO: https://pub.dev/packages/flutter_secure_storage#configure-web-version
 class Storage {
   static const keyUsername = "Username";
   static const keyPassword = "Password";
   static const keyUniversity = "University";
 
-  // Nework usage options
+  // Network usage options
   static const keyQualityLevel = "QualityLevel";
   static const keyPrefetchingLevel = "PrefetchingLevel";
   static const keyCacheDuration = "CacheDuration";
@@ -74,15 +102,17 @@ class Storage {
     return await storage.write(key: keyPassword, value: newValue);
   }
 
-  Future<String?> getUniversity() {
-    return storage.read(key: keyUniversity);
+  Future<UserUniversity> getUniversity() async {
+    var value = await storage.read(key: keyUniversity);
+    return UserUniversity.fromValue(int.parse(value ?? "1"));
   }
 
-  Future<void> editUniversity(String newValue) async {
-    return await storage.write(key: keyUniversity, value: newValue);
+  Future<void> editUniversity(UserUniversity newValue) async {
+    return await storage.write(
+        key: keyUniversity, value: newValue.value.toString());
   }
 
-  // Nework usage options
+  // Network usage options
 
   // Quality Level
   Future<int> getQualityLevel() async {

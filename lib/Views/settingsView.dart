@@ -78,7 +78,8 @@ class _SettingsViewState extends State<SettingsView> {
   saveData() async {
     await Storage.Shared.editUsername(_usernameController.text);
     await Storage.Shared.editpassword(_passwordController.text);
-    await Storage.Shared.editUniversity(tudSelected ? "1" : "2");
+    await Storage.Shared.editUniversity(
+        tudSelected ? UserUniversity.TUD : UserUniversity.HTW);
 
     setState(() {
       updateView = !updateView;
@@ -88,7 +89,7 @@ class _SettingsViewState extends State<SettingsView> {
   deleteData() async {
     await Storage.Shared.editUsername("");
     await Storage.Shared.editpassword("");
-    await Storage.Shared.editUniversity("1");
+    await Storage.Shared.editUniversity(UserUniversity.TUD);
 
     setState(() {
       updateView = !updateView;

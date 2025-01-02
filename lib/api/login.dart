@@ -20,7 +20,7 @@ class LoginResponse {
   static Future<LoginResponse> postLogin() async {
     String? user = await Storage.Shared.getUsername();
     String? passwd = await Storage.Shared.getPassword();
-    int university = int.parse(await Storage.Shared.getUniversity() ?? "1");
+    int university = int.parse(await Storage.Shared.getUniversity().toString());
 
     if (user == null) {
       throw Exception('Failed to login: No Username set');

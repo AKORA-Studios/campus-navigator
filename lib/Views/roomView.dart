@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api/login.dart';
+import '../api/storage.dart';
 import 'BottomSheetView.dart';
 import 'building_view.dart';
 import 'occupancyTableView.dart';
@@ -33,6 +34,7 @@ class _RoomViewState extends State<RoomView> {
   bool showOccupancyTable = false;
   String? errorMessageOccupancyTable;
   bool updateView = false;
+  Set<layerFilterOptions> selectedFilters = Set.from([]);
 
   @override
   void dispose() {
@@ -50,6 +52,7 @@ class _RoomViewState extends State<RoomView> {
     });
   }
 
+  // TODO: use correct Room ID
   void loadOccupancyTable() {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
@@ -97,6 +100,33 @@ class _RoomViewState extends State<RoomView> {
           final room = snapshot.data!;
           return widgetBuilder(room);
         });
+  }
+
+  Widget filterOption(layerFilterOptions opt) {
+    return StatefulBuilder(
+      builder: (context, _setState) {
+        return Row(
+          children: [
+            Checkbox(
+              value: selectedFilters.contains(opt),
+              activeColor: Styling.primaryColor.withAlpha(100),
+              checkColor: Theme.of(context).colorScheme.onSurface,
+              onChanged: (isSelected) {
+                if (isSelected == true) {
+                  selectedFilters.add(opt);
+                } else {
+                  selectedFilters.remove(opt);
+                }
+                _setState(() {}); // Update checkbox state
+                setState(() {}); // Update parent widget
+              },
+            ),
+            SizedBox(width: 10),
+            Text(opt.toString()),
+          ],
+        );
+      },
+    );
   }
 
   Widget dropDown(BuildingPageData roomPage) {
@@ -199,6 +229,27 @@ class _RoomViewState extends State<RoomView> {
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: Row(
                 children: [
+                  TextButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              List<Widget> opt = layerFilterOptions.values
+                                  .map((e) => filterOption(e))
+                                  .toList();
+                              opt.insert(0, Text("Aviable Filter Options:"));
+                              return SingleChildScrollView(
+                                  child: Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Column(children: opt)));
+                            });
+                      },
+                      child: Row(
+                        children: [
+                          Text("Filter: (${selectedFilters.length})"),
+                          Icon(Icons.arrow_drop_down_sharp)
+                        ],
+                      )),
                   const Text("Etage wechseln:"),
                   futurify(dropDown),
                 ],

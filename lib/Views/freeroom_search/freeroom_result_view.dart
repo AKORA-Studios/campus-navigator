@@ -22,9 +22,20 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
 
   @override
   Widget build(BuildContext context) {
+    final rows = widget.data.toTable();
+
     return SingleChildScrollView(
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [...data.rooms.map((r) => Text(r))]));
+        child: Table(
+      border: TableBorder.all(color: Colors.grey),
+      children: rows
+          .map((e) => TableRow(
+              children: e
+                  .map((e) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: e.map((e) => Text(e)).toList(),
+                      ))
+                  .toList()))
+          .toList(),
+    ));
   }
 }

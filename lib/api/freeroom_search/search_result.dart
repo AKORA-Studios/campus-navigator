@@ -17,6 +17,46 @@ class FreeroomSearchResult {
     required this.roominfo,
   });
 
+  /// Returns a row list representation of the free rooms
+  /// Each row is a day from monday to friday
+  /// Each column is a DS
+  /// Each entry in a cell is a free room
+  ///
+  /// Based on `Huefm.foundFreeRooms` on
+  /// https://navigator.tu-dresden.de/huefm/findfreerooms
+  List<List<List<String>>> toTable() {
+    var curday = -1;
+
+    List<List<List<String>>> rows = [];
+
+    for (var i = 0; i < 45; i++) {
+      //9 slots * 5 Tage
+      var mod = i % 9;
+
+      if (mod == 0) {
+        curday++;
+
+        rows.add([]);
+      }
+
+      if (rooms.isNotEmpty && mod <= 6) {
+        var takenRooms = taken[i];
+
+        List<String> cellData = [];
+
+        for (var j = 0; j < rooms.length; j++) {
+          if (!takenRooms.contains(j)) {
+            cellData.add(rooms[j]);
+          }
+        }
+
+        rows[curday].add(cellData);
+      }
+    }
+
+    return rows;
+  }
+
   factory FreeroomSearchResult.fromRawJson(String str) =>
       FreeroomSearchResult.fromJson(json.decode(str));
 

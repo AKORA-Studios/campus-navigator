@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +17,7 @@ class FreeroomSearchView extends StatefulWidget {
 class _FreeroomSearchViewState extends State<FreeroomSearchView> {
   Future<FreeroomSearchResult>? result;
   Set<UserUniversity> selectedUniversities = {...UserUniversity.values};
-  RangeValues weekRange = const RangeValues(1, 52);
+  RangeValues weekRange = const RangeValues(43, 43);
   Repetition repetition = Repetition.once;
 
   @override
@@ -34,7 +32,8 @@ class _FreeroomSearchViewState extends State<FreeroomSearchView> {
         startWeek: weekRange.start.round(),
         endWeek: weekRange.end.round(),
         universities: selectedUniversities,
-        repetition: repetition);
+        repetition: repetition,
+        maxCapacity: 20);
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:campus_navigator/api/search.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
+import 'freiraumsuche_view.dart';
 import 'locationView.dart';
 import 'settingsView.dart';
 
@@ -114,11 +115,22 @@ class _SearchViewState extends State<SearchView> {
           actions: [
             IconButton(
               icon: const Icon(Icons.settings),
-              tooltip: 'Open in Web',
+              tooltip: 'Einstellungen',
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const SettingsView()),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.meeting_room),
+              tooltip: 'Freiraumsuche',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const FreiraumSucheView()),
                 );
               },
             ),

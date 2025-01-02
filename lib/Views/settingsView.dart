@@ -2,7 +2,6 @@ import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../Styling.dart';
 
@@ -106,13 +105,6 @@ class _SettingsViewState extends State<SettingsView> {
           icon: const Icon(Icons.receipt_long_outlined),
           label: const Text("Show licenses"))
     ]);
-  }
-
-  void openLicence(String url) async {
-    final Uri _url = Uri.parse(url);
-    if (!await launchUrl(_url)) {
-      launchUrl(_url);
-    }
   }
 
   Widget settingsHeading(String title) {

@@ -7,6 +7,7 @@ import '../../Styling.dart';
 import '../../api/freeroom_search/search.dart';
 import '../../api/freeroom_search/search_result.dart';
 import '../../api/storage.dart';
+import 'freeroom_result_view.dart';
 
 class FreeroomSearchView extends StatefulWidget {
   const FreeroomSearchView({super.key});
@@ -138,7 +139,7 @@ class _FreeroomSearchViewState extends State<FreeroomSearchView> {
                       } else if (!snapshot.hasData) {
                         return const SizedBox.shrink();
                       }
-                      return Text(jsonEncode(snapshot.data!));
+                      return FreeroomResultView(data: snapshot.data!);
                     },
                   )
                 ],

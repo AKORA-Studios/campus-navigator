@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
 import '../../api/freeroom_search/search_result.dart';
 

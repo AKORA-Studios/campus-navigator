@@ -56,15 +56,20 @@ class _RoomViewState extends State<RoomView> {
   void loadOccupancyTable() {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
-      if (showOccupancyTable) {
+      if (showOccupancyTable && roomURL != null) {
         Future<LoginResponse> loginToken = LoginResponse.postLogin();
         loginToken.then((value) {
           Future<List<List<List<String>>>> tableContent =
-              RoomOccupancyPlan.getRoomPlan("325302.0020",
-                  token: value.loginToken);
+              RoomOccupancyPlan.getRoomPlan(roomURL!, token: value.loginToken);
           tableContent.then((value) {
             setState(() {
               roomPlan = value;
+              if (value.isEmpty) {
+                // No Data loaded/available
+                isRoomSelected = false;
+                errorMessageOccupancyTable = "Kein Raumbelegungsplan verfügbar";
+                updateView = !updateView;
+              }
             });
           });
         }).catchError(onError);
@@ -76,6 +81,7 @@ class _RoomViewState extends State<RoomView> {
     setState(() {
       errorMessageOccupancyTable = e.toString();
     });
+    throw (e);
   }
 
   void openRoomPlan() async {
@@ -194,6 +200,24 @@ class _RoomViewState extends State<RoomView> {
     );
   }
 
+  Widget occupancyButtons() {
+    return isRoomSelected
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                  onPressed: isRoomSelected ? loadOccupancyTable : null,
+                  child: Text(
+                      "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
+              ElevatedButton(
+                onPressed: isRoomSelected ? openRoomPlan : null,
+                child: const Icon(Icons.open_in_browser),
+              )
+            ],
+          )
+        : const SizedBox();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -268,19 +292,7 @@ class _RoomViewState extends State<RoomView> {
           child: Column(
             children: [
               occupancyTableView(roomPlan, showOccupancyTable),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      onPressed: isRoomSelected ? loadOccupancyTable : null,
-                      child: Text(
-                          "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
-                  ElevatedButton(
-                    onPressed: isRoomSelected ? openRoomPlan : null,
-                    child: const Icon(Icons.open_in_browser),
-                  )
-                ],
-              ),
+              occupancyButtons(),
               errorMessageOccupancyTable != null
                   ? Text(
                       errorMessageOccupancyTable ?? "",

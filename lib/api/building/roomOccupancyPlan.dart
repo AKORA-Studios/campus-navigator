@@ -1,7 +1,6 @@
 import 'package:campus_navigator/api/building/parsing/common.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:html/parser.dart';
+import 'package:http/http.dart' as http;
 
 class RoomOccupancyPlan {
   final String table;
@@ -88,7 +87,9 @@ class RoomOccupancyPlan {
           }
         }
       }
-      x.add(entries);
+      if (entries.isNotEmpty) {
+        x.add(entries);
+      }
     }
     return x;
   }

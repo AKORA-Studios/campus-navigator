@@ -52,7 +52,7 @@ Widget occupancyTableView(
       if (index == 0) {
         tableRows.add(TableRow(
             children: rowEntries,
-            decoration: BoxDecoration(color: Styling.primaryColor)));
+            decoration: const BoxDecoration(color: Styling.primaryColor)));
       } else {
         tableRows.add(TableRow(children: rowEntries));
       }

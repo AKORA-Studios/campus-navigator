@@ -34,7 +34,7 @@ class _RoomViewState extends State<RoomView> {
   bool showOccupancyTable = false;
   String? errorMessageOccupancyTable;
   bool updateView = false;
-  Set<layerFilterOptions> selectedFilters = Set.from([]);
+  Set<layerFilterOptions> selectedFilters = {};
 
   @override
   void dispose() {
@@ -127,7 +127,7 @@ class _RoomViewState extends State<RoomView> {
                 setState(() {}); // Update parent widget
               },
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(opt.toString()),
           ],
         );
@@ -261,17 +261,17 @@ class _RoomViewState extends State<RoomView> {
                               List<Widget> opt = layerFilterOptions.values
                                   .map((e) => filterOption(e))
                                   .toList();
-                              opt.insert(0, Text("Aviable Filter Options:"));
+                              opt.insert(0, const Text("Aviable Filter Options:"));
                               return SingleChildScrollView(
                                   child: Padding(
-                                      padding: EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(10),
                                       child: Column(children: opt)));
                             });
                       },
                       child: Row(
                         children: [
                           Text("Filter: (${selectedFilters.length})"),
-                          Icon(Icons.arrow_drop_down_sharp)
+                          const Icon(Icons.arrow_drop_down_sharp)
                         ],
                       )),
                   const Text("Etage wechseln:"),

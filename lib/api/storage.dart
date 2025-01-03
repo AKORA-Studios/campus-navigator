@@ -53,7 +53,7 @@ enum UserUniversity {
   }
 
   @override
-  String toString() => this.value.toString();
+  String toString() => value.toString();
 }
 
 enum layerFilterOptions {

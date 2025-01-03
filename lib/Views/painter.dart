@@ -1,7 +1,8 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
+import 'package:campus_navigator/api/storage.dart';
+import 'package:flutter/material.dart';
 
 import '../api/building/parsing/layer_data.dart';
 import '../api/building/parsing/position.dart';
@@ -165,42 +166,44 @@ class MapPainter extends CustomPainter {
     }
 
     // Beschriftungen
-    for (final entry in roomResult.raumBezData.text) {
-      final txt = entry.qy;
-      final offset = Offset(entry.x, entry.y);
+    if (Storage.Shared.filterSet.contains(layerFilterOptions.Labeling)) {
+      for (final entry in roomResult.raumBezData.text) {
+        final txt = entry.qy;
+        final offset = Offset(entry.x, entry.y);
 
-      const width = 100.0;
+        const width = 100.0;
 
-      double fontSize = min(entry.my, entry.mx / entry.qy.length);
+        double fontSize = min(entry.my, entry.mx / entry.qy.length);
 
-      // This is done to improve text readability over complex shapes like chairs
-      Shadow textShadow;
-      if (darkModeEnabled) {
-        textShadow = const Shadow(color: Colors.black, blurRadius: 20.0);
-      } else {
-        textShadow = const Shadow(color: Colors.white, blurRadius: 10.0);
-      }
+        // This is done to improve text readability over complex shapes like chairs
+        Shadow textShadow;
+        if (darkModeEnabled) {
+          textShadow = const Shadow(color: Colors.black, blurRadius: 20.0);
+        } else {
+          textShadow = const Shadow(color: Colors.white, blurRadius: 10.0);
+        }
 
-      final textPainter = TextPainter(
-          text: TextSpan(
-            text: txt,
-            style: TextStyle(
-              shadows: [textShadow],
-              color: darkModeEnabled
-                  ? Colors.grey.shade100
-                  : theme.colorScheme.onSurface,
-              fontSize: fontSize,
+        final textPainter = TextPainter(
+            text: TextSpan(
+              text: txt,
+              style: TextStyle(
+                shadows: [textShadow],
+                color: darkModeEnabled
+                    ? Colors.grey.shade100
+                    : theme.colorScheme.onSurface,
+                fontSize: fontSize,
+              ),
             ),
-          ),
-          textDirection: TextDirection.ltr,
-          textAlign: TextAlign.center);
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.center);
 
-      textPainter.layout(minWidth: width, maxWidth: width);
+        textPainter.layout(minWidth: width, maxWidth: width);
 
-      // Aligning the text vertically and horizontally
-      // 0.15 is because the text won't be perfectly vertically centere
-      textPainter.paint(canvas,
-          offset.translate(-width / 2, -((fontSize / 2) + fontSize * 0.15)));
+        // Aligning the text vertically and horizontally
+        // 0.15 is because the text won't be perfectly vertically centere
+        textPainter.paint(canvas,
+            offset.translate(-width / 2, -((fontSize / 2) + fontSize * 0.15)));
+      }
     }
   }
 

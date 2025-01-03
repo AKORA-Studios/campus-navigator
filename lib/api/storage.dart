@@ -80,6 +80,9 @@ class Storage {
   static const keyPrefetchingLevel = "PrefetchingLevel";
   static const keyCacheDuration = "CacheDuration";
 
+  // Map filters
+  var filterSet = {layerFilterOptions.Barrier_free_wc};
+
   static final Storage Shared = Storage();
 
   Storage();

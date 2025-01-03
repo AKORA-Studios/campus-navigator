@@ -120,8 +120,10 @@ class _RoomViewState extends State<RoomView> {
               onChanged: (isSelected) {
                 if (isSelected == true) {
                   selectedFilters.add(opt);
+                  Storage.Shared.filterSet.add(opt);
                 } else {
                   selectedFilters.remove(opt);
+                  Storage.Shared.filterSet.remove(opt);
                 }
                 _setState(() {}); // Update checkbox state
                 setState(() {}); // Update parent widget
@@ -261,7 +263,8 @@ class _RoomViewState extends State<RoomView> {
                               List<Widget> opt = layerFilterOptions.values
                                   .map((e) => filterOption(e))
                                   .toList();
-                              opt.insert(0, const Text("Aviable Filter Options:"));
+                              opt.insert(
+                                  0, const Text("Aviable Filter Options:"));
                               return SingleChildScrollView(
                                   child: Padding(
                                       padding: const EdgeInsets.all(10),

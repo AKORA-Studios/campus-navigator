@@ -43,6 +43,51 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
     return {...data.rooms.map((e) => e.split('/').first)};
   }
 
+  DataCell buildCell(int day, int ds) {
+    final freeRooms = tableData[day][ds - 1].where((element) => element
+        .toLowerCase()
+        .startsWith(selectedBuilding?.toLowerCase() ?? ""));
+
+    List<Widget> widgets = [];
+    // Map<String, List<String>> grouped = {};
+    for (final b in buildings()) {
+      final freeRoomsInBuilding =
+          freeRooms.where((r) => r.startsWith(b)).toList();
+
+      List<Widget> subWidgets = [];
+      final firstRoom = freeRoomsInBuilding.firstOrNull;
+      if (firstRoom != null) {
+        subWidgets.add(Text(firstRoom));
+      }
+
+      subWidgets = [
+        ...subWidgets,
+        ...freeRoomsInBuilding.skip(1).map((e) {
+          final parts = e.split('/');
+          final content = parts.skip(1).join('/');
+
+          return Row(children: [
+            Text("$b/", style: const TextStyle(color: Colors.transparent)),
+            Text(content)
+          ]);
+        }).toList()
+      ];
+
+      widgets.add(Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: subWidgets));
+    }
+
+    return DataCell(Padding(
+        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: widgets,
+        )));
+  }
+
   Widget tableView() {
     return DataTable(
       // allows rows to grow
@@ -53,15 +98,11 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
           .map((e) => DataColumn(label: Text(e)))
           .toList(),
       rows: [1, 2, 3, 4, 5, 6, 7]
-          .map((e) => DataRow(
+          .map((row) => DataRow(
                 cells: [
-                  DataCell(Text("$e. DS")),
+                  DataCell(Text("$row. DS")),
                   ...List<DataCell>.generate(
-                      5,
-                      (int index) => DataCell(Text(tableData[index][e - 1]
-                          .where((element) => element.toLowerCase().startsWith(
-                              selectedBuilding?.toLowerCase() ?? ""))
-                          .join('\n'))))
+                      5, (int col) => buildCell(col, row))
                 ],
               ))
           .toList(),

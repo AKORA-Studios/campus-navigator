@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;

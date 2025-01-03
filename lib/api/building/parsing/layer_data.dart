@@ -4,7 +4,7 @@
 
 import 'dart:ui';
 
-import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/networking.dart';
 
 import 'position.dart';
 

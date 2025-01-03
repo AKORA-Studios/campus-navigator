@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:flutter/material.dart';
 
-import 'parsing/common.dart' as common;
+import '../networking.dart' as common;
 import 'parsing/layer_data.dart';
 
 class PageImageData with ChangeNotifier {

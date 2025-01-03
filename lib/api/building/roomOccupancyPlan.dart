@@ -1,4 +1,4 @@
-import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 

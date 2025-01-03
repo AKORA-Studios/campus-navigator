@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 
-import '../../storage.dart';
+import 'storage.dart';
 
 const baseURL = "https://navigator.tu-dresden.de";
 

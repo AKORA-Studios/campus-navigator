@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:maps_toolkit/maps_toolkit.dart';
 
 import 'html_data.dart';
-import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/networking.dart';
 
 class CampusBuilding {
   /// kurzz

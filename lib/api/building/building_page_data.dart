@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
-import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/storage.dart';
 
 import 'page_image_data.dart';

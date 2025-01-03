@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:campus_navigator/api/freeroom_search/room_links.dart';
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:campus_navigator/api/freeroom_search/search_result.dart';
 import 'package:http/http.dart';

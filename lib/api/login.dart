@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:http/http.dart' as http;
 
-import 'building/parsing/common.dart';
+import 'networking.dart';
 
 class LoginResponse {
   final String loginToken;

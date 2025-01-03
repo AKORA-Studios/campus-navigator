@@ -1,7 +1,7 @@
 import 'package:campus_navigator/Styling.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
-import 'package:campus_navigator/api/building/parsing/common.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
 import 'package:flutter/gestures.dart';

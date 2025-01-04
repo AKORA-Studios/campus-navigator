@@ -125,8 +125,7 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
     }
 
     return DataCell(Padding(
-        padding: const EdgeInsets.only(
-            top: 5.0, bottom: 5.0, left: 10.0, right: 10.0),
+        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,8 +137,6 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
     return DataTable(
       // allows rows to grow
       dataRowMaxHeight: double.infinity,
-      columnSpacing: 10.0,
-
       columns: ['DS', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
           .map((e) => DataColumn(label: Text(e)))
           .toList(),

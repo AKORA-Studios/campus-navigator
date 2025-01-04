@@ -47,7 +47,7 @@ class _FreeroomSearchViewState extends State<FreeroomSearchView> {
     const maxWeek = 52;
     const divisions = maxWeek - minWeek;
 
-    final startLabel = weekRange.start.toString();
+    final startLabel = weekRange.start.round().toString();
     final endLabel = weekRange.end.round().toString();
 
     if (repetition == Repetition.once) {

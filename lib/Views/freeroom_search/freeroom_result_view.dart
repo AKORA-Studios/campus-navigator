@@ -103,38 +103,33 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
         ));
       }
 
-      subWidgets = [
-        ...subWidgets,
-        ...freeRoomsInBuilding.skip(1).map((formalRoomName) {
-          final parts = formalRoomName.split('/');
-          final content = parts.skip(1).join('/');
+      subWidgets.addAll(freeRoomsInBuilding.skip(1).map((formalRoomName) {
+        final parts = formalRoomName.split('/');
+        final content = parts.skip(1).join('/');
 
-          return TextButton(
-            style: buttonStyle,
-            child: Text.rich(
-              TextSpan(children: <TextSpan>[
-                TextSpan(
-                    text: '$b/',
-                    style: const TextStyle(color: Colors.transparent)),
-                TextSpan(text: content)
-              ]),
-            ),
-            onPressed: openRoomCallback(b, formalRoomName),
-          );
-        }).toList()
-      ];
+        return TextButton(
+          style: buttonStyle,
+          child: Text.rich(
+            TextSpan(children: <TextSpan>[
+              TextSpan(
+                  text: '$b/',
+                  style: const TextStyle(color: Colors.transparent)),
+              TextSpan(text: content)
+            ]),
+          ),
+          onPressed: openRoomCallback(b, formalRoomName),
+        );
+      }));
 
-      widgets.add(Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: subWidgets));
+      widgets.addAll(subWidgets);
     }
 
     return DataCell(Padding(
-        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+        padding: const EdgeInsets.only(
+            top: 5.0, bottom: 5.0, left: 10.0, right: 10.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: widgets,
         )));
   }
@@ -180,14 +175,18 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
             });
           },
         ),
-        tableView(),
-        /*
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: SingleChildScrollView(
-              scrollDirection: Axis.vertical, child: tableView()),
+              scrollDirection: Axis.vertical,
+              // The table will be as small as possible otherwise
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: MediaQuery.sizeOf(context).width,
+                ),
+                child: tableView(),
+              )),
         )
-        */
       ],
     );
   }

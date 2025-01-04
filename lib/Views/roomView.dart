@@ -1,9 +1,9 @@
 import 'package:campus_navigator/Styling.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
-import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -129,7 +129,9 @@ class _RoomViewState extends State<RoomView> {
                 setState(() {}); // Update parent widget
               },
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 5),
+            Icon(opt.icon),
+            const SizedBox(width: 5),
             Text(opt.toString()),
           ],
         );
@@ -264,7 +266,10 @@ class _RoomViewState extends State<RoomView> {
                                   .map((e) => filterOption(e))
                                   .toList();
                               opt.insert(
-                                  0, const Text("Aviable Filter Options:"));
+                                  0,
+                                  const Text("Available Filter Options:",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)));
                               return SingleChildScrollView(
                                   child: Padding(
                                       padding: const EdgeInsets.all(10),

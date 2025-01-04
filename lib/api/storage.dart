@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 enum PrefetchingLevel {
@@ -57,16 +58,47 @@ enum UserUniversity {
 }
 
 enum layerFilterOptions {
-  Labeling,
-  Seminarrooms,
-  Toilets,
-  Barrier_free_wc,
-  Staircase,
-  Elevator,
-  otherRooms,
-  WLAN_Accesspoints,
-  Defirbilator,
-  Changing_table;
+  Labeling(icon: Icons.text_fields),
+  Seminarrooms(icon: Icons.school_outlined),
+  Toilets(icon: Icons.wc),
+  Barrier_free_wc(icon: Icons.accessible_forward),
+  Staircase(icon: Icons.stairs_outlined),
+  Elevator(icon: Icons.elevator_outlined),
+  other_rooms(icon: Icons.roofing),
+  WLAN_Accesspoints(icon: Icons.wifi),
+  Defirbilator(icon: Icons.electric_bolt),
+  Changing_table(icon: Icons.baby_changing_station);
+
+  final IconData icon;
+  const layerFilterOptions({required this.icon});
+
+  @override
+  String toString() {
+    switch (this) {
+      case layerFilterOptions.Labeling:
+        return "Room Labels";
+      case layerFilterOptions.Seminarrooms:
+        return "Seminarrooms";
+      case layerFilterOptions.Toilets:
+        return "Toilets";
+      case layerFilterOptions.Barrier_free_wc:
+        return "Barrier Free WC";
+      case layerFilterOptions.Staircase:
+        return "Staircase";
+      case layerFilterOptions.Elevator:
+        return "Elevator";
+      case layerFilterOptions.other_rooms:
+        return "other Rooms";
+      case layerFilterOptions.WLAN_Accesspoints:
+        return "WLAN Accesspoints";
+      case layerFilterOptions.Defirbilator:
+        return "Defirbilator";
+      case layerFilterOptions.Changing_table:
+        return "Changing table";
+      default:
+        return "-";
+    }
+  }
 }
 
 // TODO: https://pub.dev/packages/flutter_secure_storage#configure-web-version
@@ -81,7 +113,7 @@ class Storage {
   static const keyCacheDuration = "CacheDuration";
 
   // Map filters
-  var filterSet = {layerFilterOptions.Barrier_free_wc};
+  var filterSet = {layerFilterOptions.Labeling};
 
   static final Storage Shared = Storage();
 

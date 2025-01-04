@@ -44,6 +44,7 @@ class _RoomViewState extends State<RoomView> {
   @override
   void initState() {
     super.initState();
+    selectedFilters = Storage.Shared.filterSet;
     widget.room.then((room) {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;

@@ -27,7 +27,7 @@ class MapPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Setup correct scalign and offset so everything will fit into the given size
+    // Setup correct scaling and offset so everything will fit into the given size
     Rect drawingArea = calculateDrawingArea();
     double scale = size.width / drawingArea.width;
     scale = min(scale, size.height / drawingArea.height);
@@ -36,7 +36,7 @@ class MapPainter extends CustomPainter {
     canvas.scale(scale);
     canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
 
-    // Adjust paints accoding to current theme
+    // Adjust paints according to current theme
     final theme = Theme.of(context);
     final darkModeEnabled = theme.brightness == Brightness.dark;
 
@@ -55,12 +55,12 @@ class MapPainter extends CustomPainter {
           if (fill != null) {
             color = fromHex(fill);
 
-            // Check if this is the highlighed room
+            // Check if this is the highlighted room
             if (color == fromHex("#ae0000")) {
-              // Highlighted color is supposed to be more aggresive
+              // Highlighted color is supposed to be more aggressive
               color = color.withAlpha(darkModeEnabled ? 150 : 200);
             } else {
-              // Make color less aggresive
+              // Make color less aggressive
               color = color.withAlpha(darkModeEnabled ? 50 : 100);
             }
           } else {
@@ -89,14 +89,29 @@ class MapPainter extends CustomPainter {
       }
     }
 
-    for (final roomPolygon in roomResult.getFlatRoomList()) {
-      drawRoom(roomPolygon);
+    for (final entry in roomResult.rooms.entries) {
+      // hide/show filtered roomColors
+      final shouldNotDisplay = Storage.Shared.filterSet
+          .any((element) => element.layerName == entry.key);
+      Color? color = shouldNotDisplay ? null : Colors.transparent;
+
+      for (final roomPolygon in entry.value) {
+        drawRoom(roomPolygon, fillColor: color);
+      }
     }
 
     // Invert symbols (black -> white) when using dark theme
     var symbolPaint = Paint()..invertColors = darkModeEnabled;
 
+    // Symbols
     for (final LayerData l in roomResult.layers) {
+      // hides/shows symbol icons due to filters
+
+      if (!Storage.Shared.filterSet
+          .any((element) => element.layerName == l.name)) {
+        continue;
+      }
+
       for (final pos in l.getSymbolOffsets()) {
         final image =
             roomResult.backgroundImageData!.getLayerSymbol(l.symbolPNG);

@@ -58,19 +58,20 @@ enum UserUniversity {
 }
 
 enum layerFilterOptions {
-  Labeling(icon: Icons.text_fields),
-  Seminarrooms(icon: Icons.school_outlined),
-  Toilets(icon: Icons.wc),
-  Barrier_free_wc(icon: Icons.accessible_forward),
-  Staircase(icon: Icons.stairs_outlined),
-  Elevator(icon: Icons.elevator_outlined),
-  other_rooms(icon: Icons.roofing),
-  WLAN_Accesspoints(icon: Icons.wifi),
-  Defirbilator(icon: Icons.electric_bolt),
-  Changing_table(icon: Icons.baby_changing_station);
+  Labeling(layerName: "", icon: Icons.text_fields),
+  Seminarrooms(layerName: "seminarraeumeData", icon: Icons.school_outlined),
+  Toilets(layerName: "wcData", icon: Icons.wc),
+  Barrier_free_wc(layerName: "bwcData", icon: Icons.accessible_forward),
+  Staircase(layerName: "treppenData", icon: Icons.stairs_outlined),
+  Elevator(layerName: "aufzuegeData", icon: Icons.elevator_outlined),
+  Other_rooms(layerName: "raeumeData", icon: Icons.roofing),
+  WLAN_Accesspoints(layerName: "WLAN AccessPoints", icon: Icons.wifi),
+  Defirbilator(layerName: "Defibrillatoren", icon: Icons.electric_bolt),
+  Changing_table(layerName: "Wickeltische", icon: Icons.baby_changing_station);
 
+  final String layerName;
   final IconData icon;
-  const layerFilterOptions({required this.icon});
+  const layerFilterOptions({required this.layerName, required this.icon});
 
   @override
   String toString() {
@@ -87,7 +88,7 @@ enum layerFilterOptions {
         return "Staircase";
       case layerFilterOptions.Elevator:
         return "Elevator";
-      case layerFilterOptions.other_rooms:
+      case layerFilterOptions.Other_rooms:
         return "other Rooms";
       case layerFilterOptions.WLAN_Accesspoints:
         return "WLAN Accesspoints";
@@ -113,7 +114,7 @@ class Storage {
   static const keyCacheDuration = "CacheDuration";
 
   // Map filters
-  var filterSet = {layerFilterOptions.Labeling};
+  var filterSet = layerFilterOptions.values.toSet();
 
   static final Storage Shared = Storage();
 

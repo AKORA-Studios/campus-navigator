@@ -1,8 +1,11 @@
+import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/freeroom_search/search.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
 import '../../api/freeroom_search/search_result.dart';
+import '../roomView.dart';
 
 class FreeroomResultView extends StatefulWidget {
   final FreeroomSearchResult data;
@@ -64,6 +67,26 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
         .toLowerCase()
         .startsWith(selectedBuilding?.toLowerCase() ?? ""));
 
+    final buttonStyle = ButtonStyle(
+      padding: MaterialStateProperty.all(EdgeInsets.zero),
+      minimumSize: MaterialStateProperty.all(Size.zero),
+    );
+
+    openRoomCallback(String building, String formalRoomName) {
+      return () async {
+        final links = await fetchRoomLink(building, formalRoomName);
+        final query = links.first.replaceFirst("$baseURL/etplan/", "");
+        final pagePromise = BuildingPageData.fetchQuery(query);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  RoomView(room: pagePromise, name: formalRoomName)),
+        );
+      };
+    }
+
     List<Widget> widgets = [];
     // Map<String, List<String>> grouped = {};
     for (final b in buildings()) {
@@ -73,25 +96,37 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
       List<Widget> subWidgets = [];
       final firstRoom = freeRoomsInBuilding.firstOrNull;
       if (firstRoom != null) {
-        subWidgets.add(Text(firstRoom));
+        subWidgets.add(TextButton(
+          style: buttonStyle,
+          child: Text(firstRoom),
+          onPressed: openRoomCallback(b, firstRoom),
+        ));
       }
 
       subWidgets = [
         ...subWidgets,
-        ...freeRoomsInBuilding.skip(1).map((e) {
-          final parts = e.split('/');
+        ...freeRoomsInBuilding.skip(1).map((formalRoomName) {
+          final parts = formalRoomName.split('/');
           final content = parts.skip(1).join('/');
 
-          return Row(children: [
-            Text("$b/", style: const TextStyle(color: Colors.transparent)),
-            Text(content)
-          ]);
+          return TextButton(
+            style: buttonStyle,
+            child: Text.rich(
+              TextSpan(children: <TextSpan>[
+                TextSpan(
+                    text: '$b/',
+                    style: const TextStyle(color: Colors.transparent)),
+                TextSpan(text: content)
+              ]),
+            ),
+            onPressed: openRoomCallback(b, formalRoomName),
+          );
         }).toList()
       ];
 
       widgets.add(Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: subWidgets));
     }
 
@@ -145,7 +180,14 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
             });
           },
         ),
-        tableView()
+        tableView(),
+        /*
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SingleChildScrollView(
+              scrollDirection: Axis.vertical, child: tableView()),
+        )
+        */
       ],
     );
   }

@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'storage.dart';
 
@@ -40,9 +41,18 @@ Future<ui.Image?> fetchImage(Uri uri) async {
   return await decodeImage(imageBytes);
 }
 
+Future<String?> fetchHMTL(Uri uri) {
+  return cachedStringRequest(uri, fileExtension: 'html');
+}
+
 /// This is a helper method for loading fetching string data and automatically cache it
 /// The fetched URI is assumed to contain UTF8 data
-Future<String?> fetchHMTL(Uri uri) async {
+Future<String?> cachedStringRequest(Uri uri,
+    {Future<Response> Function(Uri uri)? requestFunction,
+    String fileExtension = 'html'}) async {
+  // The function used to actuall execute request
+  final requester = requestFunction ?? (uri) => http.get(uri);
+
   final cachedDataFile =
       await DefaultCacheManager().getFileFromCache(uri.toString());
 
@@ -50,7 +60,7 @@ Future<String?> fetchHMTL(Uri uri) async {
   if (cachedDataFile != null) {
     responseString = await cachedDataFile.file.readAsString();
   } else {
-    final response = await http.get(uri);
+    final response = await requester(uri);
     final eTag = response.headers["etag"];
 
     if (response.statusCode != 200) {
@@ -58,11 +68,11 @@ Future<String?> fetchHMTL(Uri uri) async {
     }
 
     responseString = response.body;
-// Ensure that cached text is always in utf8 format
+    // Ensure that cached text is always in utf8 format
     final encodedString = utf8.encode(responseString);
 
     await DefaultCacheManager().putFile(uri.toString(), encodedString,
-        fileExtension: 'html',
+        fileExtension: fileExtension,
         maxAge: (await Storage.Shared.getCacheDuration()).value,
         eTag: eTag);
   }

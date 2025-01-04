@@ -1,3 +1,5 @@
+import 'package:campus_navigator/api/freeroom_search/search.dart';
+import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
 import '../../api/freeroom_search/search_result.dart';
@@ -40,6 +42,21 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
 
   Set<String> buildings() {
     return {...data.rooms.map((e) => e.split('/').first)};
+  }
+
+  /// Fetches the link of all free rooms in the provided building
+  /// The results will then get cached and therefore speed up the
+  /// user interaction by one RTT when a room is clicked on as the actual
+  /// room link does not have to be fatched anymore
+  prefetchBuildingRoomLinks(String building) async {
+    final prefetchingLevel = await Storage.Shared.getPrefetchingLevel();
+    if (prefetchingLevel == PrefetchingLevel.none) return;
+
+    final freeRoomsInBuilding = data.rooms.where((r) => r.startsWith(building));
+
+    // Wait for all room links to be fetched
+    await Future.wait(freeRoomsInBuilding
+        .map((formalRoomName) => fetchRoomLink(building, formalRoomName)));
   }
 
   DataCell buildCell(int day, int ds) {

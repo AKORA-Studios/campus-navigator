@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:campus_navigator/api/freeroom_search/room_links.dart';
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:campus_navigator/api/freeroom_search/search_result.dart';
+import 'package:campus_navigator/api/networking.dart';
 import 'package:http/http.dart';
 
 import '../storage.dart';
@@ -38,4 +39,38 @@ Future<FreeroomSearchResult> searchFreeRooms(
   }
 
   return FreeroomSearchResult.fromJson(jsonDecode(response.body));
+}
+
+Future<RoomLinks> listBuildingRoomLinks(String building) async {
+  final uri =
+      Uri.parse("https://navigator.tu-dresden.de/export/search/$building");
+
+  final responseText = await cachedStringRequest(uri,
+      requestFunction: (uri) => post(uri), fileExtension: 'json');
+
+  if (responseText == null) {
+    throw Exception("brug");
+  }
+
+  return RoomLinks.fromJson(jsonDecode(responseText));
+}
+
+/// Returns the links to all lecture rooms?
+/// Example: roomLink("MER", "MER/0003/U") = ["https://navigator.tu-dresden.de/etplan/mer/00/raum/143100.0280"]
+Future<List<String>> fetchRoomLink(
+    String building, String formalRoomName) async {
+  final uri = Uri.parse(
+      "https://navigator.tu-dresden.de/export/findroomurl/$building/$formalRoomName");
+
+  final responseText = await cachedStringRequest(uri,
+      requestFunction: (uri) => post(uri), fileExtension: 'json');
+
+  if (responseText == null) {
+    throw Exception("brug");
+  }
+
+  final decoded = jsonDecode(responseText) as Map<String, dynamic>;
+  final foundRoom = decoded["foundRoom"] as List<dynamic>;
+
+  return foundRoom.map((e) => e as String).toList();
 }

@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:flutter/material.dart';
+import 'package:week_number/iso.dart';
 
 import '../../Styling.dart';
 import '../../api/freeroom_search/search.dart';
@@ -25,6 +28,9 @@ class _FreeroomSearchViewState extends State<FreeroomSearchView> {
     super.initState();
 
     updateSearch();
+
+    final weekNumber = DateTime.now().weekNumber.toDouble();
+    weekRange = RangeValues(weekNumber, (weekNumber + 3) % 53);
   }
 
   updateSearch() {
@@ -34,6 +40,43 @@ class _FreeroomSearchViewState extends State<FreeroomSearchView> {
         universities: selectedUniversities,
         repetition: repetition,
         maxCapacity: 20);
+  }
+
+  Widget weekSelector() {
+    const minWeek = 1;
+    const maxWeek = 52;
+    const divisions = maxWeek - minWeek;
+
+    final startLabel = weekRange.start.toString();
+    final endLabel = weekRange.end.round().toString();
+
+    if (repetition == Repetition.once) {
+      return Slider.adaptive(
+          min: minWeek.toDouble(),
+          max: maxWeek.toDouble(),
+          divisions: divisions,
+          value: weekRange.start,
+          label: startLabel,
+          onChanged: (newValue) {
+            setState(() {
+              weekRange = RangeValues(newValue, max(weekRange.end, newValue));
+            });
+          });
+    } else {
+      // TODO: Use slider theme to gray out ends when they're at the max
+      // TODO: Somehow allow disabling min and max restrictions
+      return RangeSlider(
+          values: weekRange,
+          min: minWeek.toDouble(),
+          max: maxWeek.toDouble(),
+          divisions: divisions,
+          labels: RangeLabels(startLabel, endLabel),
+          onChanged: (newValue) {
+            setState(() {
+              weekRange = newValue;
+            });
+          });
+    }
   }
 
   @override
@@ -98,22 +141,7 @@ class _FreeroomSearchViewState extends State<FreeroomSearchView> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  // TODO: Use slider theme to gray out ends when they're at the max
-                  RangeSlider(
-                      values: weekRange,
-                      min: 1,
-                      max: 52,
-                      divisions: 51,
-                      labels: RangeLabels(
-                        weekRange.start.round().toString(),
-                        weekRange.end.round().toString(),
-                      ),
-                      inactiveColor: Colors.red,
-                      onChanged: (newValue) {
-                        setState(() {
-                          weekRange = newValue;
-                        });
-                      }),
+                  weekSelector(),
                   const SizedBox(height: 20),
                   TextButton.icon(
                       onPressed: () {

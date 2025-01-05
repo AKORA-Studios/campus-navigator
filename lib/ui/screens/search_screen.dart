@@ -1,23 +1,23 @@
 // Define a custom Form widget.
-import 'package:campus_navigator/Styling.dart';
-import 'package:campus_navigator/Views/roomView.dart';
+import 'package:campus_navigator/ui/styling.dart';
+import 'package:campus_navigator/ui/screens/building_screen.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/search.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
-import 'freeroom_search/freeroom_search_view.dart';
-import 'locationView.dart';
-import 'settingsView.dart';
+import 'freeroom_search_screen.dart';
+import 'location_screen.dart';
+import 'settings_screen.dart';
 
-class SearchView extends StatefulWidget {
-  const SearchView({super.key});
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
   @override
-  State<SearchView> createState() => _SearchViewState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchViewState extends State<SearchView> {
+class _SearchScreenState extends State<SearchScreen> {
   Future<SearchResult>? searchResult;
 
   String hintText = "";
@@ -72,7 +72,7 @@ class _SearchViewState extends State<SearchView> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  RoomView(room: roomResult, name: resultEntry.name)),
+                  BuildingScreen(room: roomResult, name: resultEntry.name)),
         );
       },
     );
@@ -119,7 +119,8 @@ class _SearchViewState extends State<SearchView> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SettingsView()),
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsScreen()),
                 );
               },
             ),
@@ -130,7 +131,7 @@ class _SearchViewState extends State<SearchView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const FreeroomSearchView()),
+                      builder: (context) => const FreeroomSearchScreen()),
                 );
               },
             ),
@@ -142,7 +143,7 @@ class _SearchViewState extends State<SearchView> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          const LocationView(name: "Location")),
+                          const LocationScreen(name: "Location")),
                 );
               },
             ),

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:campus_navigator/Views/building_view.dart';
+import 'package:campus_navigator/ui/components/floor_view.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/campus_map.dart';
 import 'package:campus_navigator/api/networking.dart';
@@ -9,18 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'roomView.dart';
+import 'building_screen.dart';
 
-class LocationView extends StatefulWidget {
-  const LocationView({super.key, required this.name});
+class LocationScreen extends StatefulWidget {
+  const LocationScreen({super.key, required this.name});
 
   final String name;
 
   @override
-  State<LocationView> createState() => _LocationViewState();
+  State<LocationScreen> createState() => _LocationScreenState();
 }
 
-class _LocationViewState extends State<LocationView> {
+class _LocationScreenState extends State<LocationScreen> {
   Location location = Location();
   bool _serviceEnabled = false;
   PermissionStatus _permissionGranted = PermissionStatus.denied;
@@ -145,7 +145,7 @@ class _LocationViewState extends State<LocationView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RoomView(
+                          builder: (context) => BuildingScreen(
                               room: BuildingPageData.fetchQuery("pot/00"),
                               name: "aha!")),
                     );
@@ -168,7 +168,7 @@ class _LocationViewState extends State<LocationView> {
                 ),
               ),
               buildingPageData != null
-                  ? asyncInteractiveBuildingView(buildingPageData!)
+                  ? asyncFloorView(buildingPageData!)
                   : const Text("nodata")
             ])));
   }

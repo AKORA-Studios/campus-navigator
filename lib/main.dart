@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'Views/search_view.dart';
+import 'ui/screens/search_screen.dart';
 
-import 'Styling.dart';
+import 'ui/styling.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +33,7 @@ class FirstPage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData(AppTheme.lightColorScheme),
       darkTheme: AppTheme.themeData(AppTheme.darkColorScheme),
-      home: const SearchView(),
+      home: const SearchScreen(),
     );
   }
 }

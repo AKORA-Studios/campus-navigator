@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../Styling.dart';
+import '../styling.dart';
 
-class SettingsView extends StatefulWidget {
-  const SettingsView({super.key});
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
 
   @override
-  State<SettingsView> createState() => _SettingsViewState();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsViewState extends State<SettingsView> {
+class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 

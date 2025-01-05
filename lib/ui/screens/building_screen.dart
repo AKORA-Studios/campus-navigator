@@ -1,4 +1,7 @@
-import 'package:campus_navigator/Styling.dart';
+// ignore_for_file: must_be_immutable
+
+import 'package:campus_navigator/ui/components/adress_section_view.dart';
+import 'package:campus_navigator/ui/styling.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/parsing/room_info.dart';
@@ -10,23 +13,23 @@ import 'package:maps_launcher/maps_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../api/login.dart';
-import '../api/storage.dart';
-import 'BottomSheetView.dart';
-import 'building_view.dart';
-import 'occupancyTableView.dart';
+import '../../api/login.dart';
+import '../../api/storage.dart';
+import '../components/bottom_sheet_view.dart';
+import '../components/floor_view.dart';
+import '../components/occupancyTableView.dart';
 
-class RoomView extends StatefulWidget {
-  RoomView({super.key, required this.room, required this.name});
+class BuildingScreen extends StatefulWidget {
+  BuildingScreen({super.key, required this.room, required this.name});
 
   Future<BuildingPageData> room;
   final String name;
 
   @override
-  State<RoomView> createState() => _RoomViewState();
+  State<BuildingScreen> createState() => _BuildingScreenState();
 }
 
-class _RoomViewState extends State<RoomView> {
+class _BuildingScreenState extends State<BuildingScreen> {
   String? selectedLevel;
   bool isRoomSelected = true;
   String? roomURL;
@@ -53,7 +56,6 @@ class _RoomViewState extends State<RoomView> {
     });
   }
 
-  // TODO: use correct Room ID
   void loadOccupancyTable() {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
@@ -78,7 +80,7 @@ class _RoomViewState extends State<RoomView> {
     });
   }
 
-  void onError(var e) {
+  onError(var e) {
     setState(() {
       errorMessageOccupancyTable = e.toString();
     });
@@ -109,7 +111,7 @@ class _RoomViewState extends State<RoomView> {
         });
   }
 
-  Widget filterOption(layerFilterOptions opt) {
+  Widget filterOptionEntry(layerFilterOptions opt) {
     return StatefulBuilder(
       builder: (context, _setState) {
         return Row(
@@ -140,7 +142,7 @@ class _RoomViewState extends State<RoomView> {
     );
   }
 
-  Widget dropDown(BuildingPageData roomPage) {
+  Widget levelSelectionMenu(BuildingPageData roomPage) {
     List<DropdownMenuItem> options = [];
 
     for (BuildingLevel lev in roomPage.buildingData.levels) {
@@ -159,50 +161,6 @@ class _RoomViewState extends State<RoomView> {
                 "${roomPage.queryParts.first}/${value.split(" ").last}");
           });
         });
-  }
-
-  Widget buildingAddressBlock(BuildingPageData roomPage) {
-    List<Widget> arr = [
-      const SizedBox(
-          child: Text("Gebäudeadressen",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-          width: double.infinity)
-    ];
-    for (RoomInfo child in roomPage.buildingData.rooms) {
-      arr.add(SelectableText(
-          child.fullTitle.split(',')[0].trim() +
-              " [" +
-              child.buildingNumber +
-              "]",
-          style: const TextStyle(fontWeight: FontWeight.bold)));
-      arr.add(SelectableText.rich(TextSpan(children: [
-        TextSpan(
-            text: child.adress.replaceAll("<br>", "\n"),
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Styling.primaryColor,
-                decorationColor: Styling.primaryColor,
-                decoration: TextDecoration.underline),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                MapsLauncher.launchQuery(child.adress.replaceAll("<br>", " "));
-              }),
-      ])));
-      arr.add(const SizedBox(
-        height: 10,
-      ));
-    }
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        // border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Column(
-        children: arr,
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
-    );
   }
 
   Widget occupancyButtons() {
@@ -264,7 +222,7 @@ class _RoomViewState extends State<RoomView> {
                             context: context,
                             builder: (BuildContext context) {
                               List<Widget> opt = layerFilterOptions.values
-                                  .map((e) => filterOption(e))
+                                  .map((e) => filterOptionEntry(e))
                                   .toList();
                               opt.insert(
                                   0,
@@ -284,13 +242,13 @@ class _RoomViewState extends State<RoomView> {
                         ],
                       )),
                   const Text("Etage wechseln:"),
-                  futurify(dropDown),
+                  futurify(levelSelectionMenu),
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),
             ),
           ),
-          asyncInteractiveBuildingView(widget.room,
+          asyncFloorView(widget.room,
               size: Size(
                   MediaQuery.sizeOf(context).width,
                   // Necessary to prevent overflow
@@ -312,7 +270,7 @@ class _RoomViewState extends State<RoomView> {
               Divider(
                 color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
               ),
-              futurify(buildingAddressBlock)
+              futurify(adressSection)
             ],
           ),
         )

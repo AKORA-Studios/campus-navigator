@@ -4,20 +4,20 @@ import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:flutter/material.dart';
 import 'package:week_number/iso.dart';
 
-import '../../Styling.dart';
+import '../styling.dart';
 import '../../api/freeroom_search/search.dart';
 import '../../api/freeroom_search/search_result.dart';
 import '../../api/storage.dart';
-import 'freeroom_result_view.dart';
+import '../components/freeroom_result_view.dart';
 
-class FreeroomSearchView extends StatefulWidget {
-  const FreeroomSearchView({super.key});
+class FreeroomSearchScreen extends StatefulWidget {
+  const FreeroomSearchScreen({super.key});
 
   @override
-  State<FreeroomSearchView> createState() => _FreeroomSearchViewState();
+  State<FreeroomSearchScreen> createState() => _FreeroomSearchScreenState();
 }
 
-class _FreeroomSearchViewState extends State<FreeroomSearchView> {
+class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
   Future<FreeroomSearchResult>? result;
   Set<UserUniversity> selectedUniversities = {...UserUniversity.values};
   RangeValues weekRange = const RangeValues(43, 43);

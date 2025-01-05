@@ -5,7 +5,7 @@ import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
 import '../../api/freeroom_search/search_result.dart';
-import '../roomView.dart';
+import '../screens/building_screen.dart';
 
 class FreeroomResultView extends StatefulWidget {
   final FreeroomSearchResult data;
@@ -82,7 +82,7 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  RoomView(room: pagePromise, name: formalRoomName)),
+                  BuildingScreen(room: pagePromise, name: formalRoomName)),
         );
       };
     }

@@ -1,4 +1,4 @@
-import 'package:campus_navigator/Styling.dart';
+import 'package:campus_navigator/ui/styling.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';

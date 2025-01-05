@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'painter.dart';
 
-Widget interactiveBuildingView(
-    BuildingPageData roomResult, BuildContext context,
+Widget interactiveFloorView(BuildingPageData roomResult, BuildContext context,
     {Size size = const Size(300, 300)}) {
   return InteractiveViewer(
       // How much empty space there is until the user cant scroll out even further
@@ -15,13 +14,13 @@ Widget interactiveBuildingView(
           size: size));
 }
 
-Widget asyncInteractiveBuildingView(Future<BuildingPageData> roomResult,
+Widget asyncFloorView(Future<BuildingPageData> roomResult,
     {Size size = const Size(300, 300)}) {
   return FutureBuilder<BuildingPageData>(
     future: roomResult,
     builder: (context, snapshot) {
       if (snapshot.hasData) {
-        return interactiveBuildingView(
+        return interactiveFloorView(
           snapshot.data!,
           context,
           size: size,

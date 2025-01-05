@@ -1,9 +1,9 @@
 // Define a custom Form widget.
-import 'package:campus_navigator/ui/styling.dart';
-import 'package:campus_navigator/ui/screens/building_screen.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/search.dart';
 import 'package:campus_navigator/api/storage.dart';
+import 'package:campus_navigator/ui/screens/building_screen.dart';
+import 'package:campus_navigator/ui/styling.dart';
 import 'package:flutter/material.dart';
 
 import 'freeroom_search_screen.dart';
@@ -125,7 +125,8 @@ class _SearchScreenState extends State<SearchScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.meeting_room),
+              icon: const Badge(
+                  child: Icon(Icons.meeting_room), label: Text("WIP")),
               tooltip: 'Freiraumsuche',
               onPressed: () {
                 Navigator.push(
@@ -136,7 +137,8 @@ class _SearchScreenState extends State<SearchScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.location_on),
+              icon: const Badge(
+                  child: Icon(Icons.location_on), label: Text("WIP")),
               tooltip: 'Open Location',
               onPressed: () {
                 Navigator.push(

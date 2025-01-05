@@ -141,6 +141,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
+                  const Text("Kalenderwoche auswählen:"),
                   weekSelector(),
                   const SizedBox(height: 20),
                   TextButton.icon(

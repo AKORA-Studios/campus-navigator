@@ -4,12 +4,9 @@ import 'package:campus_navigator/ui/components/adress_section_view.dart';
 import 'package:campus_navigator/ui/styling.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
-import 'package:campus_navigator/api/building/parsing/room_info.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
 import 'package:campus_navigator/api/networking.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:maps_launcher/maps_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -241,8 +238,13 @@ class _BuildingScreenState extends State<BuildingScreen> {
                           const Icon(Icons.arrow_drop_down_sharp)
                         ],
                       )),
-                  const Text("Etage wechseln:"),
-                  futurify(levelSelectionMenu),
+                  Row(
+                    children: [
+                      const Text("Etage wechseln:"),
+                      const SizedBox(width: 5),
+                      futurify(levelSelectionMenu),
+                    ],
+                  )
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),

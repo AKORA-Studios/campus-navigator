@@ -64,6 +64,16 @@ class _LocationScreenState extends State<LocationScreen> {
                   BuildingPageData.fetchQuery(foundBuilding.query);
             }
           });
+          // Navigate into building if one is found
+          if (foundBuilding != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BuildingScreen(
+                      room: BuildingPageData.fetchQuery(foundBuilding.query),
+                      name: "${currentBuilding?.shortName}!")),
+            );
+          }
         });
       }
 
@@ -114,7 +124,9 @@ class _LocationScreenState extends State<LocationScreen> {
         _permissionGranted != PermissionStatus.grantedLimited) {
       return Text(_permissionGranted.toString(), style: style);
     } else {
-      return Text("${_locationData?.latitude} ${_locationData?.longitude}");
+      return Text(_locationData == null
+          ? ""
+          : "${_locationData?.latitude} ${_locationData?.longitude}");
     }
   }
 
@@ -137,39 +149,9 @@ class _LocationScreenState extends State<LocationScreen> {
                   onPressed: () {
                     requestServices();
                   },
-                  child: const Text("Update Permissions?")),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => BuildingScreen(
-                              room: BuildingPageData.fetchQuery("pot/00"),
-                              name: "aha!")),
-                    );
-
-                    requestServices();
-                  },
-                  child: const Text("Test")),
+                  child: const Text("Update Location Permissions")),
               Center(child: errorWidget()),
-              Text(_locationData.toString()),
-              Text("In building ${currentBuilding?.shortName}"),
-              RichText(
-                text: TextSpan(
-                  text: 'but this is',
-                  style: const TextStyle(color: Colors.blue),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      launchUrl(Uri.parse(
-                          '$baseURL/etplan/${currentBuilding?.query}'));
-                    },
-                ),
-              ),
-              buildingPageData != null
-                  ? asyncFloorView(buildingPageData!)
-                  : const Text("nodata")
+              Text("Your are in building: ${currentBuilding?.shortName}")
             ])));
   }
 }

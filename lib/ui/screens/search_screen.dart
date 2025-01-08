@@ -5,6 +5,7 @@ import 'package:campus_navigator/api/storage.dart';
 import 'package:campus_navigator/ui/screens/building_screen.dart';
 import 'package:campus_navigator/ui/styling.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'freeroom_search_screen.dart';
 import 'location_screen.dart';
@@ -108,10 +109,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("Raumsuche"),
+          title: Text(localizations.searchScreen_Title),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings),
@@ -170,7 +173,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         enableInteractiveSelection: true,
                         autocorrect: false,
                         decoration: const InputDecoration(
-                          hintText: 'Raumabkürzung hier eingeben',
+                          hintText: localizations.searchScreen_SearchHint,
                         ),
                         onChanged: onSearchChanged,
                       ),

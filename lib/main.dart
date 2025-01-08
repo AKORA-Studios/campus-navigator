@@ -16,24 +16,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //   final localizations = AppLocalizations.of(context)!;
-
     return MaterialApp(
-      title: 'Test',
+      title: 'Campus Navigator',
       theme: AppTheme.themeData(AppTheme.lightColorScheme),
       darkTheme: AppTheme.themeData(AppTheme.darkColorScheme),
       debugShowCheckedModeBanner: false,
       home: const SearchScreen(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-
-      /*localizationsDelegates: [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        //    AppLocalizations.delegate, // Add this line
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],*/
       supportedLocales: const [
         Locale('en', 'US'),
         Locale('de', 'DE'),

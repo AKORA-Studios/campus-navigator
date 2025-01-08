@@ -1,6 +1,7 @@
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../styling.dart';
@@ -95,16 +96,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  List<Widget> licenceView() {
-    return settingsSection(title: "Dependencies licences", children: [
-      TextButton.icon(
-          onPressed: () {
-            showLicensePage(
-                context: context, applicationName: "Campus Navigator");
-          },
-          icon: const Icon(Icons.receipt_long_outlined),
-          label: const Text("Show licenses"))
-    ]);
+  List<Widget> licenceView(localizations) {
+    return settingsSection(
+        title: localizations.settingsScreen_licenceSection,
+        children: [
+          TextButton.icon(
+              onPressed: () {
+                showLicensePage(
+                    context: context, applicationName: "Campus Navigator");
+              },
+              icon: const Icon(Icons.receipt_long_outlined),
+              label: Text(localizations.settingsScreen_licenceButton))
+        ]);
   }
 
   Widget settingsHeading(String title) {
@@ -156,24 +159,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ];
   }
 
-  List<Widget> cacheSettingsSection() {
+  List<Widget> cacheSettingsSection(localizations) {
     return settingsSection(
-        title: "Cache Optionen",
-        description:
-            'Damit wird festgelegt, wie lange die Suchergebnisse zwischengespeichert werden sollen. Die Auswahl'
-            ' längerer Zeiträume verringert den Datenverbrauch und verbessert die Leistung, kann aber zu veralteten Ergebnissen führen.',
+        title: localizations.settingsScreen_cacheSectionTitle,
+        description: localizations.settingsScreen_cacheDescription,
         children: [
           SegmentedButton<CacheDuration>(
             multiSelectionEnabled: false,
             showSelectedIcon: false,
             style: Styling.settingsSegmentedButtonStyle,
-            segments: const <ButtonSegment<CacheDuration>>[
+            segments: <ButtonSegment<CacheDuration>>[
               ButtonSegment<CacheDuration>(
                 value: CacheDuration.day,
                 label: Column(
                   children: [
-                    Icon(Icons.calendar_view_day),
-                    Text('Tag'),
+                    const Icon(Icons.calendar_view_day),
+                    Text(localizations.settingsScreen_optionDay),
                   ],
                 ),
               ),
@@ -181,8 +182,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 value: CacheDuration.week,
                 label: Column(
                   children: [
-                    Icon(Icons.calendar_view_week),
-                    Text('Woche'),
+                    const Icon(Icons.calendar_view_week),
+                    Text(localizations.settingsScreen_optionWeek),
                   ],
                 ),
               ),
@@ -190,8 +191,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 value: CacheDuration.month,
                 label: Column(
                   children: [
-                    Icon(Icons.calendar_view_month),
-                    Text('Monat'),
+                    const Icon(Icons.calendar_view_month),
+                    Text(localizations.settingsScreen_optionMonth),
                   ],
                 ),
               ),
@@ -199,8 +200,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 value: CacheDuration.year,
                 label: Column(
                   children: [
-                    Icon(Icons.calendar_today),
-                    Text('Jahr'),
+                    const Icon(Icons.calendar_today),
+                    Text(localizations.settingsScreen_optionYear),
                   ],
                 ),
               ),
@@ -216,36 +217,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 15),
           desctructiveDialogButton(context,
-              title: "Cache leeren",
-              content:
-                  "Entfernt alle zuvor zwischengespeicherten Resourcen aus dem Cache",
-              confirmText: "Leeren", onConfirm: () async {
+              title: localizations.settingsScreen_cacheEmptyTitle,
+              content: localizations.settingsScreen_cacheEmptyDescription,
+              confirmText: localizations.settingsScreen_cacheEmptyAction,
+              onConfirm: () async {
             await DefaultCacheManager().emptyCache();
           })
         ]);
   }
 
-  List<Widget> prefetchSection() {
+  List<Widget> prefetchSection(localizations) {
     return settingsSection(
-        title: "Prefetching",
-        description:
-            'Kontrolliert wie viele der Sucheregebnisse vorgeladen werden, umso mehr Ergebnisse vorgeladen werden um so höher ist die chance das der gesuchte Raum beim öffnen bereits'
-            ' geladen ist (Das Laden eines ungecachten Suchergebniss transferiert ca. 30kB)',
+        title: localizations.settingsScreen_PrefetchingTitle,
+        description: localizations.settingsScreen_PrefetchingDescription,
         children: [
           SegmentedButton<PrefetchingLevel>(
             multiSelectionEnabled: false,
             showSelectedIcon: false,
             style: Styling.settingsSegmentedButtonStyle,
-            segments: const <ButtonSegment<PrefetchingLevel>>[
+            segments: <ButtonSegment<PrefetchingLevel>>[
               ButtonSegment<PrefetchingLevel>(
                   value: PrefetchingLevel.none,
-                  label: Text('Keine', textAlign: TextAlign.center)),
+                  label: Text(localizations.settingsScreen_PrefetchingNone,
+                      textAlign: TextAlign.center)),
               ButtonSegment<PrefetchingLevel>(
                   value: PrefetchingLevel.firstResult,
-                  label: Text('Erstes Ergebniss', textAlign: TextAlign.center)),
+                  label: Text(localizations.settingsScreen_PrefetchingFirst,
+                      textAlign: TextAlign.center)),
               ButtonSegment<PrefetchingLevel>(
                 value: PrefetchingLevel.allResults,
-                label: Text('Alle Ergebnisse', textAlign: TextAlign.center),
+                label: Text(localizations.settingsScreen_PrefetchingAll,
+                    textAlign: TextAlign.center),
               ),
             ],
             selected: <PrefetchingLevel>{prefetchingLevel},
@@ -260,12 +262,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ]);
   }
 
-  List<Widget> qualityLevelSection() {
+  List<Widget> qualityLevelSection(localizations) {
     // TODO: Show example images of the quality steps, maybe using POT background
     return settingsSection(
-        title: "Quality Level",
-        description:
-            'Entscheidet wie hoch die Auflösung der Details in der Gebäudeansicht sind, die Datennutzung steigt exponentiell mit jeder Detailstufe',
+        title: localizations.settingsScreen_QualityLevelTitle,
+        description: localizations.settingsScreen_QualityLevelDescription,
         children: [
           Slider.adaptive(
             value: qualityLevel,
@@ -283,19 +284,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ]);
   }
 
-  List<Widget> settingsForm() {
+  List<Widget> settingsForm(localizations) {
     return [
       ...settingsSection(
-          title: "Anmeldedaten",
-          description: "ZIH Login Daten zum Abrufen des Raumbelegungsplans",
+          title: localizations.settingsScreen_LoginTitle,
+          description: localizations.settingsScreen_LoginDescription,
           children: [
             TextField(
               maxLines: 1,
               autocorrect: false,
               controller: _usernameController,
-              decoration: const InputDecoration(
-                  labelText: 'Benutzername',
-                  hintText: 'Neuen Benutzernamen hier eingeben'),
+              decoration: InputDecoration(
+                  labelText: localizations.settingsScreen_LoginUsername,
+                  hintText:
+                      localizations.settingsScreen_LoginUsernameDescription),
             ),
             TextField(
               maxLines: 1,
@@ -303,8 +305,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               obscureText: passwordInvisible,
               controller: _passwordController,
               decoration: InputDecoration(
-                  hintText: 'Neues Passwort hier eingeben',
-                  labelText: 'Passwort',
+                  hintText: localizations.settingsScreen_LoginPasswordHint,
+                  labelText: localizations.settingsScreen_LoginPassword,
                   // this button is used to toggle the password visibility
                   suffixIcon: IconButton(
                       icon: Icon(passwordInvisible
@@ -320,7 +322,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                const Text("Ausgewählte Universität: "),
+                Text(localizations.settingsScreen_University),
                 SegmentedButton(
                   showSelectedIcon: false,
                   segments: const [
@@ -352,19 +354,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       FocusScope.of(context).unfocus();
                       saveData();
                     },
-                    child: const Text("Daten aktualisieren")),
+                    child: Text(localizations.settingsScreen_LoginUpdate)),
                 desctructiveDialogButton(context,
-                    title: "Daten löschen",
-                    content: "Setzt die Zugangsdaten zurück",
-                    confirmText: "Löschen", onConfirm: () async {
+                    title: localizations.settingsScreen_LoginDelete,
+                    content:
+                        localizations.settingsScreen_LoginDeleteDescription,
+                    confirmText:
+                        localizations.settingsScreen_LoginDeleteConfirmation,
+                    onConfirm: () async {
                   await deleteData();
                 })
               ],
             ),
           ]),
-      ...cacheSettingsSection(),
-      ...prefetchSection(),
-      ...qualityLevelSection(),
+      ...cacheSettingsSection(localizations),
+      ...prefetchSection(localizations),
+      ...qualityLevelSection(localizations),
     ];
   }
 
@@ -378,17 +383,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("Einstellungen"),
+          title: Text(localizations.settingsScreen_Title),
         ),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(15.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ...settingsForm(),
-              ...licenceView(),
+              ...settingsForm(localizations),
+              ...licenceView(localizations),
               Center(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

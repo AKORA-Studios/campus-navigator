@@ -172,7 +172,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       TextField(
                         enableInteractiveSelection: true,
                         autocorrect: false,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: localizations.searchScreen_SearchHint,
                         ),
                         onChanged: onSearchChanged,

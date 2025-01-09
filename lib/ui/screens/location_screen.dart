@@ -63,13 +63,13 @@ class _LocationScreenState extends State<LocationScreen> {
           });
           // Navigate into building if one is found
           if (foundBuilding != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => BuildingScreen(
-                      room: BuildingPageData.fetchQuery(foundBuilding.query),
-                      name: "${currentBuilding?.shortName}!")),
-            );
+            Route route = MaterialPageRoute(
+                builder: (context) => BuildingScreen(
+                    room: BuildingPageData.fetchQuery(foundBuilding.query),
+                    name: "${currentBuilding?.shortName}"));
+            Navigator.pushReplacement(context, route);
+            // Stop listening for location updates
+            locationListener?.cancel();
           }
         });
       }

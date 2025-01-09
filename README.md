@@ -5,9 +5,11 @@ A WIP flutter app that will hopefully one day replace the https://navigator.tu-d
 ## Features
 
 * Search for rooms
-* Display Building Maps & building adresses
-* Display occupancy Tables for Rooms (requieres Login)
+* Display Building Maps & building addresses
+* Display occupancy Tables for Rooms (requires Login)
   * save Login Data for re-use
+* WIP: search for empty rooms
+* Cache & Prefetching Settings
 
 It works by using the search api and then scraping the returned HTML document to render the campus navigator view in flutter.
 
@@ -23,7 +25,7 @@ Goals:
 - Support the most common use cases (eg. finding a room)
 
 Non Goals:
-- Support every feature that the website offers (eg. showing the IP adress of the router in a room)
+- Support every feature that the website offers (eg. showing the IP address of the router in a room)
 - Replicate the exact UI of the website
 
 ## Supported platforms
@@ -39,12 +41,16 @@ Non Goals:
 
 ### Building
 
-#### APK with VSCode
+#### APK
 
 ```Bash
 flutter build appbundle
 flutter build apk --split-per-abi
 ```
+
+#### iOS
+
+Note: change the sheme according to your target in XCode! (debug for simulator, release for physical device)
 
 #### Updating the App Icon
 
@@ -64,3 +70,6 @@ Go to `projectFolder\build\app\outputs\apk\releases`
 * flutter_launcher_icons: ^0.13.1 [License](https://pub.dev/packages/flutter_launcher_icons/license)
 * maps_toolkit: ^3.0.0 [License](https://pub.dev/packages/maps_toolkit/license)
 * package_info_plus ^8.1.2 [License](**https://pub.dev/packages/package_info_plus/license**)
+* week_number: ^1.1.1
+* flutter_localizations: sdk: flutter
+* intl: any

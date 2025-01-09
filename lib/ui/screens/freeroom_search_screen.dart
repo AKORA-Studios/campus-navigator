@@ -2,13 +2,14 @@ import 'dart:math';
 
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:week_number/iso.dart';
 
-import '../styling.dart';
 import '../../api/freeroom_search/search.dart';
 import '../../api/freeroom_search/search_result.dart';
 import '../../api/storage.dart';
 import '../components/freeroom_result_view.dart';
+import '../styling.dart';
 
 class FreeroomSearchScreen extends StatefulWidget {
   const FreeroomSearchScreen({super.key});
@@ -81,10 +82,12 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("Freiraumsuche"),
+          title: Text(localizations.freeroomsearchScreen_Title),
         ),
         body: Container(
             padding: const EdgeInsets.all(20.0),
@@ -122,15 +125,16 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     segments: const <ButtonSegment<Repetition>>[
                       ButtonSegment<Repetition>(
                         value: Repetition.once,
-                        label: Text('Einmalig'),
+                        label: Text(localizations.freeroomsearchScreen_Once),
                       ),
                       ButtonSegment<Repetition>(
                         value: Repetition.weekly,
-                        label: Text('Wöchentlich'),
+                        label: Text(localizations.freeroomsearchScreen_Weekly),
                       ),
                       ButtonSegment<Repetition>(
                         value: Repetition.biWeekly,
-                        label: Text('Zweiwöchentlich'),
+                        label:
+                            Text(localizations.freeroomsearchScreen_BiWeekly),
                       ),
                     ],
                     selected: {repetition},
@@ -141,7 +145,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  const Text("Kalenderwoche auswählen:"),
+                  const Text(localizations.freeroomsearchScreen_WeekSelector),
                   weekSelector(),
                   const SizedBox(height: 20),
                   TextButton.icon(
@@ -151,7 +155,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                         });
                       },
                       icon: const Icon(Icons.search),
-                      label: const Text("Suchen")),
+                      label: const Text(localizations.search)),
 
                   // Spacing
                   const SizedBox(

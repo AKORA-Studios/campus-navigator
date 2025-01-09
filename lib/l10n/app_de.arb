@@ -36,5 +36,22 @@
     "locationScreenErrorText": "Standort nicht aktiviert :c",
     "locationScreenUpdateText": "Standort Berechtigungen aktualisieren",
     "locationScreenBuildingText": "Bekomm den Plan vom Gebäude in welchem du dich gerade befindest:",
-    "locationScreenText": "Du bist in Gebäude: "
+    "locationScreenText": "Du bist in Gebäude: ",
+    "freeroomsearchScreen_Title": "Freiraumsuche",
+    "freeroomsearchScreen_Once": "Einmalig",
+    "freeroomsearchScreen_Weekly": "Wöchentlich",
+    "freeroomsearchScreen_BiWeekly": "Zweiwöchentlich",
+    "freeroomsearchScreen_WeekSelector": "Kalenderwoche auswählen:",
+    "search": "Suchen",
+    "buildingScreen_occupancyError": "Kein Raumbelegungsplan verfügbar",
+    "buildingScreen_NoData": "Noch keine Daten",
+    "error": "Fehler",
+    "buildingScreen_occupancyPlan": "Raumbelegungsplan",
+    "hide": "verstecken",
+    "load": "laden",
+    "buildingScreen_openinWeb": "Im Web öffnen",
+    "buildingScreen_FilterOptions": "Verfügbare Filter Optionen:",
+    "buildingScreen_FilterTitle": "Filter",
+    "buildingScreen_Floor": "Etage wechseln:",
+    "buildingScreen_Location": "Ort"
 }

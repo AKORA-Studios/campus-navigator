@@ -1,13 +1,10 @@
 import 'dart:async';
 
-import 'package:campus_navigator/ui/components/floor_view.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/campus_map.dart';
-import 'package:campus_navigator/api/networking.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:location/location.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'building_screen.dart';
 
@@ -116,10 +113,10 @@ class _LocationScreenState extends State<LocationScreen> {
 
   void checkIfInBuilding() {}
 
-  Widget errorWidget() {
+  Widget errorWidget(localitzations) {
     var style = const TextStyle(color: Colors.red, fontWeight: FontWeight.bold);
     if (!_serviceEnabled) {
-      return Text("Location not enabled :c", style: style);
+      return Text(localitzations.locationScreenErrorText, style: style);
     } else if (_permissionGranted != PermissionStatus.granted &&
         _permissionGranted != PermissionStatus.grantedLimited) {
       return Text(_permissionGranted.toString(), style: style);
@@ -136,6 +133,8 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -144,14 +143,15 @@ class _LocationScreenState extends State<LocationScreen> {
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
-              const Text("Get plan of the building your currently in:"),
+              Text(localizations.locationScreenBuildingText),
               ElevatedButton(
                   onPressed: () {
                     requestServices();
                   },
-                  child: const Text("Update Location Permissions")),
-              Center(child: errorWidget()),
-              Text("Your are in building: ${currentBuilding?.shortName}")
+                  child: Text(localizations.locationScreenUpdateText)),
+              Center(child: errorWidget(localizations)),
+              Text(localizations.locationScreenText +
+                  "${currentBuilding?.shortName}")
             ])));
   }
 }

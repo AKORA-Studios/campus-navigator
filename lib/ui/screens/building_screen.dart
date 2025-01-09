@@ -1,12 +1,13 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:campus_navigator/ui/components/adress_section_view.dart';
-import 'package:campus_navigator/ui/styling.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
 import 'package:campus_navigator/api/networking.dart';
+import 'package:campus_navigator/ui/components/adress_section_view.dart';
+import 'package:campus_navigator/ui/styling.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -53,7 +54,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
     });
   }
 
-  void loadOccupancyTable() {
+  void loadOccupancyTable(localizations) {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
       if (showOccupancyTable && roomURL != null) {
@@ -67,7 +68,8 @@ class _BuildingScreenState extends State<BuildingScreen> {
               if (value.isEmpty) {
                 // No Data loaded/available
                 isRoomSelected = false;
-                errorMessageOccupancyTable = "Kein Raumbelegungsplan verfügbar";
+                errorMessageOccupancyTable =
+                    localizations.buildingScreen_occupancyError;
                 updateView = !updateView;
               }
             });
@@ -93,14 +95,15 @@ class _BuildingScreenState extends State<BuildingScreen> {
     }
   }
 
-  Widget futurify(Widget Function(BuildingPageData) widgetBuilder) {
+  Widget futurify(
+      Widget Function(BuildingPageData) widgetBuilder, localizations) {
     return FutureBuilder<BuildingPageData>(
         future: widget.room,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Text("No data yet");
+            return Text(localizations.buildingScreen_NoData);
           } else if (snapshot.hasError) {
-            return Text("Error: ${snapshot.error}");
+            return Text("${localizations.error}: ${snapshot.error}");
           }
 
           final room = snapshot.data!;
@@ -160,19 +163,22 @@ class _BuildingScreenState extends State<BuildingScreen> {
         });
   }
 
-  Widget occupancyButtons() {
+  Widget occupancyButtons(localizations) {
     return isRoomSelected
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                  onPressed: isRoomSelected ? loadOccupancyTable : null,
-                  child: Text(
-                      "Raumbelegungsplan ${showOccupancyTable ? 'verstecken' : 'laden'}")),
+                  onPressed: () {
+                    loadOccupancyTable(localizations);
+                  },
+                  child: Text(localizations.buildingScreen_occupancyPlan +
+                          showOccupancyTable
+                      ? localizations.hide
+                      : localizations.load)),
               ElevatedButton(
-                onPressed: isRoomSelected ? openRoomPlan : null,
-                child: const Icon(Icons.open_in_browser),
-              )
+                  onPressed: isRoomSelected ? openRoomPlan : null,
+                  child: const Icon(Icons.open_in_browser))
             ],
           )
         : const SizedBox();
@@ -180,6 +186,8 @@ class _BuildingScreenState extends State<BuildingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -187,7 +195,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            tooltip: 'Open in Web',
+            tooltip: localizations.buildingScreen_openinWeb,
             onPressed: () {
               widget.room.then((value) {
                 Share.share('$baseURL/etplan/${value.queryParts.join("/")}');
@@ -202,66 +210,63 @@ class _BuildingScreenState extends State<BuildingScreen> {
             decoration: BoxDecoration(boxShadow: [
               // Blur only on bottom
               BoxShadow(
-                blurRadius: 2.5,
-                blurStyle: BlurStyle.normal,
-                color: Theme.of(context).shadowColor.withAlpha(100),
-                offset: const Offset(0, 2.5),
-                spreadRadius: 0,
-              ),
+                  blurRadius: 2.5,
+                  blurStyle: BlurStyle.normal,
+                  color: Theme.of(context).shadowColor.withAlpha(100),
+                  offset: const Offset(0, 2.5),
+                  spreadRadius: 0),
             ], color: Theme.of(context).colorScheme.surface),
             child: Padding(
               padding: const EdgeInsets.only(left: 10, right: 10),
-              child: Row(
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (BuildContext context) {
-                              List<Widget> opt = layerFilterOptions.values
-                                  .map((e) => filterOptionEntry(e))
-                                  .toList();
-                              opt.insert(
-                                  0,
-                                  const Text("Available Filter Options:",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)));
-                              return SingleChildScrollView(
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(children: opt)));
-                            });
-                      },
-                      child: Row(
-                        children: [
-                          Text("Filter: (${selectedFilters.length})"),
-                          const Icon(Icons.arrow_drop_down_sharp)
-                        ],
-                      )),
-                  Row(
-                    children: [
-                      const Text("Etage wechseln:"),
-                      const SizedBox(width: 5),
-                      futurify(levelSelectionMenu),
-                    ],
-                  )
-                ],
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              ),
+              child: Row(children: [
+                TextButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (BuildContext context) {
+                            List<Widget> opt = layerFilterOptions.values
+                                .map((e) => filterOptionEntry(e))
+                                .toList();
+                            opt.insert(
+                                0,
+                                Text(localizations.buildingScreen_FilterOptions,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)));
+                            return SingleChildScrollView(
+                                child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(children: opt)));
+                          });
+                    },
+                    child: Row(
+                      children: [
+                        Text(localizations.buildingScreen_FilterTitle +
+                            ": (${selectedFilters.length})"),
+                        const Icon(Icons.arrow_drop_down_sharp)
+                      ],
+                    )),
+                Row(
+                  children: [
+                    Text(localizations.buildingScreen_Floor),
+                    const SizedBox(width: 5),
+                    futurify(levelSelectionMenu, localizations)
+                  ],
+                )
+              ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
             ),
           ),
           asyncFloorView(widget.room,
               size: Size(
                   MediaQuery.sizeOf(context).width,
                   // Necessary to prevent overflow
-                  MediaQuery.sizeOf(context).height * 0.9)),
+                  MediaQuery.sizeOf(context).height * 0.9))
         ]),
         DraggableBottomSheet(
-          name: "Location",
+          name: localizations.buildingScreen_Location,
           child: Column(
             children: [
               occupancyTableView(roomPlan, showOccupancyTable),
-              occupancyButtons(),
+              occupancyButtons(localizations),
               errorMessageOccupancyTable != null
                   ? Text(
                       errorMessageOccupancyTable ?? "",
@@ -272,7 +277,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
               Divider(
                 color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
               ),
-              futurify(adressSection)
+              futurify(adressSection, localizations)
             ],
           ),
         )

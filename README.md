@@ -48,6 +48,8 @@ flutter build appbundle
 flutter build apk --split-per-abi
 ```
 
+Go to `projectFolder\build\app\outputs\apk\releases`
+
 #### iOS
 
 Note: change the sheme according to your target in XCode! (debug for simulator, release for physical device)
@@ -55,8 +57,6 @@ Note: change the sheme according to your target in XCode! (debug for simulator, 
 #### Updating the App Icon
 
 `dart run flutter_launcher_icons`
-
-Go to `projectFolder\build\app\outputs\apk\releases`
 
 ### Dependencies
 

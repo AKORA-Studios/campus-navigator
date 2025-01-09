@@ -122,7 +122,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     multiSelectionEnabled: false,
                     showSelectedIcon: false,
                     style: Styling.settingsSegmentedButtonStyle,
-                    segments: const <ButtonSegment<Repetition>>[
+                    segments: <ButtonSegment<Repetition>>[
                       ButtonSegment<Repetition>(
                         value: Repetition.once,
                         label: Text(localizations.freeroomsearchScreen_Once),
@@ -145,7 +145,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  const Text(localizations.freeroomsearchScreen_WeekSelector),
+                  Text(localizations.freeroomsearchScreen_WeekSelector),
                   weekSelector(),
                   const SizedBox(height: 20),
                   TextButton.icon(
@@ -155,8 +155,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                         });
                       },
                       icon: const Icon(Icons.search),
-                      label: const Text(localizations.search)),
-
+                      label: Text(localizations.search)),
                   // Spacing
                   const SizedBox(
                     height: 20,

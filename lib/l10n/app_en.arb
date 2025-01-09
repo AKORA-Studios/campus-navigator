@@ -53,5 +53,13 @@
     "buildingScreen_FilterOptions": "Available Filter Options:",
     "buildingScreen_FilterTitle": "Filter",
     "buildingScreen_Floor": "Change Floor:",
-    "buildingScreen_Location": "Location"
+    "buildingScreen_Location": "Location",
+    "adresssection_Title": "Buildingadresses",
+    "weekdayOne": "Monday",
+    "weekdayTwo": "Tuesday",
+    "weekdayThree": "Wednesday",
+    "weekdayFour": "Thursday",
+    "weekdayFive": "Friday",
+    "weekdaySix": "Saturday",
+    "weekdaySeven": "Sunday"
 }

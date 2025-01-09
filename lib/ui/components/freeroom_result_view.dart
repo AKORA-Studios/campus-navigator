@@ -2,7 +2,9 @@ import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/freeroom_search/search.dart';
 import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/storage.dart';
+import 'package:campus_navigator/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../api/freeroom_search/search_result.dart';
 import '../screens/building_screen.dart';
@@ -133,17 +135,22 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
         )));
   }
 
-  Widget tableView() {
+  Widget tableView(localizations) {
     return DataTable(
       // allows rows to grow
       dataRowMaxHeight: double.infinity,
-      columns: ['DS', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
-          .map((e) => DataColumn(label: Text(e)))
-          .toList(),
+      columns: [
+        'DS',
+        localizations.weekdayOne,
+        localizations.weekdayTwo,
+        localizations.weekdayThree,
+        localizations.weekdayFour,
+        localizations.weekdayFive
+      ].map((e) => DataColumn(label: Text(e))).toList(),
       rows: [1, 2, 3, 4, 5, 6, 7]
           .map((row) => DataRow(
                 cells: [
-                  DataCell(Text("$row. DS")),
+                  DataCell(Text(ds_to_time(row))),
                   ...List<DataCell>.generate(
                       5, (int col) => buildCell(col, row))
                 ],
@@ -154,6 +161,8 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -164,7 +173,7 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
           enableSearch: true,
           enableFilter: false,
           controller: _selectedBuildingController,
-          label: const Text("Filter"),
+          label: Text(localizations.buildingScreen_FilterTitle),
           initialSelection: buildings().firstOrNull,
           onSelected: (String? text) {
             setState(() {
@@ -181,7 +190,7 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
                 constraints: BoxConstraints(
                   minWidth: MediaQuery.sizeOf(context).width,
                 ),
-                child: tableView(),
+                child: tableView(localizations),
               )),
         )
       ],

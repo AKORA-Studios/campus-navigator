@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+
 import '../../api/building/building_page_data.dart';
 import '../../api/building/parsing/room_info.dart';
 import '../Styling.dart';
@@ -8,7 +9,7 @@ import '../Styling.dart';
 Widget adressSection(BuildingPageData roomPage) {
   List<Widget> arr = [
     const SizedBox(
-        child: Text("Gebäudeadressen",
+        child: Text("Gebäudeadressen", //TODO: Localize
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         width: double.infinity)
   ];

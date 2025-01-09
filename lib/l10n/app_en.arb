@@ -32,5 +32,9 @@
     "settingsScreen_DestructiveAbort": "Abort",
     "settingsScreen_DestructiveConfirm": "Confirm",
     "searchScreen_Title": "Roomsearch",
-    "searchScreen_SearchHint": "Enter Roomname here"
+    "searchScreen_SearchHint": "Enter Roomname here",
+    "locationScreenErrorText": "Location not enabled :c",
+    "locationScreenUpdateText": "Update Location Permissions",
+    "locationScreenBuildingText": "Get plan of the building your currently in:",
+    "locationScreenText": "Your are in building: "
 }

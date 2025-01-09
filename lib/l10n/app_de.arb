@@ -32,5 +32,9 @@
     "settingsScreen_DestructiveAbort": "Abbrechen",
     "settingsScreen_DestructiveConfirm": "Bestätigen",
     "searchScreen_Title": "Raumsuche",
-    "searchScreen_SearchHint": "Raumabkürzung hier eingeben"
+    "searchScreen_SearchHint": "Raumabkürzung hier eingeben",
+    "locationScreenErrorText": "Standort nicht aktiviert :c",
+    "locationScreenUpdateText": "Standort Berechtigungen aktualisieren",
+    "locationScreenBuildingText": "Bekomm den Plan vom Gebäude in welchem du dich gerade befindest:",
+    "locationScreenText": "Du bist in Gebäude: "
 }

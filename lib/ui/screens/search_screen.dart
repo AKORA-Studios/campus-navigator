@@ -140,8 +140,7 @@ class _SearchScreenState extends State<SearchScreen> {
               },
             ),
             IconButton(
-              icon: const Badge(
-                  child: Icon(Icons.location_on), label: Text("WIP")),
+              icon: Icon(Icons.location_on),
               tooltip: 'Open Location',
               onPressed: () {
                 Navigator.push(

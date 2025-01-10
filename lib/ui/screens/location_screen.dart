@@ -33,15 +33,30 @@ class _LocationScreenState extends State<LocationScreen> {
 
   Future<BuildingPageData>? buildingPageData;
 
+  // Update button color when new position is found
+  Color locationUpdateColor = Colors.grey;
+  Location oldLocation = Location();
+
   @override
   void dispose() {
     locationListener?.cancel();
     super.dispose();
   }
 
+  Future<void> updateLocationIcon() async {
+    setState(() {
+      locationUpdateColor = Colors.green;
+    });
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      locationUpdateColor = Colors.grey;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    requestServices();
 
     locationListener =
         location.onLocationChanged.listen((LocationData currentLocation) {
@@ -52,6 +67,11 @@ class _LocationScreenState extends State<LocationScreen> {
       if (lat != null && long != null) {
         campusMapData.then((map) {
           final foundBuilding = map.checkLocation(long, lat);
+
+          if (location != oldLocation || location == Location()) {
+            updateLocationIcon();
+          }
+          oldLocation = location;
 
           setState(() {
             currentBuilding = foundBuilding;
@@ -113,17 +133,26 @@ class _LocationScreenState extends State<LocationScreen> {
 
   void checkIfInBuilding() {}
 
-  Widget errorWidget(localitzations) {
-    var style = const TextStyle(color: Colors.red, fontWeight: FontWeight.bold);
+  Widget errorWidget(localizations) {
+    var style = const TextStyle(fontWeight: FontWeight.bold);
+
     if (!_serviceEnabled) {
-      return Text(localitzations.locationScreenErrorText, style: style);
+      return Container(
+          color: Colors.red,
+          child: Text(localizations.locationScreenErrorText, style: style));
     } else if (_permissionGranted != PermissionStatus.granted &&
         _permissionGranted != PermissionStatus.grantedLimited) {
-      return Text(_permissionGranted.toString(), style: style);
+      return Container(
+          color: Colors.grey,
+          child: Text(_permissionGranted.toString(), style: style));
     } else {
-      return Text(_locationData == null
-          ? ""
-          : "${_locationData?.latitude} ${_locationData?.longitude}");
+      return Container(
+          color: Colors.grey,
+          child: Text(
+              _locationData == null
+                  ? ""
+                  : "${_locationData?.latitude} ${_locationData?.longitude}",
+              style: style));
     }
   }
 
@@ -139,19 +168,40 @@ class _LocationScreenState extends State<LocationScreen> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.name),
+          actions: [
+            IconButton(
+                tooltip: localizations.locationScreenUpdateText,
+                onPressed: () {
+                  requestServices();
+                },
+                icon: const Icon(Icons.refresh)),
+            IconButton(
+                tooltip: "Update info",
+                onPressed: null,
+                icon: Icon(
+                  Icons.location_on,
+                  color: locationUpdateColor,
+                ))
+          ],
         ),
-        body: SingleChildScrollView(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(children: [
-              Text(localizations.locationScreenBuildingText),
-              ElevatedButton(
-                  onPressed: () {
-                    requestServices();
-                  },
-                  child: Text(localizations.locationScreenUpdateText)),
-              Center(child: errorWidget(localizations)),
-              Text(localizations.locationScreenText +
-                  "${currentBuilding?.shortName}")
-            ])));
+        body: Stack(
+          children: [
+            Column(children: [Center(child: errorWidget(localizations))]),
+            _serviceEnabled
+                ? const Center(child: CircularProgressIndicator())
+                : const SizedBox(),
+            Opacity(
+                opacity: 0.4,
+                child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: AssetImage('images/campusMap.png'),
+                      ),
+                    )))
+          ],
+        ));
   }
 }

@@ -173,9 +173,9 @@ class _BuildingScreenState extends State<BuildingScreen> {
                     loadOccupancyTable(localizations);
                   },
                   child: Text(localizations.buildingScreen_occupancyPlan +
-                          showOccupancyTable
-                      ? localizations.hide
-                      : localizations.load)),
+                      (showOccupancyTable
+                          ? localizations.hide
+                          : localizations.load))),
               ElevatedButton(
                   onPressed: isRoomSelected ? openRoomPlan : null,
                   child: const Icon(Icons.open_in_browser))

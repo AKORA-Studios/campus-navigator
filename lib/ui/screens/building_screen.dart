@@ -172,10 +172,9 @@ class _BuildingScreenState extends State<BuildingScreen> {
                   onPressed: () {
                     loadOccupancyTable(localizations);
                   },
-                  child: Text(localizations.buildingScreen_occupancyPlan +
-                      (showOccupancyTable
-                          ? localizations.hide
-                          : localizations.load))),
+                  child: Text(showOccupancyTable
+                      ? localizations.buildingScreen_occupancyPlan_Hide
+                      : localizations.buildingScreen_occupancyPlan_Show)),
               ElevatedButton(
                   onPressed: isRoomSelected ? openRoomPlan : null,
                   child: const Icon(Icons.open_in_browser))
@@ -277,7 +276,16 @@ class _BuildingScreenState extends State<BuildingScreen> {
               Divider(
                 color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
               ),
-              futurify(adressSection, localizations)
+              FutureBuilder<BuildingPageData>(
+                  future: widget.room,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text(localizations.buildingScreen_NoData);
+                    } else if (snapshot.hasError) {
+                      return Text("${localizations.error}: ${snapshot.error}");
+                    }
+                    return adressSection(snapshot.data!, localizations);
+                  })
             ],
           ),
         )

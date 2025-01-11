@@ -6,10 +6,10 @@ import '../../api/building/building_page_data.dart';
 import '../../api/building/parsing/room_info.dart';
 import '../Styling.dart';
 
-Widget adressSection(BuildingPageData roomPage) {
+Widget adressSection(BuildingPageData roomPage, localizations) {
   List<Widget> arr = [
-    const SizedBox(
-        child: Text("Gebäudeadressen", //TODO: Localize
+    SizedBox(
+        child: Text(localizations.adresssection_Title, //TODO: Localize
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         width: double.infinity)
   ];

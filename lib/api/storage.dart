@@ -79,7 +79,7 @@ enum layerFilterOptions {
       case layerFilterOptions.Labeling:
         return "Room Labels";
       case layerFilterOptions.Seminarrooms:
-        return "Seminarrooms";
+        return "Seminar Rooms";
       case layerFilterOptions.Toilets:
         return "Toilets";
       case layerFilterOptions.Barrier_free_wc:
@@ -89,11 +89,11 @@ enum layerFilterOptions {
       case layerFilterOptions.Elevator:
         return "Elevator";
       case layerFilterOptions.Other_rooms:
-        return "other Rooms";
+        return "Other Rooms";
       case layerFilterOptions.WLAN_Accesspoints:
         return "WLAN Accesspoints";
       case layerFilterOptions.Defirbilator:
-        return "Defirbilator";
+        return "Defibrillator";
       case layerFilterOptions.Changing_table:
         return "Changing table";
       default:

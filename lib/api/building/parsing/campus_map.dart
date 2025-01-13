@@ -15,29 +15,27 @@ class CampusBuilding {
   /// points
   final List<double> points;
 
+  /// points but translated to latitude and logtitude coordinates
+  final List<LatLng> polygonCoords;
+
   CampusBuilding({
     required this.shortName,
     required this.query,
     required this.points,
+    required this.polygonCoords,
   });
 
   factory CampusBuilding.fromJson(
-      Map<String, dynamic> json, String queryParts) {
+    Map<String, dynamic> json,
+    String queryParts,
+    double centerLong,
+    double centerLat,
+  ) {
     final shortName = json["kurzz"] as String;
-    final points = json["points"] as List<dynamic>;
+    final pointsDyn = json["points"] as List<dynamic>;
+    final points = pointsDyn.map((e) => (e as num).toDouble()).toList();
 
-    return CampusBuilding(
-        points: points.map((e) => (e as num).toDouble()).toList(),
-        shortName: shortName,
-        query: queryParts);
-  }
-
-  /// Translates the building points to (longitude,latitude) values
-  List<(double, double)> translatePoints({
-    required double centerLong,
-    required double centerLat,
-  }) {
-    List<(double, double)> coords = [];
+    List<LatLng> coords = [];
 
     for (int i = 0; i < (points.length - 1); i += 2) {
       final xPos = points[i];
@@ -50,11 +48,15 @@ class CampusBuilding {
           yPos: yPos));
     }
 
-    return coords;
+    return CampusBuilding(
+        points: points,
+        polygonCoords: coords,
+        shortName: shortName,
+        query: queryParts);
   }
 
   /// Converts the given x and y values to a pair of (long, lat)
-  static (double, double) translateCoordinates({
+  static LatLng translateCoordinates({
     required double centerLong,
     required double centerLat,
     required double xPos,
@@ -97,7 +99,7 @@ class CampusBuilding {
     final long = centerLong + longOffset;
     final lat = centerLat + latOffset;
 
-    return (long, lat);
+    return LatLng(lat, long);
   }
 }
 
@@ -135,6 +137,10 @@ class CampusMapData {
     final gebaeudeData =
         htmlData.assignedVariables["gebaeudeData"] as List<dynamic>;
 
+    // Parse center coordinates
+    final centerLong = htmlData.numberVariables["s_long"]!;
+    final centerLat = htmlData.numberVariables["s_lat"]!;
+
     // Parse building polygon data
     final buildings = gebaeudeData.indexed.map((e) {
       final i = e.$1;
@@ -142,12 +148,8 @@ class CampusMapData {
       String? query = gebclick["$i"];
       String shortName = json["kurzz"] as String;
       return CampusBuilding.fromJson(json as Map<String, dynamic>,
-          query ?? "${shortName.toLowerCase()}/00");
+          query ?? "${shortName.toLowerCase()}/00", centerLong, centerLat);
     }).toList();
-
-    // Parse center coordinates
-    final centerLong = htmlData.numberVariables["s_long"]!;
-    final centerLat = htmlData.numberVariables["s_lat"]!;
 
     return CampusMapData(
         htmlData: htmlData,
@@ -157,23 +159,13 @@ class CampusMapData {
   }
 
   /// Returns the cmapus building the given coordinates lie in, if any
-  /// or the closest one (< 50m) if none
+  /// or the closest one (< 30m) if none
   CampusBuilding? checkLocation(double long, double lat) {
-    // Translate all building coordinates
-    final translatedBuildings = buildings.map((b) {
-      List<LatLng> coordsPolygon = b
-          .translatePoints(centerLong: centerLong, centerLat: centerLat)
-          .map((coordinatePair) => LatLng(coordinatePair.$2, coordinatePair.$1))
-          .toList();
-
-      return MapEntry(b, coordsPolygon);
-    });
-
     // Only check buildings in close proximity, to reduce calculations
     // this is not an accurate distance calulation, and assumes a flat earth
     // the distances calculated are only rough estimates
-    final closeBuildings = translatedBuildings.where((entry) {
-      final coords = entry.value;
+    final closeBuildings = buildings.where((b) {
+      final coords = b.polygonCoords;
 
       var minDist = 1000.0;
       for (final pair in coords) {
@@ -192,13 +184,12 @@ class CampusMapData {
     final appLocation = LatLng(lat, long);
 
     // Check if the coordinates are within a building
-    for (final MapEntry(key: building, value: coordsPolygon)
-        in closeBuildings) {
+    for (final building in closeBuildings) {
       // final isClosed = PolygonUtil.isClosedPolygon(coordsPolygon);
       // if (!isClosed) continue;
 
-      final locationInPolygon =
-          PolygonUtil.containsLocation(appLocation, coordsPolygon, true);
+      final locationInPolygon = PolygonUtil.containsLocation(
+          appLocation, building.polygonCoords, true);
 
       if (!locationInPolygon) continue;
 
@@ -207,9 +198,8 @@ class CampusMapData {
 
     // Find closest building by calculating the distance of the current location
     // to each line segment
-    final closestBuilding = closeBuildings.map((entry) {
-      final b = entry.key;
-      final coordsPolygon = entry.value;
+    final closestBuilding = closeBuildings.map((building) {
+      final coordsPolygon = building.polygonCoords;
 
       // Check if we are at least close
       var minDistance = double.infinity;
@@ -222,7 +212,7 @@ class CampusMapData {
         minDistance = min(minDistance, d.toDouble());
       }
 
-      return MapEntry(b, minDistance);
+      return MapEntry(building, minDistance);
     }).reduce((current, next) => current.value < next.value ? current : next);
 
     // Check if farther away then 30 meters

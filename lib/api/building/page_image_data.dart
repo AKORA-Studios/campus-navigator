@@ -10,6 +10,8 @@ import 'parsing/layer_data.dart';
 class PageImageData with ChangeNotifier {
   Map<String, ui.Image> imageMap = {};
   late int qualiStep;
+  late int height;
+  late int width;
 
   PageImageData({
     required this.qualiStep,
@@ -27,6 +29,7 @@ class PageImageData with ChangeNotifier {
   /// Starts fetching all images for a floor plan given the `pngFileName` of
   /// the current page and all it's layers(needed for fetching of the symbolds)
   PageImageData.fetchLevelImages(String pngFileName, List<LayerData> layers,
+      List<({int h, int v})> subpics,
       {int qualiIndex = 3}) {
     final List<int> qualiSteps = [1, 2, 4, 8];
     qualiStep = qualiSteps[qualiIndex];
@@ -34,9 +37,12 @@ class PageImageData with ChangeNotifier {
     // Holds all futures
     List<Future<(String, ui.Image?)>> imageFutures = [];
 
+    width = subpics[qualiIndex].h;
+    height = subpics[qualiIndex].v;
+
     // Background tiles
-    for (int x = 0; x < qualiStep; x++) {
-      for (int y = 0; y < qualiStep; y++) {
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
         final uri = Uri.parse(
             "$baseURL/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
 

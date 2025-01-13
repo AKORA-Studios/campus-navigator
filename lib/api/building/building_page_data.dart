@@ -26,6 +26,7 @@ class BuildingPageData {
   final String pngFileName;
   final Map<String, List<RoomPolygon>> rooms;
   final List<LayerData> layers;
+  final List<({int h, int v})> subpics;
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
   final List<String> queryParts;
@@ -37,6 +38,7 @@ class BuildingPageData {
       required this.pngFileName,
       required this.rooms,
       required this.layers,
+      required this.subpics,
       required this.buildingData,
       required this.queryParts});
 
@@ -92,12 +94,26 @@ class BuildingPageData {
     // The file name for the background image
     String pngFileName = htmlData.stringVariables["png_file_name"]!;
 
+    // Figure out which image tiles we need
+    final subpicsSize = htmlData.numberVariables["subpics_size"]!;
+    final qualiSteps = [1, 2, 4, 8];
+    final dataCanvWidth = htmlData.numberVariables["data_canv_width"]!;
+    final dataCanvHeight = htmlData.numberVariables["data_canv_height"]!;
+
+    List<({int h, int v})> subpics = [];
+    for (var i = 0; i < qualiSteps.length; i++) {
+      var h = ((dataCanvWidth * qualiSteps[i].toDouble()) / subpicsSize).ceil();
+      var v = ((dataCanvHeight * qualiSteps[i]) / subpicsSize).ceil();
+      subpics.add((h: h, v: v));
+    }
+
     return BuildingPageData(
         htmlData: htmlData,
         raumBezData: raumBezData,
         pngFileName: pngFileName,
         numberVariables: htmlData.numberVariables,
         layers: layers,
+        subpics: subpics,
         rooms: rooms,
         buildingData: buildingInfo,
         queryParts: queryParts);
@@ -137,7 +153,7 @@ class BuildingPageData {
 
     // Start loading process for images
     roomResult.backgroundImageData = PageImageData.fetchLevelImages(
-        roomResult.pngFileName, roomResult.layers,
+        roomResult.pngFileName, roomResult.layers, roomResult.subpics,
         qualiIndex: (qualityLevel - 1));
 
     return roomResult;

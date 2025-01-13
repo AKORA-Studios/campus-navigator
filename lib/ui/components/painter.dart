@@ -170,8 +170,8 @@ class MapPainter extends CustomPainter {
 
       canvas.scale(1 / qualiStepD);
 
-      for (int x = 0; x < qualiStep; x++) {
-        for (int y = 0; y < qualiStep; y++) {
+      for (int x = 0; x < imageData.width; x++) {
+        for (int y = 0; y < imageData.height; y++) {
           var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
               (-0.5 * canvHeight) + (y * qualiSize));
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/campus_map.dart';
+import 'package:campus_navigator/ui/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:location/location.dart';
@@ -17,7 +18,8 @@ class LocationScreen extends StatefulWidget {
   State<LocationScreen> createState() => _LocationScreenState();
 }
 
-class _LocationScreenState extends State<LocationScreen> {
+class _LocationScreenState extends State<LocationScreen>
+    with SingleTickerProviderStateMixin {
   Location location = Location();
   bool _serviceEnabled = false;
   PermissionStatus _permissionGranted = PermissionStatus.denied;
@@ -29,25 +31,23 @@ class _LocationScreenState extends State<LocationScreen> {
   Future<CampusMapData> campusMapData = CampusMapData.fetch();
 
   // Update button color when new position is found
-  Color locationUpdateColor = Colors.grey;
-  Location oldLocation = Location();
+  LocationData? oldLocation;
+  late AnimationController _animationController;
+  late Animation _colorAnimation;
 
   @override
   void dispose() {
     locationListener?.cancel();
+    _animationController.dispose();
     super.dispose();
   }
 
   Future<void> updateLocationIcon() async {
-    setState(() {
-      locationUpdateColor = Colors.green;
-    });
+    _animationController.forward();
     // TODO: This timer needs to be cancelled on dispose()
     // otherwise could lead to a memory leak
     await Future.delayed(const Duration(seconds: 1));
-    setState(() {
-      locationUpdateColor = Colors.grey;
-    });
+    _animationController.reverse();
   }
 
   @override
@@ -66,13 +66,13 @@ class _LocationScreenState extends State<LocationScreen> {
       final long = currentLocation.longitude;
       if (lat == null || long == null) return;
 
+      if (currentLocation != oldLocation) {
+        updateLocationIcon();
+      }
+      oldLocation = currentLocation;
+
       campusMapData.then((map) {
         final foundBuilding = map.checkLocation(long, lat);
-
-        if (location != oldLocation || location == Location()) {
-          updateLocationIcon();
-        }
-        oldLocation = location;
 
         // Navigate into building if one is found
         if (foundBuilding == null) return;
@@ -89,6 +89,17 @@ class _LocationScreenState extends State<LocationScreen> {
     });
 
     requestServices();
+
+    _animationController = AnimationController(
+        duration: const Duration(
+          milliseconds: 500,
+        ),
+        vsync: this)
+      ..addListener(() {
+        setState(() {});
+      });
+    _colorAnimation = ColorTween(begin: Colors.grey, end: Styling.primaryColor)
+        .animate(_animationController);
   }
 
   void requestServices() async {
@@ -121,8 +132,6 @@ class _LocationScreenState extends State<LocationScreen> {
       }
     }
   }
-
-  void checkIfInBuilding() {}
 
   Widget errorWidget(localizations) {
     var style = const TextStyle(fontWeight: FontWeight.bold);
@@ -171,18 +180,14 @@ class _LocationScreenState extends State<LocationScreen> {
                 onPressed: null,
                 icon: Icon(
                   Icons.location_on,
-                  color: locationUpdateColor,
-                ))
+                  color: _colorAnimation.value,
+                )),
           ],
         ),
         body: Stack(
           children: [
-            Column(children: [Center(child: errorWidget(localizations))]),
-            _serviceEnabled
-                ? const Center(child: CircularProgressIndicator())
-                : const SizedBox(),
             Opacity(
-                opacity: 0.4,
+                opacity: 0.3,
                 child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
@@ -191,7 +196,15 @@ class _LocationScreenState extends State<LocationScreen> {
                         fit: BoxFit.cover,
                         image: AssetImage('images/campusMap.png'),
                       ),
-                    )))
+                    ))),
+            Column(
+              children: [
+                Center(child: errorWidget(localizations)),
+              ],
+            ),
+            _serviceEnabled
+                ? const Center(child: CircularProgressIndicator())
+                : const SizedBox()
           ],
         ));
   }

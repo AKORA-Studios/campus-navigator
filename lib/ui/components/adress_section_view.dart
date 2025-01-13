@@ -4,7 +4,7 @@ import 'package:maps_launcher/maps_launcher.dart';
 
 import '../../api/building/building_page_data.dart';
 import '../../api/building/parsing/room_info.dart';
-import '../Styling.dart';
+import '../styling.dart';
 
 Widget adressSection(BuildingPageData roomPage, localizations) {
   List<Widget> arr = [

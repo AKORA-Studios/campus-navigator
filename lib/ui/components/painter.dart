@@ -91,9 +91,14 @@ class MapPainter extends CustomPainter {
 
     for (final entry in roomResult.rooms.entries) {
       // hide/show filtered roomColors
-      final shouldNotDisplay = Storage.Shared.filterSet
+      final canBeFiltered = layerFilterOptions.values
           .any((element) => element.layerName == entry.key);
-      Color? color = shouldNotDisplay ? null : Colors.transparent;
+
+      final shouldDisplay = Storage.Shared.filterSet
+          .any((element) => element.layerName == entry.key);
+
+      Color? color =
+          (canBeFiltered && !shouldDisplay) ? Colors.transparent : null;
 
       for (final roomPolygon in entry.value) {
         drawRoom(roomPolygon, fillColor: color);

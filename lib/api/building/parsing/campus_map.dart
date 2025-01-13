@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:math';
 import 'package:maps_toolkit/maps_toolkit.dart';
 
 import 'html_data.dart';
@@ -156,25 +158,78 @@ class CampusMapData {
   }
 
   /// Returns the cmapus building the given coordinates lie in, if any
+  /// or the closest one (< 50m) if none
   CampusBuilding? checkLocation(double long, double lat) {
-    for (final b in buildings) {
+    // Translate all building coordinates
+    final translatedBuildings = buildings.map((b) {
       List<LatLng> coordsPolygon = b
           .translatePoints(centerLong: centerLong, centerLat: centerLat)
           .map((coordinatePair) => LatLng(coordinatePair.$2, coordinatePair.$1))
           .toList();
 
+      return MapEntry(b, coordsPolygon);
+    });
+
+    // Only check buildings in close proximity, to reduce calculations
+    // this is not an accurate distance calulation, and assumes a flat earth
+    // the distances calculated are only rough estimates
+    final closeBuildings = translatedBuildings.where((entry) {
+      final coords = entry.value;
+
+      var minDist = 1000.0;
+      for (final pair in coords) {
+        final dLat = lat - pair.latitude;
+        final dLong = long - pair.longitude;
+
+        final dist = (dLat * dLat) + (dLong * dLong);
+        minDist = min(minDist, dist.toDouble());
+      }
+
+      // Less than a kilometer
+      // Reduces 400 to 40
+      return minDist < 0.00001;
+    }).toList();
+
+    final appLocation = LatLng(lat, long);
+
+    // Check if the coordinates are within a building
+    for (final MapEntry(key: building, value: coordsPolygon)
+        in closeBuildings) {
       // final isClosed = PolygonUtil.isClosedPolygon(coordsPolygon);
       // if (!isClosed) continue;
 
       final locationInPolygon =
-          PolygonUtil.containsLocation(LatLng(lat, long), coordsPolygon, true);
+          PolygonUtil.containsLocation(appLocation, coordsPolygon, true);
 
       if (!locationInPolygon) continue;
 
-      return b;
+      return building;
     }
 
-    return null;
+    // Find closest building by calculating the distance of the current location
+    // to each line segment
+    final closestBuilding = closeBuildings.map((entry) {
+      final b = entry.key;
+      final coordsPolygon = entry.value;
+
+      // Check if we are at least close
+      var minDistance = double.infinity;
+      for (int i = 0; i < coordsPolygon.length - 1; i++) {
+        final p1 = coordsPolygon[i];
+        final p2 = coordsPolygon[i + 1];
+
+        // Distance in meters
+        final d = PolygonUtil.distanceToLine(appLocation, p1, p2);
+        minDistance = min(minDistance, d.toDouble());
+      }
+
+      return MapEntry(b, minDistance);
+    }).reduce((current, next) => current.value < next.value ? current : next);
+
+    // Check if farther away then 30 meters
+    if (closestBuilding.value > 30) return null;
+
+    return closestBuilding.key;
 
     // Separate multi polygons
     /*

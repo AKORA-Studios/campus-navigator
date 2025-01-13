@@ -28,11 +28,6 @@ class _LocationScreenState extends State<LocationScreen> {
   /// Future to fetch the entire campus map
   Future<CampusMapData> campusMapData = CampusMapData.fetch();
 
-  /// The building the current `_locationData` lies in
-  CampusBuilding? currentBuilding;
-
-  Future<BuildingPageData>? buildingPageData;
-
   // Update button color when new position is found
   Color locationUpdateColor = Colors.grey;
   Location oldLocation = Location();
@@ -47,6 +42,8 @@ class _LocationScreenState extends State<LocationScreen> {
     setState(() {
       locationUpdateColor = Colors.green;
     });
+    // TODO: This timer needs to be cancelled on dispose()
+    // otherwise could lead to a memory leak
     await Future.delayed(const Duration(seconds: 1));
     setState(() {
       locationUpdateColor = Colors.grey;
@@ -56,48 +53,42 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   void initState() {
     super.initState();
-    requestServices();
 
     locationListener =
         location.onLocationChanged.listen((LocationData currentLocation) {
+      setState(() {
+        _locationData = currentLocation;
+      });
+
       // If the received location contains a latitude and longitude we check
       // if it lies in one of he buildings
       final lat = currentLocation.latitude;
       final long = currentLocation.longitude;
-      if (lat != null && long != null) {
-        campusMapData.then((map) {
-          final foundBuilding = map.checkLocation(long, lat);
+      if (lat == null || long == null) return;
 
-          if (location != oldLocation || location == Location()) {
-            updateLocationIcon();
-          }
-          oldLocation = location;
+      campusMapData.then((map) {
+        final foundBuilding = map.checkLocation(long, lat);
 
-          setState(() {
-            currentBuilding = foundBuilding;
+        if (location != oldLocation || location == Location()) {
+          updateLocationIcon();
+        }
+        oldLocation = location;
 
-            if (foundBuilding != null) {
-              buildingPageData =
-                  BuildingPageData.fetchQuery(foundBuilding.query);
-            }
-          });
-          // Navigate into building if one is found
-          if (foundBuilding != null) {
-            Route route = MaterialPageRoute(
-                builder: (context) => BuildingScreen(
-                    room: BuildingPageData.fetchQuery(foundBuilding.query),
-                    name: "${currentBuilding?.shortName}"));
-            Navigator.pushReplacement(context, route);
-            // Stop listening for location updates
-            locationListener?.cancel();
-          }
-        });
-      }
+        // Navigate into building if one is found
+        if (foundBuilding == null) return;
 
-      setState(() {
-        _locationData = currentLocation;
+        // Stop listening for location updates
+        locationListener?.cancel();
+
+        Route route = MaterialPageRoute(
+            builder: (context) => BuildingScreen(
+                room: BuildingPageData.fetchQuery(foundBuilding.query),
+                name: foundBuilding.shortName));
+        Navigator.pushReplacement(context, route);
       });
     });
+
+    requestServices();
   }
 
   void requestServices() async {

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math';
 import 'package:maps_toolkit/maps_toolkit.dart';
 
@@ -230,51 +229,6 @@ class CampusMapData {
     if (closestBuilding.value > 30) return null;
 
     return closestBuilding.key;
-
-    // Separate multi polygons
-    /*
-    {
-      for (final (i, b) in buildings.indexed) {
-        final duplicatedPoints = b.points.indexed
-            .map((p) {
-              final pIndex = p.$1;
-              final pValue = p.$2;
-
-              final isX = (pIndex % 2) == 0;
-              // Coordinates that are also x | y
-              final sameCoordPoints = b.points.indexed
-                  .where((p) => (p.$1 % 2 == 0) == isX)
-                  .map((e) => e.$2);
-
-              return (p.$1, sameCoordPoints.where((pp) => p.$2 == pp).length);
-            })
-            .where((p) => p.$2 > 1)
-            .toList();
-
-        if (duplicatedPoints.isEmpty) continue;
-
-        // Filter for points where the x and y coordinates are duplicated
-        final duplicatedEnds = duplicatedPoints.where((e) {
-          final pIndex = e.$1;
-          final pValue = e.$2;
-          return duplicatedPoints.any((element) =>
-              ((element.$1 == (pIndex + 2)) || (element.$1 == (pIndex - 2))) &&
-              element.$2 == pValue);
-        });
-
-        print("${b.shortName} ${duplicatedEnds.map((e) => e.$1)}");
-      }
-    }
-
-    for (final b in buildings) {
-      final c = b.points
-          .map((p) => b.points.where((pp) => p == pp).length)
-          .where((element) => element > 1)
-          .length;
-
-      // print("${b.shortName}: $c");
-    }
-    */
   }
 
   static Future<CampusMapData> fetch() async {

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
+import 'package:maps_toolkit/maps_toolkit.dart';
 
 import '../../api/building/parsing/layer_data.dart';
 import '../../api/building/parsing/position.dart';
@@ -20,6 +21,8 @@ class MapPainter extends CustomPainter {
   final BuildingPageData roomResult;
   final BuildContext context;
 
+  Offset? mousePos;
+
   MapPainter({
     required this.roomResult,
     required this.context,
@@ -33,8 +36,28 @@ class MapPainter extends CustomPainter {
     scale = min(scale, size.height / drawingArea.height);
 
     // Translate & Scale coordinate system
-    canvas.scale(scale);
-    canvas.translate(-drawingArea.topLeft.dx, -drawingArea.topLeft.dy);
+    final translateX = -drawingArea.topLeft.dx;
+    final translateY = -drawingArea.topLeft.dy;
+
+    final transformationMatrix = Matrix4.identity().scaled(scale);
+    transformationMatrix.translate(translateX, translateY);
+
+    // Use local transform matrix because canvas.getTransform()
+    // also includes transforms outside of our custom transform
+    final inverseTransform = Matrix4.identity();
+    inverseTransform.copyInverse(transformationMatrix);
+    final inverseMousePos = mousePos != null
+        ? MatrixUtils.transformPoint(inverseTransform, mousePos!)
+        : null;
+
+    // canvas.scale(scale);
+    // canvas.translate(translateX, translateY);
+    canvas.transform(transformationMatrix.storage);
+
+    // Draw mouse
+    if (inverseMousePos != null) {
+      canvas.drawCircle(inverseMousePos, 1.0, Paint()..color = Colors.red);
+    }
 
     // Adjust paints according to current theme
     final theme = Theme.of(context);
@@ -43,6 +66,8 @@ class MapPainter extends CustomPainter {
     void drawRoom(RoomPolygon roomData, {Color? fillColor}) {
       for (int i = 0; i < roomData.points.length; i++) {
         final pointList = roomData.points[i];
+        final mapped = mapPoints(pointList);
+
         final fill = roomData.fill;
 
         Color color;
@@ -68,14 +93,21 @@ class MapPainter extends CustomPainter {
           }
         }
 
+        // Mouse hover
+        if (inverseMousePos != null) {
+          final mouseHover = PolygonUtil.containsLocation(
+              inverseMousePos.toCoords(),
+              mapped.map((p) => p.toCoords()).toList(),
+              false);
+          if (mouseHover) color = Colors.red;
+        }
+
         final fillPaint = Paint()
           ..strokeWidth = 0
           ..style = PaintingStyle.fill
           ..color = color;
 
-        var path = Path();
-        final mapped = mapPoints(pointList);
-
+        final path = Path();
         if (mapped.isNotEmpty) {
           path.moveTo(mapped[0].dx, mapped[0].dy);
 
@@ -270,4 +302,10 @@ List<Offset> mapPoints(List<double> rawPoints) {
 
 List<Offset> mapPositions(List<Position> rawPoints) {
   return rawPoints.map((p) => p.toOffset()).toList();
+}
+
+extension ToLatLng on Offset {
+  LatLng toCoords() {
+    return LatLng(dx, dy);
+  }
 }

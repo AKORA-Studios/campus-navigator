@@ -4,14 +4,19 @@ import 'painter.dart';
 
 Widget interactiveFloorView(BuildingPageData roomResult, BuildContext context,
     {Size size = const Size(300, 300)}) {
+  final painter = MapPainter(roomResult: roomResult, context: context);
+  void down(PointerDownEvent evt) {
+    painter.mousePos = evt.localPosition;
+  }
+
   return InteractiveViewer(
       // How much empty space there is until the user cant scroll out even further
       boundaryMargin: const EdgeInsets.all(300.0),
       minScale: 0.001,
       maxScale: 16.0,
-      child: CustomPaint(
-          painter: MapPainter(roomResult: roomResult, context: context),
-          size: size));
+      child: Listener(
+          onPointerDown: down,
+          child: CustomPaint(painter: painter, size: size)));
 }
 
 Widget asyncFloorView(Future<BuildingPageData> roomResult,

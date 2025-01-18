@@ -2,9 +2,12 @@ class BuildingLevel {
   String name;
   List<BuildingRoom> rooms = [];
 
-  BuildingLevel(this.name);
+  BuildingLevel(String name2) : name = name2.replaceAll("Etage", "");
 
-  BuildingLevel.fromRooms(this.name, this.rooms);
+  BuildingLevel.init(String name, List<BuildingRoom> rooms2)
+      : name = name.replaceAll("Etage", "") {
+    rooms = rooms2;
+  }
 
   @override
   String toString() {

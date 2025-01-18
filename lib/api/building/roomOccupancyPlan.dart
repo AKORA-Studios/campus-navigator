@@ -22,8 +22,9 @@ class RoomOccupancyPlan {
   }
 
   static Future<List<List<List<String>>>> getRoomPlan(String roomID,
-      {String token = ""}) async {
-    final uri = Uri.parse('$baseURL/raum/$roomID');
+      [String token = "", String locale = "de"]) async {
+    final uri = Uri.parse(
+        '$baseURL/raum/$roomID${locale == "en" ? "?language=en" : ""}');
 
     Map<String, String> cookies = {
       'loginToken': token,

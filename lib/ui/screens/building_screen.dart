@@ -54,14 +54,15 @@ class _BuildingScreenState extends State<BuildingScreen> {
     });
   }
 
-  void loadOccupancyTable(localizations) {
+  void loadOccupancyTable(localizations, currentLocale) {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
       if (showOccupancyTable && roomURL != null) {
         Future<LoginResponse> loginToken = LoginResponse.postLogin();
         loginToken.then((value) {
           Future<List<List<List<String>>>> tableContent =
-              RoomOccupancyPlan.getRoomPlan(roomURL!, token: value.loginToken);
+              RoomOccupancyPlan.getRoomPlan(
+                  roomURL!, value.loginToken, currentLocale);
           tableContent.then((value) {
             setState(() {
               roomPlan = value;
@@ -163,14 +164,14 @@ class _BuildingScreenState extends State<BuildingScreen> {
         });
   }
 
-  Widget occupancyButtons(localizations) {
+  Widget occupancyButtons(localizations, currentLocale) {
     return isRoomSelected
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
                   onPressed: () {
-                    loadOccupancyTable(localizations);
+                    loadOccupancyTable(localizations, currentLocale);
                   },
                   child: Text(showOccupancyTable
                       ? localizations.buildingScreen_occupancyPlan_Hide
@@ -186,6 +187,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final currentLocale = AppLocalizations.of(context)!.localeName;
 
     return Scaffold(
       appBar: AppBar(
@@ -265,7 +267,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
           child: Column(
             children: [
               occupancyTableView(roomPlan, showOccupancyTable),
-              occupancyButtons(localizations),
+              occupancyButtons(localizations, currentLocale),
               errorMessageOccupancyTable != null
                   ? Text(
                       errorMessageOccupancyTable ?? "",

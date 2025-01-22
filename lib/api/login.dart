@@ -53,6 +53,8 @@ class LoginResponse {
 
     if (response.statusCode == 200) {
       return LoginResponse.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 500) {
+      throw "Server exception, try again later";
     } else {
       print(response.body);
       String? msg = json.decode(response.body)["message"];

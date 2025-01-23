@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../styling.dart';
 
@@ -349,12 +350,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      saveData();
-                    },
-                    child: Text(localizations.settingsScreen_LoginUpdate)),
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        saveData();
+                      },
+                      child: Text(localizations.settingsScreen_LoginUpdate)),
+                ),
                 desctructiveDialogButton(context,
                     title: localizations.settingsScreen_LoginDelete,
                     content:
@@ -399,7 +403,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Center(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [const Text("App version"), Text(appVersion)],
+                children: [
+                  const Text("App version"),
+                  Text(appVersion),
+                  const SizedBox(height: 10),
+                  TextButton.icon(
+                      onPressed: () async {
+                        final Uri _url = Uri.parse(
+                            'https://github.com/AKORA-Studios/campus-navigator');
+                        if (!await launchUrl(_url)) {
+                          launchUrl(_url);
+                        }
+                      },
+                      icon: const Icon(Icons.share),
+                      label: Text("Github"))
+                ],
               ))
             ])));
   }

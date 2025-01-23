@@ -256,11 +256,13 @@ class _BuildingScreenState extends State<BuildingScreen> {
               ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
             ),
           ),
-          asyncFloorView(widget.room,
-              size: Size(
-                  MediaQuery.sizeOf(context).width,
-                  // Necessary to prevent overflow
-                  MediaQuery.sizeOf(context).height * 0.9))
+          Expanded(
+              flex: 1,
+              child: asyncFloorView(widget.room,
+                  size: Size(
+                      MediaQuery.sizeOf(context).width,
+                      // Necessary to prevent overflow
+                      MediaQuery.sizeOf(context).height * 0.9))),
         ]),
         DraggableBottomSheet(
           name: localizations.buildingScreen_Location,

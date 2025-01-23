@@ -62,8 +62,6 @@ class BuildingData {
 
             buildingLevelInfo.add(
                 BuildingLevel.init(level.children[0].innerHtml, roomInfos));
-            print(
-                "--------------------- ${BuildingLevel.init(level.children[0].innerHtml, roomInfos).name}");
           } else {
             // No Rooms loaded for this level
             buildingLevelInfo.add(BuildingLevel(level.children[0].innerHtml));

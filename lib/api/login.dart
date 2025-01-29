@@ -1,9 +1,8 @@
 import 'dart:convert';
 
+import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:http/http.dart' as http;
-
-import 'networking.dart';
 
 class LoginResponse {
   final String loginToken;
@@ -17,7 +16,7 @@ class LoginResponse {
     );
   }
 
-  static Future<LoginResponse> postLogin() async {
+  static Future<LoginResponse> postLogin({http.Client? httpClient}) async {
     String? user = await Storage.Shared.getUsername();
     String? passwd = await Storage.Shared.getPassword();
     var x = await Storage.Shared.getUniversity();
@@ -31,6 +30,22 @@ class LoginResponse {
       throw Exception('Failed to login: No Password set');
     }
 
+    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+    var jsonBody = {
+      'username': stringToBase64.encode(user.trim()),
+      'password': stringToBase64.encode(passwd.trim()),
+      'university': university,
+      'from': "/"
+    };
+
+    return makeRequest(jsonBody, httpClient: httpClient);
+  }
+
+  static Future<LoginResponse> makeRequest(Map<String, Object> jsonBody,
+      {http.Client? httpClient}) async {
+    // _httpClient = httpClient ?? http.Client();
+    final client = httpClient ?? http.Client();
+
     //application/x-www-form-urlencoded;charset=UTF-8
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -38,25 +53,17 @@ class LoginResponse {
       "Accept": "application/json"
     };
 
-    Codec<String, String> stringToBase64 = utf8.fuse(base64);
-
-    var jsonBody = {
-      'username': stringToBase64.encode(user.trim()),
-      'password': stringToBase64.encode(passwd.trim()),
-      'university': university,
-      'from': "/"
-    };
-    final uri = Uri.parse('$baseURL/api/login');
+    final uri = Uri.parse(APIServices.loginURL);
 
     final response =
-        await http.post(uri, headers: headers, body: jsonEncode(jsonBody));
+        await client.post(uri, headers: headers, body: jsonEncode(jsonBody));
 
     if (response.statusCode == 200) {
       return LoginResponse.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 500) {
       throw "Server exception, try again later";
     } else {
-      print(response.body);
+      // print(response.body);
       String? msg = json.decode(response.body)["message"];
       throw Exception('Failed to login: $msg');
     }

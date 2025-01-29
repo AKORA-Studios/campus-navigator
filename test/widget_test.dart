@@ -7,14 +7,13 @@
 
 import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/login.dart';
+import 'package:campus_navigator/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:mockito/annotations.dart';
-
-import 'package:campus_navigator/main.dart';
 import 'package:mockito/mockito.dart';
+
 import './widget_test.mocks.dart';
 
 @GenerateMocks([http.Client])
@@ -30,10 +29,10 @@ void main() {
 
       when(client.post(Uri.parse(APIServices.loginURL),
               headers: headers, body: {}, encoding: null))
-          .thenAnswer((_) async => http.Response('{"loginToken": 123}', 200));
+          .thenAnswer((_) async => http.Response('{"loginToken": "123"}', 200));
 
       expect(await LoginResponse.makeRequest({}, httpClient: client),
-          isA<Future<LoginResponse>>());
+          isA<LoginResponse>());
     });
   });
 

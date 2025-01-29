@@ -107,9 +107,9 @@ class MockClient2 extends _i1.Mock implements _i2.Client {
           #post,
           [url],
           {
-            #headers: headers,
-            #body: body,
-            #encoding: encoding,
+            // #headers: headers,
+            // #body: body,
+            //  #encoding: encoding,
           },
         ),
         returnValue: _i3.Future<_i2.Response>.value(_FakeResponse_0(
@@ -118,9 +118,9 @@ class MockClient2 extends _i1.Mock implements _i2.Client {
             #post,
             [url],
             {
-              #headers: headers,
-              #body: body,
-              #encoding: encoding,
+              //        #headers: headers,
+              //      #body: body,
+              //    #encoding: encoding,
             },
           ),
         )),

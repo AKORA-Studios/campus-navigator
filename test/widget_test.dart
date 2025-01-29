@@ -5,12 +5,38 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:campus_navigator/api/api_services.dart';
+import 'package:campus_navigator/api/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:mockito/annotations.dart';
 
 import 'package:campus_navigator/main.dart';
+import 'package:mockito/mockito.dart';
+import './widget_test.mocks.dart';
 
+@GenerateMocks([http.Client])
 void main() {
+  group("LoginTests", () {
+    test('successfullRequest', () async {
+      final client = MockClient2();
+      Map<String, String> headers = {
+        "Content-Type": "application/json",
+        "Accept-Charset": "utf-8",
+        "Accept": "application/json"
+      };
+
+      when(client.post(Uri.parse(APIServices.loginURL),
+              headers: headers, body: {}, encoding: null))
+          .thenAnswer((_) async => http.Response('{"loginToken": 123}', 200));
+
+      expect(await LoginResponse.makeRequest({}, httpClient: client),
+          isA<Future<LoginResponse>>());
+    });
+  });
+
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());

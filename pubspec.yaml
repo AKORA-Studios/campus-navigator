@@ -29,7 +29,7 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  http: ^1.1.0
+  http: ^1.2.0
   html: ^0.15.4
   share_plus: ^7.2.2
   maps_launcher: ^2.2.1
@@ -55,6 +55,8 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^1.0.0
+  mockito: ^5.4.4
+  build_runner: ^2.4.9
 
 
 # The following section is specific to Flutter.

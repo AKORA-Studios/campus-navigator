@@ -58,6 +58,13 @@ Note: change the sheme according to your target in XCode! (debug for simulator, 
 
 `dart run flutter_launcher_icons`
 
+
+#### Side Note About UI Tests
+
+run this to visually see the tests 
+
+`flutter run -t test/widget_test.dart`
+
 ### Dependencies
 
 * cupertino_icons: ^1.0.2 [License](https://pub.dev/packages/cupertino_icons/license)

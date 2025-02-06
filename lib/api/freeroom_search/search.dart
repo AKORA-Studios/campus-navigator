@@ -4,7 +4,7 @@ import 'package:campus_navigator/api/freeroom_search/room_links.dart';
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:campus_navigator/api/freeroom_search/search_result.dart';
 import 'package:campus_navigator/api/networking.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 import '../storage.dart';
 
@@ -14,7 +14,9 @@ Future<FreeroomSearchResult> searchFreeRooms(
     required Set<UserUniversity> universities,
     int minCapacity = -1,
     int maxCapacity = -1,
-    Repetition repetition = Repetition.once}) async {
+    Repetition repetition = Repetition.once,
+    http.Client? httpClient}) async {
+  final client = httpClient ?? http.Client();
   final uri =
       Uri.parse("https://navigator.tu-dresden.de/huefm/ajax_findfreerooms");
 
@@ -25,7 +27,7 @@ Future<FreeroomSearchResult> searchFreeRooms(
     type = universities.first.toString();
   }
 
-  final response = await post(uri, body: {
+  final response = await client.post(uri, body: {
     "startwoche": startWeek.toString(),
     "endwoche": endWeek.toString(),
     "type": repetition.serialize(),
@@ -41,12 +43,14 @@ Future<FreeroomSearchResult> searchFreeRooms(
   return FreeroomSearchResult.fromJson(jsonDecode(response.body));
 }
 
-Future<RoomLinks> listBuildingRoomLinks(String building) async {
+Future<RoomLinks> listBuildingRoomLinks(String building,
+    {http.Client? httpClient}) async {
+  final client = httpClient ?? http.Client();
   final uri =
       Uri.parse("https://navigator.tu-dresden.de/export/search/$building");
 
   final responseText = await cachedStringRequest(uri,
-      requestFunction: (uri) => post(uri), fileExtension: 'json');
+      requestFunction: (uri) => client.post(uri), fileExtension: 'json');
 
   if (responseText == null) {
     throw Exception("brug");
@@ -57,13 +61,14 @@ Future<RoomLinks> listBuildingRoomLinks(String building) async {
 
 /// Returns the links to all lecture rooms?
 /// Example: roomLink("MER", "MER/0003/U") = ["https://navigator.tu-dresden.de/etplan/mer/00/raum/143100.0280"]
-Future<List<String>> fetchRoomLink(
-    String building, String formalRoomName) async {
+Future<List<String>> fetchRoomLink(String building, String formalRoomName,
+    {http.Client? httpClient}) async {
+  final client = httpClient ?? http.Client();
   final uri = Uri.parse(
       "https://navigator.tu-dresden.de/export/findroomurl/$building/$formalRoomName");
 
   final responseText = await cachedStringRequest(uri,
-      requestFunction: (uri) => post(uri), fileExtension: 'json');
+      requestFunction: (uri) => client.post(uri), fileExtension: 'json');
 
   if (responseText == null) {
     throw Exception("brug");

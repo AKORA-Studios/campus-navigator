@@ -165,8 +165,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     future: result,
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
-                        throw snapshot.error!;
-                        //return Text('${snapshot.error}');
+                        return Text('${snapshot.error}');
                       } else if (!snapshot.hasData) {
                         return const SizedBox.shrink();
                       }

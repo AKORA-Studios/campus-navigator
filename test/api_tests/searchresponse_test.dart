@@ -6,7 +6,6 @@ import 'package:mockito/mockito.dart';
 import '../apiservice_mock.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
   group("[API] SearchTest", () {
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -14,9 +13,8 @@ void main() {
       "Accept": "application/json"
     };
 
-    final sut = APIServicesMock();
-
     test('successfullRequest - fetchRoomLink', () async {
+      final sut = APIServicesMock();
       when(sut.client.post(
               Uri.parse(
                   "https://navigator.tu-dresden.de/export/findroomurl/f/f"),

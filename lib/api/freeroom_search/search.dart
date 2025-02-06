@@ -8,7 +8,7 @@ import 'package:campus_navigator/api/networking.dart';
 
 import '../storage.dart';
 
-extension FreeroomSearchResult_APIExtension on APIServices {
+extension FreeroomSearchResult_APIExtension on BaseAPIServices {
   Future<FreeroomSearchResult> searchFreeRooms(
       {required int startWeek,
       required int endWeek,

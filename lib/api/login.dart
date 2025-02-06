@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:campus_navigator/api/api_services.dart';
-import 'package:campus_navigator/api/storage.dart';
-import 'package:http/http.dart' as http;
 
 class LoginResponse {
   final String loginToken;
@@ -15,11 +13,13 @@ class LoginResponse {
       loginToken: json['loginToken'],
     );
   }
+}
 
-  static Future<LoginResponse> postLogin(http.Client httpClient) async {
-    String? user = await Storage.Shared.getUsername();
-    String? passwd = await Storage.Shared.getPassword();
-    var x = await Storage.Shared.getUniversity();
+extension LoginresponseAPIExtension on BaseAPIServices {
+  Future<LoginResponse> postLogin() async {
+    String? user = await storage.getUsername();
+    String? passwd = await storage.getPassword();
+    var x = await storage.getUniversity();
     int university = int.parse(x.value.toString());
 
     if (user == null) {
@@ -45,10 +45,10 @@ class LoginResponse {
       "Accept": "application/json"
     };
 
-    final uri = Uri.parse(APIServices.loginURL);
+    final uri = Uri.parse(BaseAPIServices.loginURL);
 
-    final response = await httpClient.post(uri,
-        headers: headers, body: jsonEncode(jsonBody));
+    final response =
+        await client.post(uri, headers: headers, body: jsonEncode(jsonBody));
 
     if (response.statusCode == 200) {
       return LoginResponse.fromJson(jsonDecode(response.body));

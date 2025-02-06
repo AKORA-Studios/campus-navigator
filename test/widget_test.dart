@@ -7,9 +7,8 @@ import './ui_tests/searchscreen_test.dart' as searchscreenTest;
 
 @GenerateMocks([http.Client])
 void main() {
-  if (false) {
-    loginresponseTest.main();
-    searchscreenTest.main();
-  }
+  loginresponseTest.main();
   searchresponseTest.main();
+
+  searchscreenTest.main();
 }

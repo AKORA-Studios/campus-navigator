@@ -1,4 +1,3 @@
-import 'package:campus_navigator/api/login.dart';
 import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -9,20 +8,20 @@ abstract class NavigatorCacheManager extends CacheManager
   NavigatorCacheManager(super.config);
 }
 
-class APIServices {
+class APIServices extends BaseAPIServices {
+  static APIServices Shared = APIServices();
+
+  APIServices() : super(cacheManager: DefaultCacheManager());
+}
+
+class BaseAPIServices {
   static const String loginURL = '$baseURL/api/login';
 
   http.Client client = http.Client();
-  ImageCacheManager cacheManager = DefaultCacheManager();
+  ImageCacheManager? cacheManager;
   Storage storage = Storage.Shared;
 
-  static APIServices Shared = APIServices();
-
-  APIServices();
-
-  APIServices.fromMock({required this.client});
-
-  Future<LoginResponse> postLogin() async {
-    return await LoginResponse.postLogin(client);
+  BaseAPIServices({ImageCacheManager? cacheManager}) {
+    cacheManager = cacheManager;
   }
 }

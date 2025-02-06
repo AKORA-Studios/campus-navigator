@@ -10,11 +10,12 @@ import 'api_services.dart';
 
 const baseURL = "https://navigator.tu-dresden.de";
 
-extension APIServices_Util on APIServices {
+extension APIServices_Util on BaseAPIServices {
   /// This is a helper method for loading images that
   /// automatically caches them for ease of use
   Future<ui.Image?> fetchImage(Uri uri) async {
-    final cachedImageFile = await cacheManager.getFileFromCache(uri.toString());
+    final cachedImageFile =
+        await cacheManager?.getFileFromCache(uri.toString());
 
     Uint8List imageBytes;
     if (cachedImageFile != null) {
@@ -27,7 +28,7 @@ extension APIServices_Util on APIServices {
         return null;
       }
 
-      await cacheManager.putFile(uri.toString(), response.bodyBytes,
+      await cacheManager?.putFile(uri.toString(), response.bodyBytes,
           maxAge: (await storage.getCacheDuration()).value,
           fileExtension: 'png',
           eTag: eTag);
@@ -48,12 +49,11 @@ extension APIServices_Util on APIServices {
   /// The fetched URI is assumed to contain UTF8 data
   Future<String?> cachedStringRequest(Uri uri,
       {Future<Response> Function(Uri uri)? requestFunction,
-      String fileExtension = 'html',
-      http.Client? httpClient}) async {
+      String fileExtension = 'html'}) async {
     // The function used to actually execute request
-    final requester = requestFunction ?? (uri) => httpClient!.get(uri);
+    final requester = requestFunction ?? (uri) => client.get(uri);
 
-    final cachedDataFile = await cacheManager.getFileFromCache(uri.toString());
+    final cachedDataFile = await cacheManager?.getFileFromCache(uri.toString());
 
     String responseString;
     if (cachedDataFile != null) {
@@ -70,7 +70,7 @@ extension APIServices_Util on APIServices {
       // Ensure that cached text is always in utf8 format
       final encodedString = utf8.encode(responseString);
 
-      await cacheManager.putFile(uri.toString(), encodedString,
+      await cacheManager?.putFile(uri.toString(), encodedString,
           fileExtension: fileExtension,
           maxAge: (await storage.getCacheDuration()).value,
           eTag: eTag);

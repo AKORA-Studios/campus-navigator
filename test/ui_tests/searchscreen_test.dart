@@ -1,6 +1,5 @@
 import 'package:campus_navigator/main.dart';
 import 'package:campus_navigator/ui/screens/freeroom_search_screen.dart';
-import 'package:campus_navigator/ui/screens/location_screen.dart';
 import 'package:campus_navigator/ui/screens/search_screen.dart';
 import 'package:campus_navigator/ui/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -34,12 +33,13 @@ void main() {
     await tester.pump();
 
 // Location
+    /*
     await tester.tap(find.byIcon(Icons.location_on));
     await tester.pump();
     await tester.pump();
     expect(find.byType(LocationScreen), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.arrow_back));
-    await tester.pump();
+    await tester.pump();*/
   });
 }

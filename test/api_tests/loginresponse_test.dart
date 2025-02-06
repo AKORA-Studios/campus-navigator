@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 
 import '../apiservice_mock.dart';
-import '../widget_test.mocks.dart';
 
 void main() {
   group("[API] LoginTests", () {
@@ -14,12 +13,10 @@ void main() {
       "Accept-Charset": "utf-8",
       "Accept": "application/json"
     };
+    final sut = APIServicesMock();
 
     test('successfullRequest', () async {
-      final client = MockClient2();
-      final sut = APIServicesMock();
-
-      when(client.post(Uri.parse(BaseAPIServices.loginURL),
+      when(sut.client.post(Uri.parse(BaseAPIServices.loginURL),
               headers: headers, body: {}, encoding: null))
           .thenAnswer((_) async => http.Response('{"loginToken": "123"}', 200));
 
@@ -27,18 +24,14 @@ void main() {
     });
 
     test('siteAvailability', () async {
-      final client = MockClient2();
-      final sut = APIServicesMock();
-      when(client.post(Uri.parse(BaseAPIServices.loginURL),
+      when(sut.client.post(Uri.parse(BaseAPIServices.loginURL),
               headers: headers, body: {}, encoding: null))
           .thenAnswer((_) async => http.Response('Not Found', 404));
       expect(sut.postLogin(), throwsException);
     });
 
     test('serverException', () async {
-      final client = MockClient2();
-      final sut = APIServicesMock();
-      when(client.post(Uri.parse(BaseAPIServices.loginURL),
+      when(sut.client.post(Uri.parse(BaseAPIServices.loginURL),
               headers: headers, body: {}, encoding: null))
           .thenAnswer((_) async => http.Response('Not Found', 500));
       expect(sut.postLogin(), throwsException);

@@ -55,7 +55,6 @@ class LoginResponse {
     } else if (response.statusCode == 500) {
       throw Exception("Server exception, try again later");
     } else {
-      // print(response.body);
       String? msg = json.decode(response.body)["message"];
       throw Exception('Failed to login: $msg');
     }

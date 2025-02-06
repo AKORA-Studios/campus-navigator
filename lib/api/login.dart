@@ -16,7 +16,7 @@ class LoginResponse {
     );
   }
 
-  static Future<LoginResponse> postLogin({http.Client? httpClient}) async {
+  static Future<LoginResponse> postLogin(http.Client httpClient) async {
     String? user = await Storage.Shared.getUsername();
     String? passwd = await Storage.Shared.getPassword();
     var x = await Storage.Shared.getUniversity();
@@ -38,14 +38,6 @@ class LoginResponse {
       'from': "/"
     };
 
-    return makeRequest(jsonBody, httpClient: httpClient);
-  }
-
-  static Future<LoginResponse> makeRequest(Map<String, Object> jsonBody,
-      {http.Client? httpClient}) async {
-    // _httpClient = httpClient ?? http.Client();
-    final client = httpClient ?? http.Client();
-
     //application/x-www-form-urlencoded;charset=UTF-8
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -55,13 +47,13 @@ class LoginResponse {
 
     final uri = Uri.parse(APIServices.loginURL);
 
-    final response =
-        await client.post(uri, headers: headers, body: jsonEncode(jsonBody));
+    final response = await httpClient.post(uri,
+        headers: headers, body: jsonEncode(jsonBody));
 
     if (response.statusCode == 200) {
       return LoginResponse.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 500) {
-      throw "Server exception, try again later";
+      throw Exception("Server exception, try again later");
     } else {
       // print(response.body);
       String? msg = json.decode(response.body)["message"];

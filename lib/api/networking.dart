@@ -49,9 +49,10 @@ Future<String?> fetchHMTL(Uri uri) {
 /// The fetched URI is assumed to contain UTF8 data
 Future<String?> cachedStringRequest(Uri uri,
     {Future<Response> Function(Uri uri)? requestFunction,
-    String fileExtension = 'html'}) async {
-  // The function used to actuall execute request
-  final requester = requestFunction ?? (uri) => http.get(uri);
+    String fileExtension = 'html',
+    http.Client? httpClient}) async {
+  // The function used to actually execute request
+  final requester = requestFunction ?? (uri) => httpClient!.get(uri);
 
   final cachedDataFile =
       await DefaultCacheManager().getFileFromCache(uri.toString());

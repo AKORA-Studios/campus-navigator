@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/building/parsing/building_levels.dart';
 import 'package:campus_navigator/api/building/roomOccupancyPlan.dart';
@@ -58,7 +59,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
     setState(() {
       showOccupancyTable = !showOccupancyTable;
       if (showOccupancyTable && roomURL != null) {
-        Future<LoginResponse> loginToken = LoginResponse.postLogin();
+        Future<LoginResponse> loginToken = APIServices.Shared.postLogin();
         loginToken.then((value) {
           Future<List<List<List<String>>>> tableContent =
               RoomOccupancyPlan.getRoomPlan(

@@ -116,7 +116,7 @@ class Storage {
   // Map filters
   var filterSet = layerFilterOptions.values.toSet();
 
-  static final Storage Shared = Storage();
+  static Storage Shared = Storage();
 
   Storage();
 

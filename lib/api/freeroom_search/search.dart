@@ -1,22 +1,21 @@
 import 'dart:convert';
 
+import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/freeroom_search/room_links.dart';
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:campus_navigator/api/freeroom_search/search_result.dart';
 import 'package:campus_navigator/api/networking.dart';
-import 'package:http/http.dart' as http;
 
 import '../storage.dart';
 
-extension FreeroomSearchResult_APIExtension on FreeroomSearchResult {
-  static Future<FreeroomSearchResult> searchFreeRooms(
+extension FreeroomSearchResult_APIExtension on APIServices {
+  Future<FreeroomSearchResult> searchFreeRooms(
       {required int startWeek,
       required int endWeek,
       required Set<UserUniversity> universities,
-      required int minCapacity,
-      required int maxCapacity,
-      required Repetition repetition,
-      required http.Client httpClient}) async {
+      int minCapacity = -1,
+      int maxCapacity = -1,
+      Repetition repetition = Repetition.once}) async {
     final uri = Uri.parse("$baseURL/huefm/ajax_findfreerooms");
 
     String type;
@@ -26,7 +25,7 @@ extension FreeroomSearchResult_APIExtension on FreeroomSearchResult {
       type = universities.first.toString();
     }
 
-    final response = await httpClient.post(uri, body: {
+    final response = await client.post(uri, body: {
       "startwoche": startWeek.toString(),
       "endwoche": endWeek.toString(),
       "type": repetition.serialize(),
@@ -42,12 +41,11 @@ extension FreeroomSearchResult_APIExtension on FreeroomSearchResult {
     return FreeroomSearchResult.fromJson(jsonDecode(response.body));
   }
 
-  static Future<RoomLinks> listBuildingRoomLinks(
-      String building, http.Client httpClient) async {
+  Future<RoomLinks> listBuildingRoomLinks(String building) async {
     final uri = Uri.parse("$baseURL/export/search/$building");
 
     final responseText = await cachedStringRequest(uri,
-        requestFunction: (uri) => httpClient.post(uri), fileExtension: 'json');
+        requestFunction: (uri) => client.post(uri), fileExtension: 'json');
 
     if (responseText == null) {
       throw Exception("brug");
@@ -58,13 +56,13 @@ extension FreeroomSearchResult_APIExtension on FreeroomSearchResult {
 
   /// Returns the links to all lecture rooms?
   /// Example: roomLink("MER", "MER/0003/U") = ["https://navigator.tu-dresden.de/etplan/mer/00/raum/143100.0280"]
-  static Future<List<String>> fetchRoomLink(
-      String building, String formalRoomName, http.Client httpClient) async {
+  Future<List<String>> fetchRoomLink(
+      String building, String formalRoomName) async {
     final uri =
         Uri.parse("$baseURL/export/findroomurl/$building/$formalRoomName");
 
     final responseText = await cachedStringRequest(uri,
-        requestFunction: (uri) => httpClient.post(uri), fileExtension: 'json');
+        requestFunction: (uri) => client.post(uri), fileExtension: 'json');
 
     if (responseText == null) {
       throw Exception("brug");

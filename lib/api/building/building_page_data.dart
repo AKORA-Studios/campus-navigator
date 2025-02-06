@@ -5,6 +5,7 @@ import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/networking.dart';
 import 'package:campus_navigator/api/storage.dart';
 
+import '../api_services.dart';
 import 'page_image_data.dart';
 import 'parsing/html_data.dart';
 import 'parsing/layer_data.dart';
@@ -125,7 +126,7 @@ class BuildingPageData {
   static Future<void> preFetchQuery(String query) async {
     final uri = Uri.parse("$baseURL/etplan/$query");
 
-    String? body = await fetchHMTL(uri);
+    String? body = await APIServices.Shared.fetchHMTL(uri);
     if (body == null) {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -137,7 +138,7 @@ class BuildingPageData {
     final queryParts = query.split("/");
     final uri = Uri.parse("$baseURL/etplan/$query");
 
-    String? body = await fetchHMTL(uri);
+    String? body = await APIServices.Shared.fetchHMTL(uri);
     if (body == null) {
       // If the server did not return a 200 OK response,
       // then throw an exception.

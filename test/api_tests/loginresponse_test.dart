@@ -1,16 +1,13 @@
 import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/login.dart';
-import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 
-import '../storage_mock.dart';
 import '../widget_test.mocks.dart';
 
 void main() {
   group("[API] LoginTests", () {
-    Storage.Shared = MockStorage();
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept-Charset": "utf-8",

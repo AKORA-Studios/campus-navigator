@@ -1,9 +1,9 @@
-import 'package:campus_navigator/api/api_services.dart';
+import 'package:campus_navigator/api/freeroom_search/search.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 
-import '../widget_test.mocks.dart';
+import '../apiservice_mock.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -14,11 +14,10 @@ void main() {
       "Accept": "application/json"
     };
 
-    final client = MockClient2();
-    final sut = APIServices.fromMock(client: client);
+    final sut = APIServicesMock();
 
     test('successfullRequest - fetchRoomLink', () async {
-      when(client.post(
+      when(sut.client.post(
               Uri.parse(
                   "https://navigator.tu-dresden.de/export/findroomurl/f/f"),
               headers: headers,

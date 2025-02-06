@@ -1,6 +1,6 @@
 import 'package:campus_navigator/api/storage.dart';
 
-class MockStorage extends Storage {
+class StorageMock extends Storage {
   @override
   Future<String?> getPassword() {
     return Future(() => "pwd");

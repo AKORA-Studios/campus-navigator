@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/networking.dart';
 import 'package:flutter/material.dart';
 
-import '../networking.dart' as common;
 import 'parsing/layer_data.dart';
 
 class PageImageData with ChangeNotifier {
@@ -46,8 +46,8 @@ class PageImageData with ChangeNotifier {
         final uri = Uri.parse(
             "$baseURL/images/etplan_cache/${pngFileName}_$qualiStep/${x}_$y.png/nobase64");
 
-        final imageFuture =
-            common.fetchImage(uri).then((image) => ("${x}_$y", image));
+        final imageFuture = APIServices.Shared.fetchImage(uri)
+            .then((image) => ("${x}_$y", image));
 
         imageFutures.add(imageFuture);
       }
@@ -55,8 +55,7 @@ class PageImageData with ChangeNotifier {
 
     // Layer symbols
     for (final layer in layers) {
-      final imageFuture = common
-          .fetchImage(layer.getSymbolUri())
+      final imageFuture = APIServices.Shared.fetchImage(layer.getSymbolUri())
           .then((image) => (layer.symbolPNG, image));
 
       imageFutures.add(imageFuture);

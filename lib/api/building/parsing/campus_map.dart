@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:maps_toolkit/maps_toolkit.dart';
 
+import '../../api_services.dart';
+import '../../networking.dart';
 import 'html_data.dart';
-import 'package:campus_navigator/api/networking.dart';
 
 class CampusBuilding {
-  /// kurzz
+  /// kurz
   final String shortName;
 
   /// Part of the query used to open the map of this building
@@ -224,7 +226,7 @@ class CampusMapData {
   static Future<CampusMapData> fetch() async {
     final uri = Uri.parse(baseURL);
 
-    String? body = await fetchHMTL(uri);
+    String? body = await APIServices.Shared.fetchHMTL(uri);
     if (body == null) {
       // If the server did not return a 200 OK response,
       // then throw an exception.

@@ -62,7 +62,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
         Future<LoginResponse> loginToken = APIServices.Shared.postLogin();
         loginToken.then((value) {
           Future<List<List<List<String>>>> tableContent =
-              RoomOccupancyPlan.getRoomPlan(
+              APIServices.Shared.getRoomPlan(
                   roomURL!, value.loginToken, currentLocale);
           tableContent.then((value) {
             setState(() {

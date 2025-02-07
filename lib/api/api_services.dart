@@ -16,6 +16,7 @@ class APIServices extends BaseAPIServices {
 
 class BaseAPIServices {
   static const String loginURL = '$baseURL/api/login';
+  static const String occupancyPlanURL = '$baseURL/raum';
 
   http.Client client = http.Client();
   ImageCacheManager? cacheManager;
@@ -23,5 +24,29 @@ class BaseAPIServices {
 
   BaseAPIServices({ImageCacheManager? cacheManager}) {
     cacheManager = cacheManager;
+  }
+
+  String generateCookieHeader(Map<String, String> cookies) {
+    String cookie = "";
+
+    for (var key in cookies.keys) {
+      if (cookie.isNotEmpty) cookie += ";";
+      cookie += key + "=" + cookies[key]!;
+    }
+
+    return cookie;
+  }
+
+  Map<String, String> generatePostHeader(String token) {
+    Map<String, String> cookies = {
+      'loginToken': token,
+    };
+
+    return {
+      "Content-Type": "application/json",
+      "Accept-Charset": "utf-8",
+      "Accept": "application/json",
+      "cookie": generateCookieHeader(cookies),
+    };
   }
 }

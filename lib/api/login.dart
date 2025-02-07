@@ -16,17 +16,20 @@ class LoginResponse {
 }
 
 extension LoginresponseAPIExtension on BaseAPIServices {
+  /// Post login request to receive a `token` for fetching Room Occupancy Tables
+  ///
+  /// Login data is used from the Storage inside the APIService
   Future<LoginResponse> postLogin() async {
     String? user = await storage.getUsername();
     String? passwd = await storage.getPassword();
     var x = await storage.getUniversity();
     int university = int.parse(x.value.toString());
 
-    if (user == null) {
+    if (user == null || user.isEmpty) {
       throw Exception('Failed to login: No Username set');
     }
 
-    if (passwd == null) {
+    if (passwd == null || passwd.isEmpty) {
       throw Exception('Failed to login: No Password set');
     }
 

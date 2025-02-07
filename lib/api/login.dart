@@ -53,7 +53,8 @@ extension LoginresponseAPIExtension on BaseAPIServices {
     if (response.statusCode == 200) {
       return LoginResponse.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 500) {
-      throw Exception("Server exception, try again later");
+      throw Exception(
+          "Server exception, try again later. Also check if you have selected the correct university");
     } else {
       String? msg = json.decode(response.body)["message"];
       throw Exception('Failed to login: $msg');

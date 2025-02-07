@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:campus_navigator/api/networking.dart';
-import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
+
+import 'api_services.dart';
 
 class SearchResult {
   final String assist;
@@ -59,7 +60,7 @@ class SearchResult {
       body = response.body;
       await DefaultCacheManager().putFile(cacheKey, utf8.encode(body),
           fileExtension: 'json',
-          maxAge: (await Storage.Shared.getCacheDuration()).value);
+          maxAge: (await APIServices.Shared.storage.getCacheDuration()).value);
     }
 
     // If the server did return a 200 OK response,

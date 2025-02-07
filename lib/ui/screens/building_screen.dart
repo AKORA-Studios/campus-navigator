@@ -46,7 +46,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
   @override
   void initState() {
     super.initState();
-    selectedFilters = Storage.Shared.filterSet;
+    selectedFilters = APIServices.Shared.storage.filterSet;
     widget.room.then((room) {
       setState(() {
         selectedLevel = room.buildingData.getCurrentLevel()?.name;
@@ -125,10 +125,10 @@ class _BuildingScreenState extends State<BuildingScreen> {
               onChanged: (isSelected) {
                 if (isSelected == true) {
                   selectedFilters.add(opt);
-                  Storage.Shared.filterSet.add(opt);
+                  APIServices.Shared.storage.filterSet.add(opt);
                 } else {
                   selectedFilters.remove(opt);
-                  Storage.Shared.filterSet.remove(opt);
+                  APIServices.Shared.storage.filterSet.remove(opt);
                 }
                 _setState(() {}); // Update checkbox state
                 setState(() {}); // Update parent widget

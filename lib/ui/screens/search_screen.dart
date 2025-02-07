@@ -7,6 +7,7 @@ import 'package:campus_navigator/ui/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../api/api_services.dart';
 import 'freeroom_search_screen.dart';
 import 'location_screen.dart';
 import 'settings_screen.dart';
@@ -94,7 +95,8 @@ class _SearchScreenState extends State<SearchScreen> {
     if (firstResult == null) return;
 
     // Prefetching for better UX
-    final preFetchingLevel = await Storage.Shared.getPrefetchingLevel();
+    final preFetchingLevel =
+        await APIServices.Shared.storage.getPrefetchingLevel();
 
     switch (preFetchingLevel) {
       case PrefetchingLevel.allResults:

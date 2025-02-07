@@ -4,6 +4,7 @@ import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 
+import '../../api/api_services.dart';
 import '../../api/building/parsing/layer_data.dart';
 import '../../api/building/parsing/position.dart';
 import '../../api/building/parsing/room_polygon.dart';
@@ -94,7 +95,7 @@ class MapPainter extends CustomPainter {
       final canBeFiltered = layerFilterOptions.values
           .any((element) => element.layerName == entry.key);
 
-      final shouldDisplay = Storage.Shared.filterSet
+      final shouldDisplay = APIServices.Shared.storage.filterSet
           .any((element) => element.layerName == entry.key);
 
       Color? color =
@@ -112,7 +113,7 @@ class MapPainter extends CustomPainter {
     for (final LayerData l in roomResult.layers) {
       // hides/shows symbol icons due to filters
 
-      if (!Storage.Shared.filterSet
+      if (!APIServices.Shared.storage.filterSet
           .any((element) => element.layerName == l.name)) {
         continue;
       }
@@ -186,7 +187,8 @@ class MapPainter extends CustomPainter {
     }
 
     // Beschriftungen
-    if (Storage.Shared.filterSet.contains(layerFilterOptions.Labeling)) {
+    if (APIServices.Shared.storage.filterSet
+        .contains(layerFilterOptions.Labeling)) {
       for (final entry in roomResult.raumBezData.text) {
         final txt = entry.qy;
         final offset = Offset(entry.x, entry.y);

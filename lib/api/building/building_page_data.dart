@@ -150,7 +150,7 @@ class BuildingPageData {
     var roomResult = BuildingPageData.fromHTMLText(body, queryParts);
 
     // Get quality index from settings
-    final qualityLevel = await Storage.Shared.getQualityLevel();
+    final qualityLevel = await APIServices.Shared.storage.getQualityLevel();
 
     // Start loading process for images
     roomResult.backgroundImageData = PageImageData.fetchLevelImages(

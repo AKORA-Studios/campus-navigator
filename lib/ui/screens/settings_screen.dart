@@ -1,3 +1,4 @@
+import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -44,12 +45,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         qualityLevelValue,
         packageInfo
       ) = await (
-        Storage.Shared.getUsername(),
-        Storage.Shared.getPassword(),
-        Storage.Shared.getUniversity(),
-        Storage.Shared.getCacheDuration(),
-        Storage.Shared.getPrefetchingLevel(),
-        Storage.Shared.getQualityLevel(),
+        APIServices.Shared.storage.getUsername(),
+        APIServices.Shared.storage.getPassword(),
+        APIServices.Shared.storage.getUniversity(),
+        APIServices.Shared.storage.getCacheDuration(),
+        APIServices.Shared.storage.getPrefetchingLevel(),
+        APIServices.Shared.storage.getQualityLevel(),
         PackageInfo.fromPlatform()
       ).wait;
 
@@ -62,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _usernameController.text = usernameValue ?? "";
         _passwordController.text = passwordValue ?? "";
 
-        tudSelected = tudSelectedValue == "1";
+        tudSelected = tudSelectedValue == UserUniversity.TUD;
 
         cacheDuration = cacheDurationValue;
         prefetchingLevel = prefetchingLevelValue;
@@ -77,10 +78,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String get password => _passwordController.text;
 
   saveData() async {
-    await Storage.Shared.editUsername(_usernameController.text);
-    await Storage.Shared.editpassword(_passwordController.text);
-    await Storage.Shared.editUniversity(
-        tudSelected ? UserUniversity.TUD : UserUniversity.HTW);
+    await APIServices.Shared.storage.editUsername(_usernameController.text);
+    await APIServices.Shared.storage.editpassword(_passwordController.text);
+    await APIServices.Shared.storage
+        .editUniversity(tudSelected ? UserUniversity.TUD : UserUniversity.HTW);
 
     setState(() {
       updateView = !updateView;
@@ -88,9 +89,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   deleteData() async {
-    await Storage.Shared.editUsername("");
-    await Storage.Shared.editpassword("");
-    await Storage.Shared.editUniversity(UserUniversity.TUD);
+    await APIServices.Shared.storage.editUsername("");
+    await APIServices.Shared.storage.editpassword("");
+    await APIServices.Shared.storage.editUniversity(UserUniversity.TUD);
 
     setState(() {
       updateView = !updateView;
@@ -209,7 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
             selected: <CacheDuration>{cacheDuration},
             onSelectionChanged: (Set<CacheDuration> newSelection) async {
-              Storage.Shared.setCacheDuration(newSelection.first);
+              APIServices.Shared.storage.setCacheDuration(newSelection.first);
 
               setState(() {
                 cacheDuration = newSelection.first;
@@ -253,7 +254,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
             selected: <PrefetchingLevel>{prefetchingLevel},
             onSelectionChanged: (Set<PrefetchingLevel> newSelection) async {
-              Storage.Shared.setPrefetchingLevel(newSelection.first);
+              APIServices.Shared.storage
+                  .setPrefetchingLevel(newSelection.first);
 
               setState(() {
                 prefetchingLevel = newSelection.first;
@@ -276,7 +278,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             divisions: 4,
             label: qualityLevel.round().toString(),
             onChanged: (double value) async {
-              Storage.Shared.setQualityLevel(value.round());
+              APIServices.Shared.storage.setQualityLevel(value.round());
               setState(() {
                 qualityLevel = value;
               });

@@ -55,7 +55,8 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
   /// user interaction by one RTT when a room is clicked on as the actual
   /// room link does not have to be fatched anymore
   prefetchBuildingRoomLinks(String building) async {
-    final prefetchingLevel = await Storage.Shared.getPrefetchingLevel();
+    final prefetchingLevel =
+        await APIServices.Shared.storage.getPrefetchingLevel();
     if (prefetchingLevel == PrefetchingLevel.none) return;
 
     final freeRoomsInBuilding = data.rooms.where((r) => r.startsWith(building));

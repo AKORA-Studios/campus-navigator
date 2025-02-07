@@ -1,6 +1,6 @@
-import 'package:campus_navigator/api/networking.dart';
 import 'package:html/parser.dart';
-import 'package:http/http.dart' as http;
+
+import '../api_services.dart';
 
 class RoomOccupancyPlan {
   final String table;
@@ -10,47 +10,15 @@ class RoomOccupancyPlan {
     required this.table,
   });
 
-  static String _generateCookieHeader(Map<String, String> cookies) {
-    String cookie = "";
-
-    for (var key in cookies.keys) {
-      if (cookie.isNotEmpty) cookie += ";";
-      cookie += key + "=" + cookies[key]!;
-    }
-
-    return cookie;
-  }
-
-  static Future<List<List<List<String>>>> getRoomPlan(String roomID,
-      [String token = "", String locale = "de"]) async {
-    final uri = Uri.parse(
-        '$baseURL/raum/$roomID${locale == "en" ? "?language=en" : ""}');
-
-    Map<String, String> cookies = {
-      'loginToken': token,
-    };
-
-    Map<String, String> headers = {
-      "Content-Type": "application/json",
-      "Accept-Charset": "utf-8",
-      "Accept": "application/json",
-      "cookie": _generateCookieHeader(cookies),
-    };
-
-    final response = await http.get(uri, headers: headers);
-
-    if (response.statusCode == 200) {
-      return getTableContentFromBody(response.body);
-    } else {
-      throw Exception('Failed to load search results');
-    }
-  }
-
   static List<List<List<String>>> getTableContentFromBody(String body) {
     var htmlDocument = parse(body);
     RoomOccupancyPlan.tableNames = [];
 
     final allTables = htmlDocument.querySelectorAll("table");
+    if (allTables.length < 1) {
+      print("Warning: No Tables in Room OccupancyTable");
+      return [];
+    }
     allTables.removeAt(0);
 
     List<List<List<String>>> x = [];
@@ -93,5 +61,24 @@ class RoomOccupancyPlan {
       }
     }
     return x;
+  }
+}
+
+extension RoomOccupancyPlanresponseAPIExtension on BaseAPIServices {
+  /// Fetches the rooms, by [id], occupancy Plan to parse
+  Future<List<List<List<String>>>> getRoomPlan(String roomID,
+      [String token = "", String locale = "de"]) async {
+    final uri = Uri.parse(
+        '${BaseAPIServices.occupancyPlanURL}/$roomID${locale == "en" ? "?language=en" : ""}');
+
+    Map<String, String> headers = generatePostHeader(token);
+
+    final response = await client.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      return RoomOccupancyPlan.getTableContentFromBody(response.body);
+    } else {
+      throw Exception('Failed to load search results');
+    }
   }
 }

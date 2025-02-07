@@ -1,3 +1,4 @@
+import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'package:campus_navigator/api/freeroom_search/search.dart';
 import 'package:campus_navigator/api/networking.dart';
@@ -60,8 +61,8 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
     final freeRoomsInBuilding = data.rooms.where((r) => r.startsWith(building));
 
     // Wait for all room links to be fetched
-    await Future.wait(freeRoomsInBuilding
-        .map((formalRoomName) => fetchRoomLink(building, formalRoomName)));
+    await Future.wait(freeRoomsInBuilding.map((formalRoomName) =>
+        APIServices.Shared.fetchRoomLink(building, formalRoomName)));
   }
 
   DataCell buildCell(int day, int ds) {
@@ -76,7 +77,8 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
 
     openRoomCallback(String building, String formalRoomName) {
       return () async {
-        final links = await fetchRoomLink(building, formalRoomName);
+        final links =
+            await APIServices.Shared.fetchRoomLink(building, formalRoomName);
         final query = links.first.replaceFirst("$baseURL/etplan/", "");
         final pagePromise = BuildingPageData.fetchQuery(query);
 

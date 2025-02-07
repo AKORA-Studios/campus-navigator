@@ -4,43 +4,37 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
 
-import '../widget_test.mocks.dart';
+import '../apiservice_mock.dart';
 
 void main() {
-  group("LoginTests", () {
+  group("[API] LoginTests", () {
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept-Charset": "utf-8",
       "Accept": "application/json"
     };
+    final sut = APIServicesMock();
 
     test('successfullRequest', () async {
-      final client = MockClient2();
-
-      when(client.post(Uri.parse(APIServices.loginURL),
+      when(sut.client.post(Uri.parse(BaseAPIServices.loginURL),
               headers: headers, body: {}, encoding: null))
           .thenAnswer((_) async => http.Response('{"loginToken": "123"}', 200));
 
-      expect(await LoginResponse.makeRequest({}, httpClient: client),
-          isA<LoginResponse>());
+      expect(await sut.postLogin(), isA<LoginResponse>());
     });
 
     test('siteAvailability', () async {
-      final client = MockClient2();
-
-      when(client.post(Uri.parse(APIServices.loginURL),
+      when(sut.client.post(Uri.parse(BaseAPIServices.loginURL),
               headers: headers, body: {}, encoding: null))
           .thenAnswer((_) async => http.Response('Not Found', 404));
-      expect(LoginResponse.postLogin(httpClient: client), throwsException);
+      expect(sut.postLogin(), throwsException);
     });
 
     test('serverException', () async {
-      final client = MockClient2();
-
-      when(client.post(Uri.parse(APIServices.loginURL),
+      when(sut.client.post(Uri.parse(BaseAPIServices.loginURL),
               headers: headers, body: {}, encoding: null))
           .thenAnswer((_) async => http.Response('Not Found', 500));
-      expect(LoginResponse.postLogin(httpClient: client), throwsException);
+      expect(sut.postLogin(), throwsException);
     });
   });
 }

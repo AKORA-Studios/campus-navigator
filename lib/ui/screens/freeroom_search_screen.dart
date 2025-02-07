@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:campus_navigator/api/api_services.dart';
 import 'package:campus_navigator/api/freeroom_search/search_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -35,7 +36,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
   }
 
   updateSearch() {
-    result = searchFreeRooms(
+    result = APIServices.Shared.searchFreeRooms(
         startWeek: weekRange.start.round(),
         endWeek: weekRange.end.round(),
         universities: selectedUniversities,
@@ -165,8 +166,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     future: result,
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
-                        throw snapshot.error!;
-                        //return Text('${snapshot.error}');
+                        return Text('${snapshot.error}');
                       } else if (!snapshot.hasData) {
                         return const SizedBox.shrink();
                       }

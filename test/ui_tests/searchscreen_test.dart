@@ -1,4 +1,5 @@
 import 'package:campus_navigator/main.dart';
+import 'package:campus_navigator/ui/screens/freeroom_search_screen.dart';
 import 'package:campus_navigator/ui/screens/search_screen.dart';
 import 'package:campus_navigator/ui/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,15 +24,18 @@ void main() {
     expect(find.byType(SearchScreen), findsOneWidget);
 
 // Freeroom - TODO: fix http request
-/*await tester.tap(find.byIcon(Icons.meeting_room));
+    await tester.tap(find.byIcon(Icons.meeting_room));
+    await tester.pump();
     await tester.pump();
     expect(find.byType(FreeroomSearchScreen), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.arrow_back));
-    await tester.pump();*/
+    await tester.pump();
 
-// Location - TODO: mock location
-/*await tester.tap(find.byIcon(Icons.location_on));
+// Location
+    /*
+    await tester.tap(find.byIcon(Icons.location_on));
+    await tester.pump();
     await tester.pump();
     expect(find.byType(LocationScreen), findsOneWidget);
 

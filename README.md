@@ -1,6 +1,6 @@
 # Flutter Campus Navigator
 
-A WIP flutter app that will hopefully one day replace the https://navigator.tu-dresden.de website.
+A WIP flutter app that improves the mobile experience of the https://navigator.tu-dresden.de website.
 
 ## Features
 

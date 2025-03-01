@@ -55,11 +55,6 @@ class MapPainter extends CustomPainter {
     // canvas.translate(translateX, translateY);
     canvas.transform(transformationMatrix.storage);
 
-    // Draw mouse
-    if (inverseMousePos != null) {
-      canvas.drawCircle(inverseMousePos, 1.0, Paint()..color = Colors.red);
-    }
-
     // Adjust paints according to current theme
     final theme = Theme.of(context);
     final darkModeEnabled = theme.brightness == Brightness.dark;
@@ -95,14 +90,17 @@ class MapPainter extends CustomPainter {
         }
 
         // Mouse hover
+        final mouseHover = inverseMousePos != null
+            ? Poly.isPointInPolygon(inverseMousePos, [...mapped, mapped[0]])
+            : false;
+
         if (inverseMousePos != null) {
-          final mouseHover = Poly.isPointInPolygon(inverseMousePos, mapped);
           if (mouseHover) color = Colors.red;
         }
 
         final fillPaint = Paint()
           ..strokeWidth = 0
-          ..style = PaintingStyle.fill
+          ..style = !mouseHover ? PaintingStyle.fill : PaintingStyle.stroke
           ..color = color;
 
         final path = Path();
@@ -113,7 +111,7 @@ class MapPainter extends CustomPainter {
             path.lineTo(p.dx, p.dy);
           }
         }
-        path.close();
+        // path.close();
 
         canvas.drawPath(path, fillPaint);
       }
@@ -121,8 +119,8 @@ class MapPainter extends CustomPainter {
 
     for (final entry in roomResult.rooms.entries) {
       // hide/show filtered roomColors
-      final canBeFiltered = layerFilterOptions.values
-          .any((element) => element.layerName == entry.key);
+      final canBeFiltered =
+          layerFilterOptions.values.any((opt) => opt.layerName == entry.key);
 
       final shouldDisplay = APIServices.Shared.storage.filterSet
           .any((element) => element.layerName == entry.key);
@@ -133,6 +131,12 @@ class MapPainter extends CustomPainter {
       for (final roomPolygon in entry.value) {
         drawRoom(roomPolygon, fillColor: color);
       }
+    }
+
+    // Draw mouse
+    if (inverseMousePos != null) {
+      canvas.drawCircle(inverseMousePos, 3.0, Paint()..color = Colors.green);
+      canvas.drawCircle(inverseMousePos, 2.0, Paint()..color = Colors.red);
     }
 
     // Invert symbols (black -> white) when using dark theme
@@ -207,8 +211,8 @@ class MapPainter extends CustomPainter {
 
           final image = imageData.getBackgroundImage(x, y);
           if (image == null) continue;
-          canvas.drawImage(
-              image, imageOffset.scale(qualiStepD, qualiStepD), imagePaint);
+          //canvas.drawImage(
+          //    image, imageOffset.scale(qualiStepD, qualiStepD), imagePaint);
         }
       }
 

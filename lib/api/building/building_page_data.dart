@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
+import 'package:campus_navigator/api/building/parsing/m_json/json_etagen.dart';
 import 'package:campus_navigator/api/networking.dart';
-import 'package:campus_navigator/api/storage.dart';
 
 import '../api_services.dart';
 import 'page_image_data.dart';
@@ -31,6 +31,7 @@ class BuildingPageData {
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
   final List<String> queryParts;
+  List<JsonEtage>? jsonEtagen;
 
   BuildingPageData(
       {required this.htmlData,
@@ -148,6 +149,9 @@ class BuildingPageData {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     var roomResult = BuildingPageData.fromHTMLText(body, queryParts);
+
+    // Json API
+    roomResult.jsonEtagen = await JsonEtage.queryBuilding(query);
 
     // Get quality index from settings
     final qualityLevel = await APIServices.Shared.storage.getQualityLevel();

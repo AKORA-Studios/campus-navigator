@@ -59,6 +59,10 @@ class MapPainter extends CustomPainter {
     final theme = Theme.of(context);
     final darkModeEnabled = theme.brightness == Brightness.dark;
 
+    final currentLevelName = roomResult.buildingData.getCurrentLevel()!.name;
+    final currentLevel =
+        roomResult.jsonEtagen!.firstWhere((e) => e.etage == currentLevelName);
+
     void drawRoom(RoomPolygon roomData, {Color? fillColor}) {
       for (int i = 0; i < roomData.points.length; i++) {
         final pointList = roomData.points[i];
@@ -117,18 +121,18 @@ class MapPainter extends CustomPainter {
       }
     }
 
-    for (final entry in roomResult.rooms.entries) {
+    for (final roomType in currentLevel.typen) {
       // hide/show filtered roomColors
       final canBeFiltered =
-          layerFilterOptions.values.any((opt) => opt.layerName == entry.key);
+          layerFilterOptions.values.any((opt) => opt.layerName == roomType.typ);
 
       final shouldDisplay = APIServices.Shared.storage.filterSet
-          .any((element) => element.layerName == entry.key);
+          .any((element) => element.layerName == roomType.typ);
 
       Color? color =
           (canBeFiltered && !shouldDisplay) ? Colors.transparent : null;
 
-      for (final roomPolygon in entry.value) {
+      for (final room in roomType.rooms) {
         drawRoom(roomPolygon, fillColor: color);
       }
     }

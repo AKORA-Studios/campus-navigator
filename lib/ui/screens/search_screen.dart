@@ -1,5 +1,6 @@
 // Define a custom Form widget.
 import 'package:campus_navigator/api/building/building_page_data.dart';
+import 'package:campus_navigator/api/building/parsing/m_json/json_etagen.dart';
 import 'package:campus_navigator/api/search.dart';
 import 'package:campus_navigator/api/storage.dart';
 import 'package:campus_navigator/ui/screens/building_screen.dart';
@@ -81,6 +82,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void onSearchChanged(String newQuery) async {
+    JsonEtage.queryBuilding(newQuery).then((resp) {
+      if (resp == null) return;
+
+      for (final floor in resp) {
+        floor.
+      }
+    });
+
     final searchFuture = SearchResult.searchRoom(newQuery);
     setState(() {
       searchResult = searchFuture;

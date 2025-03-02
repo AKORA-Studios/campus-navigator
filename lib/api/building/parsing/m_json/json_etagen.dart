@@ -1,13 +1,17 @@
 import 'dart:convert';
 
-class JsonEtagen {
+import 'package:campus_navigator/api/networking.dart';
+
+import '../../../api_services.dart';
+
+class JsonEtage {
   final String etage;
   final double maxY;
   final double maxX;
   final String raumf;
   final List<Typen> typen;
 
-  JsonEtagen({
+  JsonEtage({
     required this.etage,
     required this.maxY,
     required this.maxX,
@@ -15,12 +19,12 @@ class JsonEtagen {
     required this.typen,
   });
 
-  factory JsonEtagen.fromRawJson(String str) =>
-      JsonEtagen.fromJson(json.decode(str));
+  factory JsonEtage.fromRawJson(String str) =>
+      JsonEtage.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory JsonEtagen.fromJson(Map<String, dynamic> json) => JsonEtagen(
+  factory JsonEtage.fromJson(Map<String, dynamic> json) => JsonEtage(
         etage: json["etage"],
         maxY: json["maxY"]?.toDouble(),
         maxX: json["maxX"]?.toDouble(),
@@ -35,14 +39,32 @@ class JsonEtagen {
         "raumf": raumf,
         "typen": List<dynamic>.from(typen.map((x) => x.toJson())),
       };
+
+  static Future<List<JsonEtage>?> queryBuilding(String buildingName) async {
+    final uri = Uri.parse("$baseURL/m/json_etagen/$buildingName");
+    String? body = await APIServices.Shared.cachedStringRequest(uri);
+    if (body == null) return null;
+
+    final jsonData = json.decode(body);
+
+    if (jsonData is Map) {
+      final error = jsonData["error"];
+      print("JsonEtagen.queryBuilding: $error");
+      return null;
+    }
+
+    return (jsonData as List<dynamic>)
+        .map((d) => JsonEtage.fromJson(d))
+        .toList();
+  }
 }
 
 class Typen {
-  final List<Rooms> rume;
+  final List<Rooms> rooms;
   final int typ;
 
   Typen({
-    required this.rume,
+    required this.rooms,
     required this.typ,
   });
 
@@ -51,12 +73,12 @@ class Typen {
   String toRawJson() => json.encode(toJson());
 
   factory Typen.fromJson(Map<String, dynamic> json) => Typen(
-        rume: List<Rooms>.from(json["räume"].map((x) => Rooms.fromJson(x))),
+        rooms: List<Rooms>.from(json["räume"].map((x) => Rooms.fromJson(x))),
         typ: json["typ"],
       );
 
   Map<String, dynamic> toJson() => {
-        "räume": List<dynamic>.from(rume.map((x) => x.toJson())),
+        "räume": List<dynamic>.from(rooms.map((x) => x.toJson())),
         "typ": typ,
       };
 }

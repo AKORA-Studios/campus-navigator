@@ -42,8 +42,9 @@ class JsonEtage {
         "typen": List<dynamic>.from(typen.map((x) => x.toJson())),
       };
 
-  static Future<List<JsonEtage>?> queryBuilding(String buildingName) async {
-    final uri = Uri.parse("$baseURL/m/json_etagen/hsz");
+  static Future<List<JsonEtage>?> queryBuilding(String query) async {
+    final buildingName = query.split("/").first;
+    final uri = Uri.parse("$baseURL/m/json_etagen/$buildingName");
     String? body = await APIServices.Shared.cachedStringRequest(uri);
     if (body == null) return null;
 

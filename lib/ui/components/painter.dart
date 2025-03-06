@@ -106,15 +106,62 @@ class MapPainter extends CustomPainter {
             path.lineTo(p.dx, p.dy);
           }
         }
-        // path.close();
 
         canvas.drawPath(path, fillPaint);
 
         // Mouse hover
         if (inverseMousePos != null) {
           if (path.contains(inverseMousePos)) {
+            path.close();
             canvas.drawPath(path, strokePaint);
           }
+        }
+
+        // Beschriftungen
+        if (APIServices.Shared.storage.filterSet
+            .contains(layerFilterOptions.Labeling)) {
+          final polygonArea = calculateDrawingArea(points: mapped);
+
+          if (room.name == null) break;
+
+          final txt = room.name!;
+          final offset = Offset(room.namex!, room.namey!);
+
+          const width = 100.0;
+
+          double fontSize =
+              min(polygonArea.height, polygonArea.width / txt.length);
+
+          // This is done to improve text readability over complex shapes like chairs
+          Shadow textShadow;
+          if (darkModeEnabled) {
+            textShadow = const Shadow(color: Colors.black, blurRadius: 20.0);
+          } else {
+            textShadow = const Shadow(color: Colors.white, blurRadius: 10.0);
+          }
+
+          final textPainter = TextPainter(
+              text: TextSpan(
+                text: txt,
+                style: TextStyle(
+                  shadows: [textShadow],
+                  color: darkModeEnabled
+                      ? Colors.grey.shade100
+                      : theme.colorScheme.onSurface,
+                  fontSize: fontSize,
+                ),
+              ),
+              textDirection: TextDirection.ltr,
+              textAlign: TextAlign.center);
+
+          textPainter.layout(minWidth: width, maxWidth: width);
+
+          // Aligning the text vertically and horizontally
+          // 0.15 is because the text won't be perfectly vertically centere
+          textPainter.paint(
+              canvas,
+              offset.translate(
+                  -width / 2, -((fontSize / 2) + fontSize * 0.15)));
         }
       }
     }
@@ -201,48 +248,6 @@ class MapPainter extends CustomPainter {
 
       canvas.scale(qualiStepD);
     }
-
-    // Beschriftungen
-    if (APIServices.Shared.storage.filterSet
-        .contains(layerFilterOptions.Labeling)) {
-      for (final entry in roomResult.raumBezData.text) {
-        final txt = entry.qy;
-        final offset = Offset(entry.x, entry.y);
-
-        const width = 100.0;
-
-        double fontSize = min(entry.my, entry.mx / entry.qy.length);
-
-        // This is done to improve text readability over complex shapes like chairs
-        Shadow textShadow;
-        if (darkModeEnabled) {
-          textShadow = const Shadow(color: Colors.black, blurRadius: 20.0);
-        } else {
-          textShadow = const Shadow(color: Colors.white, blurRadius: 10.0);
-        }
-
-        final textPainter = TextPainter(
-            text: TextSpan(
-              text: txt,
-              style: TextStyle(
-                shadows: [textShadow],
-                color: darkModeEnabled
-                    ? Colors.grey.shade100
-                    : theme.colorScheme.onSurface,
-                fontSize: fontSize,
-              ),
-            ),
-            textDirection: TextDirection.ltr,
-            textAlign: TextAlign.center);
-
-        textPainter.layout(minWidth: width, maxWidth: width);
-
-        // Aligning the text vertically and horizontally
-        // 0.15 is because the text won't be perfectly vertically centere
-        textPainter.paint(canvas,
-            offset.translate(-width / 2, -((fontSize / 2) + fontSize * 0.15)));
-      }
-    }
   }
 
   @override
@@ -253,23 +258,24 @@ class MapPainter extends CustomPainter {
     return newHtmlData || newImages;
   }
 
-  Rect calculateDrawingArea() {
-    var allPoints = roomResult.jsonEtagen!
-        .expand((e) => e.typen)
-        .expand((r) => r.rooms)
-        .expand((r) => r.mappedPoints())
-        .toList();
+  Rect calculateDrawingArea({List<Offset>? points}) {
+    final allPoints = points ??
+        roomResult.jsonEtagen!
+            .expand((e) => e.typen)
+            .expand((r) => r.rooms)
+            .expand((r) => r.mappedPoints())
+            .toList();
 
-    var minX = allPoints.fold(allPoints[0].dx,
+    final minX = allPoints.fold(allPoints[0].dx,
         (previousValue, element) => min(previousValue, element.dx));
 
-    var maxX = allPoints.fold(allPoints[0].dx,
+    final maxX = allPoints.fold(allPoints[0].dx,
         (previousValue, element) => max(previousValue, element.dx));
 
-    var minY = allPoints.fold(allPoints[0].dy,
+    final minY = allPoints.fold(allPoints[0].dy,
         (previousValue, element) => min(previousValue, element.dy));
 
-    var maxY = allPoints.fold(allPoints[0].dy,
+    final maxY = allPoints.fold(allPoints[0].dy,
         (previousValue, element) => max(previousValue, element.dy));
 
     return Rect.fromLTRB(minX, minY, maxX, maxY);

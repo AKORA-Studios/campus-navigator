@@ -85,9 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
     JsonEtage.queryBuilding(newQuery).then((resp) {
       if (resp == null) return;
 
-      for (final floor in resp) {
-        floor.
-      }
+      for (final floor in resp) {}
     });
 
     final searchFuture = SearchResult.searchRoom(newQuery);

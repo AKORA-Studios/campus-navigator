@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:campus_navigator/api/networking.dart';
 
 import '../../../api_services.dart';
+import '../room_polygon.dart';
 
 class JsonEtage {
   final String etage;
@@ -41,7 +43,7 @@ class JsonEtage {
       };
 
   static Future<List<JsonEtage>?> queryBuilding(String buildingName) async {
-    final uri = Uri.parse("$baseURL/m/json_etagen/$buildingName");
+    final uri = Uri.parse("$baseURL/m/json_etagen/hsz");
     String? body = await APIServices.Shared.cachedStringRequest(uri);
     if (body == null) return null;
 
@@ -57,10 +59,24 @@ class JsonEtage {
         .map((d) => JsonEtage.fromJson(d))
         .toList();
   }
+
+  Map<int, String> roomFills() {
+    // "1:#575757|2:#dbd8db|4:#8…7|27:#a0accd|29:#f0f0f0"
+    final Map<int, String> fillMap = {};
+    for (final f in raumf.split("|")) {
+      final parts = f.split(":");
+
+      final roomType = int.parse(parts[0]);
+      final hexString = parts[1];
+      fillMap[roomType] = hexString;
+    }
+
+    return fillMap;
+  }
 }
 
 class Typen {
-  final List<Rooms> rooms;
+  final List<Room> rooms;
   final int typ;
 
   Typen({
@@ -73,7 +89,7 @@ class Typen {
   String toRawJson() => json.encode(toJson());
 
   factory Typen.fromJson(Map<String, dynamic> json) => Typen(
-        rooms: List<Rooms>.from(json["räume"].map((x) => Rooms.fromJson(x))),
+        rooms: List<Room>.from(json["räume"].map((x) => Room.fromJson(x))),
         typ: json["typ"],
       );
 
@@ -83,7 +99,7 @@ class Typen {
       };
 }
 
-class Rooms {
+class Room {
   final List<Punkt> punkte;
   final double? namey;
   final double? namex;
@@ -91,7 +107,7 @@ class Rooms {
   final String id;
   final bool list;
 
-  Rooms({
+  Room({
     required this.punkte,
     this.namey,
     this.namex,
@@ -100,11 +116,11 @@ class Rooms {
     required this.list,
   });
 
-  factory Rooms.fromRawJson(String str) => Rooms.fromJson(json.decode(str));
+  factory Room.fromRawJson(String str) => Room.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Rooms.fromJson(Map<String, dynamic> json) => Rooms(
+  factory Room.fromJson(Map<String, dynamic> json) => Room(
         punkte: List<Punkt>.from(json["punkte"].map((x) => Punkt.fromJson(x))),
         namey: json["namey"]?.toDouble(),
         namex: json["namex"]?.toDouble(),
@@ -121,6 +137,16 @@ class Rooms {
         "id": id,
         "list": list,
       };
+
+  RoomPolygon toPoly() {
+    return RoomPolygon(fill: null, points: [
+      punkte.expand((e) => [e.x, e.y]).toList()
+    ]);
+  }
+
+  List<Offset> mappedPoints() {
+    return punkte.map((p) => Offset(p.x, p.y)).toList();
+  }
 }
 
 class Punkt {

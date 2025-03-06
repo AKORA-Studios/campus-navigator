@@ -8,7 +8,6 @@ import 'package:maps_toolkit/maps_toolkit.dart';
 import '../../api/api_services.dart';
 import '../../api/building/parsing/layer_data.dart';
 import '../../api/building/parsing/position.dart';
-import '../../api/building/parsing/room_polygon.dart';
 
 // https://stackoverflow.com/questions/55147586/flutter-convert-color-to-hex-string
 Color fromHex(String hexString) {
@@ -59,53 +58,45 @@ class MapPainter extends CustomPainter {
     final theme = Theme.of(context);
     final darkModeEnabled = theme.brightness == Brightness.dark;
 
-    final currentLevelName = roomResult.buildingData.getCurrentLevel()!.name;
+    final currentLevelName =
+        roomResult.buildingData.getCurrentLevel()!.name.trim();
     final currentLevel =
         roomResult.jsonEtagen!.firstWhere((e) => e.etage == currentLevelName);
 
-    void drawRoom(RoomPolygon roomData, {Color? fillColor}) {
-      for (int i = 0; i < roomData.points.length; i++) {
-        final pointList = roomData.points[i];
-        final mapped = mapPoints(pointList);
+    for (final roomType in currentLevel.typen) {
+      // hide/show filtered roomColors
+      final canBeFiltered =
+          layerFilterOptions.values.any((opt) => opt.layerName == roomType.typ);
 
-        final fill = roomData.fill;
+      final shouldDisplay = APIServices.Shared.storage.filterSet
+          .any((element) => element.layerName == roomType.typ);
 
-        Color color;
-        if (fillColor != null) {
-          // Specially highlighted rooms
-          color = fillColor;
+      final fillColors = currentLevel.roomFills();
+      Color color = (canBeFiltered && !shouldDisplay)
+          ? Colors.transparent
+          : fromHex(fillColors[roomType.typ] ?? "#ae0000");
+
+      for (final room in roomType.rooms) {
+        final mapped = room.mappedPoints();
+
+        // Check if this is the highlighted room
+
+        if (color == fromHex("#ae0000")) {
+          // Highlighted color is supposed to be more aggressive
+          color = color.withAlpha(darkModeEnabled ? 150 : 200);
         } else {
-          // Normal rooms
-          // Transparent is for some rea
-          if (fill != null) {
-            color = fromHex(fill);
-
-            // Check if this is the highlighted room
-            if (color == fromHex("#ae0000")) {
-              // Highlighted color is supposed to be more aggressive
-              color = color.withAlpha(darkModeEnabled ? 150 : 200);
-            } else {
-              // Make color less aggressive
-              color = color.withAlpha(darkModeEnabled ? 50 : 100);
-            }
-          } else {
-            color = Colors.transparent;
-          }
-        }
-
-        // Mouse hover
-        final mouseHover = inverseMousePos != null
-            ? Poly.isPointInPolygon(inverseMousePos, [...mapped, mapped[0]])
-            : false;
-
-        if (inverseMousePos != null) {
-          if (mouseHover) color = Colors.red;
+          // Make color less aggressive
+          color = color.withAlpha(darkModeEnabled ? 50 : 100);
         }
 
         final fillPaint = Paint()
-          ..strokeWidth = 0
-          ..style = !mouseHover ? PaintingStyle.fill : PaintingStyle.stroke
+          ..style = PaintingStyle.fill
           ..color = color;
+
+        final strokePaint = Paint()
+          ..strokeWidth = 3
+          ..style = PaintingStyle.stroke
+          ..color = Colors.red;
 
         final path = Path();
         if (mapped.isNotEmpty) {
@@ -118,22 +109,13 @@ class MapPainter extends CustomPainter {
         // path.close();
 
         canvas.drawPath(path, fillPaint);
-      }
-    }
 
-    for (final roomType in currentLevel.typen) {
-      // hide/show filtered roomColors
-      final canBeFiltered =
-          layerFilterOptions.values.any((opt) => opt.layerName == roomType.typ);
-
-      final shouldDisplay = APIServices.Shared.storage.filterSet
-          .any((element) => element.layerName == roomType.typ);
-
-      Color? color =
-          (canBeFiltered && !shouldDisplay) ? Colors.transparent : null;
-
-      for (final room in roomType.rooms) {
-        drawRoom(roomPolygon, fillColor: color);
+        // Mouse hover
+        if (inverseMousePos != null) {
+          if (path.contains(inverseMousePos)) {
+            canvas.drawPath(path, strokePaint);
+          }
+        }
       }
     }
 
@@ -201,8 +183,6 @@ class MapPainter extends CustomPainter {
       int qualiStep = imageData.qualiStep;
       double qualiStepD = qualiStep.toDouble();
 
-      double canvWidth = roomResult.numberVariables["data_canv_width"]!;
-      double canvHeight = roomResult.numberVariables["data_canv_height"]!;
       double qualiSize =
           roomResult.numberVariables["subpics_size"]! / qualiStep;
 
@@ -210,13 +190,12 @@ class MapPainter extends CustomPainter {
 
       for (int x = 0; x < imageData.width; x++) {
         for (int y = 0; y < imageData.height; y++) {
-          var imageOffset = Offset((-0.5 * canvWidth) + (x * qualiSize),
-              (-0.5 * canvHeight) + (y * qualiSize));
+          var imageOffset = Offset((x * qualiSize), (y * qualiSize));
 
           final image = imageData.getBackgroundImage(x, y);
           if (image == null) continue;
-          //canvas.drawImage(
-          //    image, imageOffset.scale(qualiStepD, qualiStepD), imagePaint);
+          canvas.drawImage(
+              image, imageOffset.scale(qualiStepD, qualiStepD), imagePaint);
         }
       }
 
@@ -275,10 +254,10 @@ class MapPainter extends CustomPainter {
   }
 
   Rect calculateDrawingArea() {
-    var allPoints = roomResult
-        .getFlatRoomList()
-        .expand((r) => r.points)
-        .expand(mapPoints)
+    var allPoints = roomResult.jsonEtagen!
+        .expand((e) => e.typen)
+        .expand((r) => r.rooms)
+        .expand((r) => r.mappedPoints())
         .toList();
 
     var minX = allPoints.fold(allPoints[0].dx,
@@ -314,64 +293,5 @@ List<Offset> mapPositions(List<Position> rawPoints) {
 extension ToLatLng on Offset {
   LatLng toCoords() {
     return LatLng(dx, dy);
-  }
-}
-
-// Inspired by: https://github.com/molteo-engineering-team/point_in_polygon/blob/58e567221f5c225d301cb1c2d4871c0454e61723/lib/point_in_polygon.dart
-// https://en.wikipedia.org/wiki/Point_in_polygon
-class Poly {
-  /// Check if a Point [point] is inside a polygon representing by a List of Point [vertices]
-  /// by using a Ray-Casting algorithm
-  static bool isPointInPolygon(Offset point, List<Offset> vertices) {
-    int intersectCount = 0;
-    for (int i = 0; i < vertices.length; i += 1) {
-      final Offset vertB =
-          i == vertices.length - 1 ? vertices[0] : vertices[i + 1];
-      if (Poly.rayCastIntersect(point, vertices[i], vertB)) {
-        intersectCount += 1;
-      }
-    }
-    return (intersectCount % 2) == 0;
-  }
-
-  /// Ray-Casting algorithm implementation
-  /// Calculate whether a horizontal ray cast eastward from [point]
-  /// will intersect with the line between [vertA] and [vertB]
-  /// Refer to `https://en.wikipedia.org/wiki/Point_in_polygon` for more explanation
-  /// or the example comment bloc at the end of this file
-  static bool rayCastIntersect(Offset point, Offset vertA, Offset vertB) {
-    final double aY = vertA.dy;
-    final double bY = vertB.dy;
-    final double aX = vertA.dx;
-    final double bX = vertB.dx;
-    final double pY = point.dy;
-    final double pX = point.dx;
-
-    if ((aY > pY && bY > pY) || (aY < pY && bY < pY) || (aX < pX && bX < pX)) {
-      // The case where the ray does not possibly pass through the polygon edge,
-      // because both points A and B are above/below the line,
-      // or both are to the left/west of the starting point
-      // (as the line travels eastward into the polygon).
-      // Therefore we should not perform the check and simply return false.
-      // If we did not have this check we would get false positives.
-      return false;
-    }
-
-    // y = mx + b : Standard linear equation
-    // (y-b)/m = x : Formula to solve for x
-
-    // M is rise over run -> the slope or angle between vertices A and B.
-    final double m = (aY - bY) / (aX - bX);
-    // B is the Y-intercept of the line between vertices A and B
-    final double b = ((aX * -1) * m) + aY;
-    // We want to find the X location at which a flat horizontal ray at Y height
-    // of pY would intersect with the line between A and B.
-    // So we use our rearranged Y = MX+B, but we use pY as our Y value
-    final double x = (pY - b) / m;
-
-    // If the value of X
-    // (the x point at which the ray intersects the line created by points A and B)
-    // is "ahead" of the point's X value, then the ray can be said to intersect with the polygon.
-    return x > pX;
   }
 }

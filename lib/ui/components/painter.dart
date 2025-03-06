@@ -176,6 +176,12 @@ class MapPainter extends CustomPainter {
     var symbolPaint = Paint()..invertColors = darkModeEnabled;
 
     // Symbols
+    double canvWidth = roomResult.numberVariables["data_canv_width"]!;
+    double canvHeight = roomResult.numberVariables["data_canv_height"]!;
+    final xOff = canvWidth * 0.5;
+    final yOff = canvHeight * 0.5;
+
+    canvas.translate(xOff, yOff);
     for (final LayerData l in roomResult.layers) {
       // hides/shows symbol icons due to filters
 
@@ -194,6 +200,7 @@ class MapPainter extends CustomPainter {
         canvas.scale(1 / l.symbscale);
       }
     }
+    canvas.translate(-xOff, -yOff);
 
     // Paint background image
     if (roomResult.backgroundImageData != null) {

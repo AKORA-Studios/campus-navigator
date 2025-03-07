@@ -22,9 +22,7 @@ class BaseAPIServices {
   ImageCacheManager? cacheManager;
   Storage storage = Storage.Shared;
 
-  BaseAPIServices({ImageCacheManager? cacheManager}) {
-    cacheManager = cacheManager;
-  }
+  BaseAPIServices({this.cacheManager});
 
   String generateCookieHeader(Map<String, String> cookies) {
     String cookie = "";

@@ -19,10 +19,15 @@ import '../components/floor_view.dart';
 import '../components/occupancyTableView.dart';
 
 class BuildingScreen extends StatefulWidget {
-  BuildingScreen({super.key, required this.room, required this.name});
+  BuildingScreen(
+      {super.key,
+      required this.room,
+      required this.name,
+      this.highlightedRoomIdentifier});
 
   Future<BuildingPageData> room;
   final String name;
+  final String? highlightedRoomIdentifier;
 
   @override
   State<BuildingScreen> createState() => _BuildingScreenState();
@@ -260,6 +265,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
           Expanded(
               flex: 1,
               child: asyncFloorView(widget.room,
+                  highlightedRoomIdentifier: widget.highlightedRoomIdentifier,
                   size: Size(
                       MediaQuery.sizeOf(context).width,
                       // Necessary to prevent overflow

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:campus_navigator/api/building/building_page_data.dart';
 import 'painter.dart';
 
-Widget interactiveFloorView(BuildingPageData roomResult, BuildContext context,
-    {Size size = const Size(300, 300)}) {
-  final painter = MapPainter(roomResult: roomResult, context: context);
+Widget interactiveFloorView(BuildContext context, BuildingPageData roomResult,
+    {Size size = const Size(300, 300), String? highlightedRoomIdentifier}) {
+  final painter = MapPainter(
+      context: context,
+      roomResult: roomResult,
+      highlightedRoomIdentifier: highlightedRoomIdentifier);
   void down(PointerDownEvent evt) {
     painter.mousePos = evt.localPosition;
   }
@@ -20,16 +23,13 @@ Widget interactiveFloorView(BuildingPageData roomResult, BuildContext context,
 }
 
 Widget asyncFloorView(Future<BuildingPageData> roomResult,
-    {Size size = const Size(300, 300)}) {
+    {Size size = const Size(300, 300), String? highlightedRoomIdentifier}) {
   return FutureBuilder<BuildingPageData>(
     future: roomResult,
     builder: (context, snapshot) {
       if (snapshot.hasData) {
-        return interactiveFloorView(
-          snapshot.data!,
-          context,
-          size: size,
-        );
+        return interactiveFloorView(context, snapshot.data!,
+            size: size, highlightedRoomIdentifier: highlightedRoomIdentifier);
       } else if (snapshot.hasError) {
         return Text('${snapshot.error}');
       }

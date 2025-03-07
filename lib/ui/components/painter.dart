@@ -18,14 +18,16 @@ Color fromHex(String hexString) {
 }
 
 class MapPainter extends CustomPainter {
-  final BuildingPageData roomResult;
   final BuildContext context;
+  final BuildingPageData roomResult;
+  String? highlightedRoomIdentifier;
 
   Offset? mousePos;
 
   MapPainter({
-    required this.roomResult,
     required this.context,
+    required this.roomResult,
+    this.highlightedRoomIdentifier,
   }) : super(repaint: roomResult.backgroundImageData);
 
   @override
@@ -89,9 +91,13 @@ class MapPainter extends CustomPainter {
           color = color.withAlpha(darkModeEnabled ? 50 : 100);
         }
 
+        final isHighligthed =
+            highlightedRoomIdentifier?.endsWith(room.id.replaceAll("U", "-")) ??
+                false;
+
         final fillPaint = Paint()
           ..style = PaintingStyle.fill
-          ..color = color;
+          ..color = isHighligthed ? Colors.green : color;
 
         final strokePaint = Paint()
           ..strokeWidth = 3
@@ -114,6 +120,8 @@ class MapPainter extends CustomPainter {
           if (path.contains(inverseMousePos)) {
             path.close();
             canvas.drawPath(path, strokePaint);
+
+            print("${room.name}, ${room.id}, ${highlightedRoomIdentifier}");
           }
         }
 
@@ -125,9 +133,10 @@ class MapPainter extends CustomPainter {
           if (room.name == null) break;
 
           final txt = room.name!;
+
           final offset = Offset(room.namex!, room.namey!);
 
-          const width = 100.0;
+          const width = 1000.0;
 
           double fontSize =
               min(polygonArea.height, polygonArea.width / txt.length);

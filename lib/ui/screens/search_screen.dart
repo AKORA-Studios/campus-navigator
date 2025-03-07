@@ -103,8 +103,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
     switch (preFetchingLevel) {
       case PrefetchingLevel.allResults:
-        results.resultsRooms
-            .map((e) => BuildingPageData.preFetchQuery(e.identifier));
+        for (final room in results.resultsRooms.take(10)) {
+          BuildingPageData.preFetchQuery(room.identifier);
+        }
       case PrefetchingLevel.firstResult:
         BuildingPageData.preFetchQuery(firstResult.identifier);
       case PrefetchingLevel.none:

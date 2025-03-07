@@ -31,7 +31,7 @@ class BuildingPageData {
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
   final List<String> queryParts;
-  List<JsonEtage>? jsonEtagen;
+  late final List<JsonEtage> jsonEtagen;
 
   BuildingPageData(
       {required this.htmlData,
@@ -127,17 +127,15 @@ class BuildingPageData {
   static Future<void> preFetchQuery(String query) async {
     final uri = Uri.parse("$baseURL/etplan/$query");
 
-    String? body = await APIServices.Shared.fetchHMTL(uri);
-    if (body == null) {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to pre fetch query');
-    }
+    await Future.wait(
+        [JsonEtage.queryBuilding(query), APIServices.Shared.fetchHMTL(uri)]);
   }
 
   static Future<BuildingPageData> fetchQuery(String query) async {
     final queryParts = query.split("/");
     final uri = Uri.parse("$baseURL/etplan/$query");
+
+    final floorDataFuture = JsonEtage.queryBuilding(query);
 
     String? body = await APIServices.Shared.fetchHMTL(uri);
     if (body == null) {
@@ -151,7 +149,7 @@ class BuildingPageData {
     var roomResult = BuildingPageData.fromHTMLText(body, queryParts);
 
     // Json API
-    roomResult.jsonEtagen = await JsonEtage.queryBuilding(query);
+    roomResult.jsonEtagen = (await floorDataFuture)!;
 
     // Get quality index from settings
     final qualityLevel = await APIServices.Shared.storage.getQualityLevel();

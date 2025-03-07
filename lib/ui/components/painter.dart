@@ -63,7 +63,7 @@ class MapPainter extends CustomPainter {
     final currentLevelName =
         roomResult.buildingData.getCurrentLevel()!.name.trim();
     final currentLevel =
-        roomResult.jsonEtagen!.firstWhere((e) => e.etage == currentLevelName);
+        roomResult.jsonEtagen.firstWhere((e) => e.etage == currentLevelName);
 
     for (final roomType in currentLevel.typen) {
       // hide/show filtered roomColors
@@ -120,8 +120,6 @@ class MapPainter extends CustomPainter {
           if (path.contains(inverseMousePos)) {
             path.close();
             canvas.drawPath(path, strokePaint);
-
-            print("${room.name}, ${room.id}, ${highlightedRoomIdentifier}");
           }
         }
 
@@ -276,7 +274,7 @@ class MapPainter extends CustomPainter {
 
   Rect calculateDrawingArea({List<Offset>? points}) {
     final allPoints = points ??
-        roomResult.jsonEtagen!
+        roomResult.jsonEtagen
             .expand((e) => e.typen)
             .expand((r) => r.rooms)
             .expand((r) => r.mappedPoints())

@@ -57,44 +57,64 @@ enum UserUniversity {
   String toString() => value.toString();
 }
 
-enum layerFilterOptions {
+enum LayerFilterOptions {
+  /*
+  case stairwell = 11
+  case elevator = 12
+  case restroom = 13
+  case accessibleRestroom = 14
+  case babyChangingRoom = 15
+  case library = 21
+  case lecturehall = 22
+  case seminarroom = 23
+  case drawingroom = 24
+  case restingroom = 26
+  case coatroom = 27
+  case room = 29
+  case other = -1
+  */
+
   Labeling(layerName: "", icon: Icons.text_fields),
-  Seminarrooms(layerName: "seminarraeumeData", icon: Icons.school_outlined),
-  Toilets(layerName: "wcData", icon: Icons.wc),
-  Barrier_free_wc(layerName: "bwcData", icon: Icons.accessible_forward),
-  Staircase(layerName: "treppenData", icon: Icons.stairs_outlined),
-  Elevator(layerName: "aufzuegeData", icon: Icons.elevator_outlined),
-  Other_rooms(layerName: "raeumeData", icon: Icons.roofing),
+  Seminarrooms(
+      layerName: "seminarraeumeData", icon: Icons.school_outlined, id: 23),
+  Toilets(layerName: "wcData", icon: Icons.wc, id: 13),
+  Barrier_free_wc(layerName: "bwcData", icon: Icons.accessible_forward, id: 14),
+  Staircase(layerName: "treppenData", icon: Icons.stairs_outlined, id: 11),
+  Elevator(layerName: "aufzuegeData", icon: Icons.elevator_outlined, id: 12),
+  Other_rooms(layerName: "raeumeData", icon: Icons.roofing, id: 29),
   WLAN_Accesspoints(layerName: "WLAN AccessPoints", icon: Icons.wifi),
   Defirbilator(layerName: "Defibrillatoren", icon: Icons.electric_bolt),
   Changing_table(layerName: "Wickeltische", icon: Icons.baby_changing_station);
 
   final String layerName;
   final IconData icon;
-  const layerFilterOptions({required this.layerName, required this.icon});
+  final int? id;
+
+  const LayerFilterOptions(
+      {required this.layerName, required this.icon, this.id});
 
   @override
   String toString() {
     switch (this) {
-      case layerFilterOptions.Labeling:
+      case LayerFilterOptions.Labeling:
         return "Room Labels";
-      case layerFilterOptions.Seminarrooms:
+      case LayerFilterOptions.Seminarrooms:
         return "Seminar Rooms";
-      case layerFilterOptions.Toilets:
+      case LayerFilterOptions.Toilets:
         return "Toilets";
-      case layerFilterOptions.Barrier_free_wc:
+      case LayerFilterOptions.Barrier_free_wc:
         return "Barrier Free WC";
-      case layerFilterOptions.Staircase:
+      case LayerFilterOptions.Staircase:
         return "Staircase";
-      case layerFilterOptions.Elevator:
+      case LayerFilterOptions.Elevator:
         return "Elevator";
-      case layerFilterOptions.Other_rooms:
+      case LayerFilterOptions.Other_rooms:
         return "Other Rooms";
-      case layerFilterOptions.WLAN_Accesspoints:
+      case LayerFilterOptions.WLAN_Accesspoints:
         return "WLAN Accesspoints";
-      case layerFilterOptions.Defirbilator:
+      case LayerFilterOptions.Defirbilator:
         return "Defibrillator";
-      case layerFilterOptions.Changing_table:
+      case LayerFilterOptions.Changing_table:
         return "Changing table";
       default:
         return "-";
@@ -114,7 +134,7 @@ class Storage {
   static const keyCacheDuration = "CacheDuration";
 
   // Map filters
-  var filterSet = layerFilterOptions.values.toSet();
+  var filterSet = LayerFilterOptions.values.toSet();
 
   static Storage Shared = Storage();
 

@@ -41,7 +41,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
   bool showOccupancyTable = false;
   String? errorMessageOccupancyTable;
   bool updateView = false;
-  Set<layerFilterOptions> selectedFilters = {};
+  Set<LayerFilterOptions> selectedFilters = {};
 
   @override
   void dispose() {
@@ -118,7 +118,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
         });
   }
 
-  Widget filterOptionEntry(layerFilterOptions opt) {
+  Widget filterOptionEntry(LayerFilterOptions opt) {
     return StatefulBuilder(
       builder: (context, _setState) {
         return Row(
@@ -231,7 +231,7 @@ class _BuildingScreenState extends State<BuildingScreen> {
                       showModalBottomSheet(
                           context: context,
                           builder: (BuildContext context) {
-                            List<Widget> opt = layerFilterOptions.values
+                            List<Widget> opt = LayerFilterOptions.values
                                 .map((e) => filterOptionEntry(e))
                                 .toList();
                             opt.insert(

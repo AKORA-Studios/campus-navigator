@@ -64,33 +64,29 @@ class MapPainter extends CustomPainter {
         roomResult.buildingData.getCurrentLevel()!.name.trim();
     final currentLevel =
         roomResult.jsonEtagen.firstWhere((e) => e.etage == currentLevelName);
+    final fillColors = currentLevel.roomFills();
 
     for (final roomType in currentLevel.typen) {
       // hide/show filtered roomColors
       final canBeFiltered =
-          layerFilterOptions.values.any((opt) => opt.layerName == roomType.typ);
+          LayerFilterOptions.values.any((opt) => opt.id == roomType.typ);
 
       final shouldDisplay = APIServices.Shared.storage.filterSet
-          .any((element) => element.layerName == roomType.typ);
+          .any((element) => element.id == roomType.typ);
 
-      final fillColors = currentLevel.roomFills();
-      Color color = (canBeFiltered && !shouldDisplay)
-          ? Colors.transparent
-          : fromHex(fillColors[roomType.typ] ?? "#ae0000");
+      final fillColor = fillColors.containsKey(roomType.typ)
+          ? fromHex(fillColors[roomType.typ]!)
+          : Colors.transparent;
+      Color color =
+          (canBeFiltered && !shouldDisplay) ? Colors.transparent : fillColor;
 
       for (final room in roomType.rooms) {
         final mapped = room.mappedPoints();
 
+        // Make color less aggressive
+        color = color.withAlpha(darkModeEnabled ? 50 : 100);
+
         // Check if this is the highlighted room
-
-        if (color == fromHex("#ae0000")) {
-          // Highlighted color is supposed to be more aggressive
-          color = color.withAlpha(darkModeEnabled ? 150 : 200);
-        } else {
-          // Make color less aggressive
-          color = color.withAlpha(darkModeEnabled ? 50 : 100);
-        }
-
         final isHighligthed =
             highlightedRoomIdentifier?.endsWith(room.id.replaceAll("U", "-")) ??
                 false;
@@ -125,7 +121,7 @@ class MapPainter extends CustomPainter {
 
         // Beschriftungen
         if (APIServices.Shared.storage.filterSet
-            .contains(layerFilterOptions.Labeling)) {
+            .contains(LayerFilterOptions.Labeling)) {
           final polygonArea = calculateDrawingArea(points: mapped);
 
           if (room.name == null) break;
@@ -183,10 +179,8 @@ class MapPainter extends CustomPainter {
     var symbolPaint = Paint()..invertColors = darkModeEnabled;
 
     // Symbols
-    double canvWidth = roomResult.numberVariables["data_canv_width"]!;
-    double canvHeight = roomResult.numberVariables["data_canv_height"]!;
-    final xOff = canvWidth * 0.5;
-    final yOff = canvHeight * 0.5;
+    final xOff = currentLevel.maxX * 0.5;
+    final yOff = currentLevel.maxY * 0.5;
 
     canvas.translate(xOff, yOff);
     for (final LayerData l in roomResult.layers) {

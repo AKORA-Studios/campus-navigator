@@ -4,8 +4,10 @@ import 'package:campus_navigator/ui/screens/search_screen.dart';
 import 'package:campus_navigator/ui/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
+  setUp(() => FlutterSecureStorage.setMockInitialValues({}));
   testWidgets('SearchscreenNavigation', (WidgetTester tester) async {
 // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());

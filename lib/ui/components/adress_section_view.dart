@@ -4,13 +4,16 @@ import 'package:maps_launcher/maps_launcher.dart';
 
 import '../../api/building/building_page_data.dart';
 import '../../api/building/parsing/room_info.dart';
-import '../styling.dart';
 
-Widget adressSection(BuildingPageData roomPage, localizations) {
+Widget adressSection(BuildingPageData roomPage, localizations,
+    {BuildContext? context}) {
+  final linkColor = context == null
+      ? const Color(0xff006c68)
+      : Theme.of(context).colorScheme.primary;
   List<Widget> arr = [
     SizedBox(
         child: Text(localizations.adresssection_Title, //TODO: Localize
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         width: double.infinity)
   ];
   for (RoomInfo child in roomPage.buildingData.rooms) {
@@ -23,10 +26,10 @@ Widget adressSection(BuildingPageData roomPage, localizations) {
     arr.add(SelectableText.rich(TextSpan(children: [
       TextSpan(
           text: child.adress.replaceAll("<br>", "\n"),
-          style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Styling.primaryColor,
-              decorationColor: Styling.primaryColor,
+          style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: linkColor,
+              decorationColor: linkColor,
               decoration: TextDecoration.underline),
           recognizer: TapGestureRecognizer()
             ..onTap = () {

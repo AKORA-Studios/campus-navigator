@@ -138,16 +138,16 @@ class _LocationScreenState extends State<LocationScreen>
 
     if (!_serviceEnabled) {
       return Container(
-          color: Colors.red,
+          color: Theme.of(context).colorScheme.errorContainer,
           child: Text(localizations.locationScreenErrorText, style: style));
     } else if (_permissionGranted != PermissionStatus.granted &&
         _permissionGranted != PermissionStatus.grantedLimited) {
       return Container(
-          color: Colors.grey,
-          child: Text(_permissionGranted.toString(), style: style));
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: Text(localizations.mapLocationDenied, style: style));
     } else {
       return Container(
-          color: Colors.grey,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           child: Text(
               _locationData == null
                   ? ""
@@ -166,7 +166,6 @@ class _LocationScreenState extends State<LocationScreen>
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.name),
           actions: [
             IconButton(
@@ -176,7 +175,7 @@ class _LocationScreenState extends State<LocationScreen>
                 },
                 icon: const Icon(Icons.refresh)),
             IconButton(
-                tooltip: "Update info",
+                tooltip: localizations.locationUpdateInfo,
                 onPressed: null,
                 icon: Icon(
                   Icons.location_on,

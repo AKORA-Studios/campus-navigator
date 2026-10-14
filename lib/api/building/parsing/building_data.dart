@@ -20,7 +20,8 @@ class BuildingData {
     if (currLevel != null) {
       return BuildingLevel(currLevel!);
     }
-    return levels.where((element) => element.rooms.isNotEmpty).first;
+    return levels.where((element) => element.rooms.isNotEmpty).firstOrNull ??
+        levels.firstOrNull;
   }
 
   static BuildingData fromHTMLDocument(Document document) {

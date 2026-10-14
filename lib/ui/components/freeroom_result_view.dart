@@ -143,7 +143,7 @@ class _FreeroomResultViewState extends State<FreeroomResultView> {
       // allows rows to grow
       dataRowMaxHeight: double.infinity,
       columns: [
-        'DS',
+        localizations.doublePeriod,
         localizations.weekdayOne,
         localizations.weekdayTwo,
         localizations.weekdayThree,

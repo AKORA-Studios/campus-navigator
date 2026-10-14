@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:campus_navigator/api/building/parsing/building_data.dart';
 import 'package:campus_navigator/api/networking.dart';
-import 'package:campus_navigator/api/storage.dart';
 
 import '../api_services.dart';
 import 'page_image_data.dart';
@@ -20,6 +19,15 @@ final RegExp pngFileNameExp =
 final RegExp highlightedRoomExp =
     RegExp(r"ETplan\.permahighlightRaum\((\d+), (\w+)\);", multiLine: true);
 
+/// Server identity and layer/index are kept together so a label cannot select
+/// a different polygon merely because two labels overlap.
+class SelectedRoom {
+  final String id;
+  final String name;
+  final RoomPolygon polygon;
+  const SelectedRoom(this.id, this.name, this.polygon);
+}
+
 class BuildingPageData {
   final HTMLData htmlData;
   final RaumBezData raumBezData;
@@ -31,9 +39,11 @@ class BuildingPageData {
   PageImageData? backgroundImageData;
   final BuildingData buildingData;
   final List<String> queryParts;
+  final SelectedRoom? selectedRoom;
 
   BuildingPageData(
-      {required this.htmlData,
+      {this.selectedRoom,
+      required this.htmlData,
       required this.raumBezData,
       required this.numberVariables,
       required this.pngFileName,
@@ -67,29 +77,48 @@ class BuildingPageData {
         roomsEntry.key: RoomPolygon.fromJsonList(roomsEntry.value),
     };
 
-    // Outline of current building
-    final highlightedRoomMatch = highlightedRoomExp.firstMatch(htmlData.script);
-    if (highlightedRoomMatch != null) {
-      final [roomIndexString!, containingVariable!] =
-          highlightedRoomMatch.groups([1, 2]);
+    // Resolve the exact opaque room ID through the server's layer/index map.
+    // The permahighlight call is a compatibility fallback for older pages only.
+    Map<String, dynamic> readServerMap(String name) {
+      final match = RegExp('this\\.$name = (\\{[^;]+)', multiLine: true)
+          .firstMatch(htmlData.script);
+      return match == null ? {} : jsonDecode(match[1]!) as Map<String, dynamic>;
+    }
 
-      final roomIndex = int.parse(roomIndexString);
-      // `containingVariable` describes the kinetic layer, adding "Data" gives
-      // variable that actually holds the point data
-      final variableName = "${containingVariable}Data";
-
-      final roomPolygons = rooms[variableName]!;
-
-      // Search for matching polygon, the index is a index of drawed polygons
-      // One RoomPolygon contains multiple polygons so we possibly have to traverse all
-      // A List<double> is a single polygon in this case
-      List<List<double>> flattendPolygons =
-          roomPolygons.expand((element) => element.points).toList();
-
-      // Add new room list that only contains the highlighted polygon
-      final newRoomPolygon =
-          RoomPolygon(points: [flattendPolygons[roomIndex]], fill: "#ae0000");
-      rooms["hightlightedRoom"] = [newRoomPolygon];
+    final searchHelp = readServerMap('searchhelp');
+    final roomClick = readServerMap('raumclick');
+    final roomPart = queryParts.indexOf('raum');
+    final requestedId = roomPart >= 0 && roomPart + 1 < queryParts.length
+        ? queryParts[roomPart + 1]
+        : null;
+    SelectedRoom? selectedRoom;
+    final identity = requestedId == null ? null : searchHelp[requestedId];
+    final legacy = highlightedRoomExp.firstMatch(htmlData.script);
+    final layer = identity != null
+        ? identity[0] as String
+        : searchHelp.isEmpty && legacy != null
+            ? legacy[2]
+            : null;
+    final index = identity != null
+        ? (identity[1] as num).toInt()
+        : searchHelp.isEmpty && legacy != null
+            ? int.parse(legacy[1]!)
+            : null;
+    if (layer != null && index != null) {
+      final polygons =
+          rooms['${layer}Data']?.expand((room) => room.points).toList() ??
+              <List<double>>[];
+      final info = roomClick['$layer$index'];
+      final idMatches =
+          requestedId == null || info == null || info[0] == requestedId;
+      if (idMatches && index >= 0 && index < polygons.length) {
+        final polygon = RoomPolygon(points: [polygons[index]], fill: '#ae0000');
+        rooms['highlightedRoom'] = [polygon];
+        if (info != null) {
+          selectedRoom =
+              SelectedRoom(info[0] as String, info[1] as String, polygon);
+        }
+      }
     }
 
     // The file name for the background image
@@ -109,6 +138,7 @@ class BuildingPageData {
     }
 
     return BuildingPageData(
+        selectedRoom: selectedRoom,
         htmlData: htmlData,
         raumBezData: raumBezData,
         pngFileName: pngFileName,
@@ -155,7 +185,7 @@ class BuildingPageData {
     // Start loading process for images
     roomResult.backgroundImageData = PageImageData.fetchLevelImages(
         roomResult.pngFileName, roomResult.layers, roomResult.subpics,
-        qualiIndex: (qualityLevel - 1));
+        qualiIndex: (qualityLevel - 1), adaptive: true);
 
     return roomResult;
   }

@@ -78,7 +78,7 @@ class RaumBezDataEntry {
       y: (json["y"] as num).toDouble(),
       mx: (json["mx"] as num).toDouble(),
       my: (json["my"] as num).toDouble(),
-      th: 0, //json["th"],
+      th: (json["th"] as num?)?.toDouble(),
     );
   }
 }

@@ -1,0 +1,183 @@
+00:00 +0: loading F:/apps/Codex/campus-ui-refinement/test/api_tests/loginresponse_test.dart
+00:00 +0: F:/apps/Codex/campus-ui-refinement/test/api_tests/loginresponse_test.dart: [API] LoginTests successfullRequest
+00:00 +1: F:/apps/Codex/campus-ui-refinement/test/api_tests/loginresponse_test.dart: [API] LoginTests siteAvailability
+00:00 +2: F:/apps/Codex/campus-ui-refinement/test/api_tests/loginresponse_test.dart: [API] LoginTests serverException
+00:00 +3: F:/apps/Codex/campus-ui-refinement/test/api_tests/roomoccupancyplanresponse_test.dart: [API] LoginTests successfullRequest
+Warning: No Tables in Room OccupancyTable
+00:00 +4: F:/apps/Codex/campus-ui-refinement/test/api_tests/roomoccupancyplanresponse_test.dart: [API] LoginTests serverException
+00:00 +5: F:/apps/Codex/campus-ui-refinement/test/api_tests/searchresponse_test.dart: [API] SearchTest successfullRequest - fetchRoomLink
+00:00 +6: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +7: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +8: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +9: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +10: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +11: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +12: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +13: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +14: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +15: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +16: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +17: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +18: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +19: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +20: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:00 +21: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: A is default and stored B changes real favorite rows immediately
+00:01 +22: F:/apps/Codex/campus-ui-refinement/test/regression/campus_identity_layout_test.dart: compact hub does not reserve button space in a passive heading
+00:01 +23: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: search zoom starts loading native detail tiles for high density
+00:01 +24: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: search zoom starts loading native detail tiles for high density
+00:02 +25: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: saved map preference and B reach the real map without losing camera
+00:02 +26: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: saved map preference and B reach the real map without losing camera
+00:02 +27: F:/apps/Codex/campus-ui-refinement/test/regression/app_preferences_integration_test.dart: saved map preference and B reach the real map without losing camera
+00:02 +28: F:/apps/Codex/campus-ui-refinement/test/regression/campus_identity_layout_test.dart: selected building keeps all map tools inside a rotated phone
+00:02 +29: F:/apps/Codex/campus-ui-refinement/test/regression/campus_identity_layout_test.dart: selected building keeps all map tools inside a rotated phone
+00:02 +30: F:/apps/Codex/campus-ui-refinement/test/regression/campus_identity_layout_test.dart: selected building keeps all map tools inside a rotated phone
+00:02 +31: F:/apps/Codex/campus-ui-refinement/test/regression/campus_identity_layout_test.dart: selected building keeps all map tools inside a rotated phone
+00:02 +32: F:/apps/Codex/campus-ui-refinement/test/regression/campus_identity_layout_test.dart: selected building keeps all map tools inside a rotated phone
+00:02 +33: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +34: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +35: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +36: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +37: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +38: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +39: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +40: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +41: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +42: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +43: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +44: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +45: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +46: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +47: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +48: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:02 +49: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:03 +50: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:03 +50 ~1: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:03 +51 ~1: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:03 +52 ~1: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 320.0
+00:03 +53 ~1: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: navigation keeps favorites, room query and campus camera alive
+00:03 +54 ~1: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: navigation keeps favorites, room query and campus camera alive
+00:03 +55 ~1: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~1: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~2: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~3: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~4: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~5: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~6: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~7: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~8: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~9: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~10: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~11: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~12: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~13: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~14: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~15: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~16: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~17: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~18: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~19: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~20: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~21: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~22: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~23: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~24: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~25: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +56 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +57 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +58 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/interaction_test.dart: map, filters and information at 1280.0
+00:03 +59 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +60 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +61 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +62 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +63 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +64 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +65 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +66 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +67 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +68 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +69 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +70 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +71 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +72 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +73 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +74 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +75 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +76 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +77 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +78 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +79 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +80 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +81 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +82 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +83 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +84 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +85 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:03 +86 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:04 +87 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:04 +88 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:04 +89 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/campus_map_widget_test.dart: phone and tablet: select real APB/BAR, styles, zoom and attribution fit
+00:04 +90 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +91 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +92 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +93 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +94 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +95 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +96 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +97 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +98 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +99 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +100 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +101 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +102 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +103 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +104 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +105 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +106 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +107 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +108 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +109 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +110 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: building search keeps TU identifiers with German umlauts
+00:04 +111 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_flow_test.dart: typing is debounced and stale search results cannot be selected
+00:04 +112 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_flow_test.dart: typing is debounced and stale search results cannot be selected
+00:04 +113 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_flow_test.dart: typing is debounced and stale search results cannot be selected
+00:04 +114 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_flow_test.dart: typing is debounced and stale search results cannot be selected
+00:05 +115 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_flow_test.dart: typing is debounced and stale search results cannot be selected
+00:05 +116 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_flow_test.dart: typing is debounced and stale search results cannot be selected
+00:05 +117 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_flow_test.dart: typing is debounced and stale search results cannot be selected
+00:05 +118 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +119 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +120 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +121 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +122 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +123 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +124 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +125 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +126 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +127 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +128 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +128 ~26: F:/apps/Codex/campus-ui-refinement/test/widget_test.dart: [API] LoginTests successfullRequest
+Warning: No Tables in Room OccupancyTable
+00:05 +129 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +130 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +131 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:05 +132 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +133 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +134 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +135 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +136 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +137 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +138 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +139 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +140 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +141 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +142 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:06 +143 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: large room result lists remain scrollable and open the last ID
+00:07 +144 ~26: F:/apps/Codex/campus-ui-refinement/test/settings/settings_screen_test.dart: cache confirmation clears temp data and preserves places
+00:07 +145 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: failed full search leaves a retry action and current results
+00:07 +146 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: empty home fits small phone and landscape tablet in both themes
+00:07 +147 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: favorite room also in history and same-name other room navigate by ID
+00:07 +148 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: search stars persist across a fresh home, removal also persists
+00:07 +149 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: loading, network error, retry, no results and clear search recover
+00:07 +150 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: failed opening creates no history and a later tap can retry
+00:07 +151 ~26: F:/apps/Codex/campus-ui-refinement/test/regression/search_favorites_widget_test.dart: unavailable local storage shows retry and reloads successfully
+00:07 +152 ~26: All tests passed!

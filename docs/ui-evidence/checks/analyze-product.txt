@@ -1,0 +1,40 @@
+Analyzing campus-ui-refinement...
+
+   info - The variable name 'Shared' isn't a lowerCamelCase identifier - lib\api\api_services.dart:15:22 - non_constant_identifier_names
+   info - The file name 'roomOccupancyPlan.dart' isn't a lower_case_with_underscores identifier - lib\api\building\roomOccupancyPlan.dart:1:1 - file_names
+   info - Use 'isEmpty' instead of 'length' to test whether the collection is empty - lib\api\building\roomOccupancyPlan.dart:18:9 - prefer_is_empty
+   info - Don't invoke 'print' in production code - lib\api\building\roomOccupancyPlan.dart:19:7 - avoid_print
+   info - The extension name 'FreeroomSearchResult_APIExtension' isn't an UpperCamelCase identifier - lib\api\freeroom_search\search.dart:11:11 - camel_case_extensions
+   info - The extension name 'APIServices_Util' isn't an UpperCamelCase identifier - lib\api\networking.dart:12:11 - camel_case_extensions
+   info - The constant name 'TUD' isn't a lowerCamelCase identifier - lib\api\storage.dart:49:3 - constant_identifier_names
+   info - The constant name 'HTW' isn't a lowerCamelCase identifier - lib\api\storage.dart:50:3 - constant_identifier_names
+   info - The type name 'layerFilterOptions' isn't an UpperCamelCase identifier - lib\api\storage.dart:63:6 - camel_case_types
+   info - The constant name 'Labeling' isn't a lowerCamelCase identifier - lib\api\storage.dart:64:3 - constant_identifier_names
+   info - The constant name 'Seminarrooms' isn't a lowerCamelCase identifier - lib\api\storage.dart:65:3 - constant_identifier_names
+   info - The constant name 'Toilets' isn't a lowerCamelCase identifier - lib\api\storage.dart:66:3 - constant_identifier_names
+   info - The constant name 'Barrier_free_wc' isn't a lowerCamelCase identifier - lib\api\storage.dart:67:3 - constant_identifier_names
+   info - The constant name 'Staircase' isn't a lowerCamelCase identifier - lib\api\storage.dart:68:3 - constant_identifier_names
+   info - The constant name 'Elevator' isn't a lowerCamelCase identifier - lib\api\storage.dart:69:3 - constant_identifier_names
+   info - The constant name 'Other_rooms' isn't a lowerCamelCase identifier - lib\api\storage.dart:70:3 - constant_identifier_names
+   info - The constant name 'WLAN_Accesspoints' isn't a lowerCamelCase identifier - lib\api\storage.dart:71:3 - constant_identifier_names
+   info - The constant name 'Defirbilator' isn't a lowerCamelCase identifier - lib\api\storage.dart:72:3 - constant_identifier_names
+   info - The constant name 'Changing_table' isn't a lowerCamelCase identifier - lib\api\storage.dart:73:3 - constant_identifier_names
+   info - The variable name 'Shared' isn't a lowerCamelCase identifier - lib\api\storage.dart:122:18 - non_constant_identifier_names
+   info - Use 'const' with the constructor to improve performance - lib\ui\components\adress_section_view.dart:16:20 - prefer_const_constructors
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\ui\components\freeroom_result_view.dart:75:16 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\ui\components\freeroom_result_view.dart:76:20 - deprecated_member_use
+   info - The file name 'occupancyTableView.dart' isn't a lower_case_with_underscores identifier - lib\ui\components\occupancyTableView.dart:1:1 - file_names
+   info - Use 'const' with the constructor to improve performance - lib\ui\components\occupancyTableView.dart:71:15 - prefer_const_constructors
+   info - Statements in an if should be enclosed in a block - lib\ui\screens\building_screen.dart:84:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\ui\screens\building_screen.dart:200:15 - curly_braces_in_flow_control_structures
+   info - Don't invoke 'print' in production code - lib\ui\screens\location_screen.dart:160:5 - avoid_print
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\ui\styling.dart:11:24 - deprecated_member_use
+   info - 'MaterialState' is deprecated and shouldn't be used. Use WidgetState instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\ui\styling.dart:12:29 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\ui\styling.dart:18:14 - deprecated_member_use
+   info - The variable name 'ds_to_time' isn't a lowerCamelCase identifier - lib\util.dart:1:8 - non_constant_identifier_names
+   info - The prefix 'loginresponseTest' isn't a lower_case_with_underscores identifier - test\widget_test.dart:4:49 - library_prefixes
+   info - The prefix 'roomoccupancyplanresponseTest' isn't a lower_case_with_underscores identifier - test\widget_test.dart:6:8 - library_prefixes
+   info - The prefix 'searchresponseTest' isn't a lower_case_with_underscores identifier - test\widget_test.dart:7:50 - library_prefixes
+   info - The prefix 'searchscreenTest' isn't a lower_case_with_underscores identifier - test\widget_test.dart:8:47 - library_prefixes
+
+36 issues found. (ran in 4.3s)

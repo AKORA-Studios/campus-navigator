@@ -1,0 +1,5 @@
+Analyzing campus-ui-refinement...
+
+   info - The variable name 'Shared' isn't a lowerCamelCase identifier - lib\api\api_services.dart:15:22 - non_constant_identifier_names
+
+1 issue found. (ran in 7.8s)

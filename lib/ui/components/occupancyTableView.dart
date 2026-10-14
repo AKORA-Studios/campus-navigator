@@ -4,7 +4,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 Widget occupancyTableView(
-    List<List<List<String>>>? roomPlan, bool showOccupancyTable) {
+    List<List<List<String>>>? roomPlan, bool showOccupancyTable,
+    {BuildContext? context}) {
+  final colors = context == null ? null : Theme.of(context).colorScheme;
   var basicStyle = const TextStyle(fontSize: 12);
   var boldStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
   List<Widget> allTables = [];
@@ -52,7 +54,8 @@ Widget occupancyTableView(
       if (index == 0) {
         tableRows.add(TableRow(
             children: rowEntries,
-            decoration: const BoxDecoration(color: Styling.primaryColor)));
+            decoration: BoxDecoration(
+                color: colors?.primaryContainer ?? Styling.primaryColor)));
       } else {
         tableRows.add(TableRow(children: rowEntries));
       }
@@ -72,7 +75,12 @@ Widget occupancyTableView(
       children: tableRows,
     );
     if (tableRows.isNotEmpty) {
-      allTables.add(Text(RoomOccupancyPlan.tableNames[i]));
+      // Server headings can be dates/week numbers. Do not infer chronology.
+      // The legacy parser may drop empty tables but keep their heading;
+      // in that case omit ambiguous headings rather than attach a wrong week.
+      if (RoomOccupancyPlan.tableNames.length == roomPlan.length) {
+        allTables.add(Text(RoomOccupancyPlan.tableNames[i]));
+      }
       allTables.add(fullTable);
       allTables.add(const SizedBox(
         height: 10,

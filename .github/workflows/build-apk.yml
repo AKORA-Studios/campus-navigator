@@ -1,0 +1,47 @@
+name: Build Android test APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, work/ui-polish-and-darkmode]
+    paths:
+      - '.github/workflows/build-apk.yml'
+      - 'lib/**'
+      - 'test/**'
+      - 'android/**'
+      - 'images/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Analyze changed code (legacy lints remain documented)
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - run: flutter test
+      - name: Build installable APK signed with the Android debug key
+        run: flutter build apk --debug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: campus-navigator-android-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14

@@ -9,7 +9,7 @@ class Styling {
 
   static final settingsSegmentedButtonStyle = ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith((states) {
-        if (states.firstOrNull == MaterialState.selected) {
+        if (states.contains(MaterialState.selected)) {
           return Styling.primaryColor;
         } else {
           return Colors.transparent;
@@ -33,8 +33,10 @@ class AppTheme {
   static ThemeData themeData(ColorScheme colorScheme) {
     return ThemeData(
         colorScheme: colorScheme,
-        canvasColor: colorScheme.background,
-        scaffoldBackgroundColor: colorScheme.background,
+        canvasColor: colorScheme.surface,
+        scaffoldBackgroundColor: colorScheme.surface,
+        appBarTheme: const AppBarTheme(elevation: 0, scrolledUnderElevation: 0),
+        dividerTheme: DividerThemeData(color: colorScheme.outlineVariant),
         highlightColor: Colors.transparent,
         useMaterial3: true,
         focusColor: const Color(0xff88ccb4),
@@ -46,31 +48,22 @@ class AppTheme {
             valueIndicatorTextStyle: const TextStyle(color: Colors.white)));
   }
 
-  static const ColorScheme lightColorScheme = ColorScheme(
-    primary: Styling.primaryColor,
-    onPrimary: Color(0xFFD8F1F1),
-    secondary: Styling.secondaryColor,
-    onSecondary: Color(0xff424242),
-    error: Colors.redAccent,
-    onError: Colors.white,
-    background: Color(0xFFFFFFFF),
-    onBackground: Colors.grey,
-    surface: Color(0xFFFAFBFB),
-    onSurface: Color(0xFF545454),
+  // One restrained accent; all foreground/background pairs are opaque.
+  static final lightColorScheme = ColorScheme.fromSeed(
+    seedColor: const Color(0xff006c68),
     brightness: Brightness.light,
-  );
+  ).copyWith(
+      surface: const Color(0xfffafbfb),
+      onSurface: const Color(0xff20292d),
+      primary: const Color(0xff006c68),
+      onPrimary: Colors.white);
 
-  static const ColorScheme darkColorScheme = ColorScheme(
-    primary: Styling.primaryColor,
-    secondary: Styling.secondaryColor,
-    background: Color(0xFF0E0E0E),
-    surface: Color(0xFF1E1E1E),
-    onBackground: Color(0x5ABBBBBB),
-    error: Colors.redAccent,
-    onError: Colors.white,
-    onPrimary: Color(0x34606060),
-    onSecondary: Colors.white,
-    onSurface: Colors.white,
+  static final darkColorScheme = ColorScheme.fromSeed(
+    seedColor: const Color(0xff006c68),
     brightness: Brightness.dark,
-  );
+  ).copyWith(
+      surface: const Color(0xff20282d),
+      onSurface: const Color(0xffedf1f3),
+      primary: const Color(0xff8bd2c9),
+      onPrimary: const Color(0xff003733));
 }

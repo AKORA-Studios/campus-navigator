@@ -87,7 +87,6 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(localizations.freeroomsearchScreen_Title),
         ),
         body: Container(
@@ -166,7 +165,7 @@ class _FreeroomSearchScreenState extends State<FreeroomSearchScreen> {
                     future: result,
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
-                        return Text('${snapshot.error}');
+                        return Text(localizations.freeRoomFailed);
                       } else if (!snapshot.hasData) {
                         return const SizedBox.shrink();
                       }

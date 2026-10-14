@@ -15,8 +15,9 @@ enum PrefetchingLevel {
   }
 
   static PrefetchingLevel deserialize(String value) {
-    return PrefetchingLevel.values
-        .firstWhere((element) => element.value == value);
+    return PrefetchingLevel.values.firstWhere(
+        (element) => element.value == value,
+        orElse: () => PrefetchingLevel.firstResult);
   }
 }
 
@@ -35,10 +36,12 @@ enum CacheDuration {
   }
 
   static CacheDuration deserialize(String value) {
-    final daysInt = int.parse(value);
+    final daysInt = int.tryParse(value);
+    if (daysInt == null) return CacheDuration.day;
 
-    return CacheDuration.values
-        .firstWhere((element) => element.value.inDays == daysInt);
+    return CacheDuration.values.firstWhere(
+        (element) => element.value.inDays == daysInt,
+        orElse: () => CacheDuration.day);
   }
 }
 
@@ -139,8 +142,24 @@ class Storage {
   }
 
   Future<UserUniversity> getUniversity() async {
-    var value = await storage.read(key: keyUniversity);
-    return UserUniversity.fromValue(int.parse(value ?? "1"));
+    try {
+      return await getUniversityStrict();
+    } catch (_) {
+      return UserUniversity.TUD;
+    }
+  }
+
+  /// Reads the saved university and propagates storage read failures.
+  /// Invalid stored values use the documented TUD default, while Settings can
+  /// distinguish a real storage failure from a corrupt preference.
+  Future<UserUniversity> getUniversityStrict() async {
+    final storedValue = await storage.read(key: keyUniversity);
+    final value = int.tryParse(storedValue ?? '1');
+    if (value == null) return UserUniversity.TUD;
+    return UserUniversity.values.firstWhere(
+      (university) => university.value == value,
+      orElse: () => UserUniversity.TUD,
+    );
   }
 
   Future<void> editUniversity(UserUniversity newValue) async {
@@ -152,15 +171,12 @@ class Storage {
 
   // Quality Level
   Future<int> getQualityLevel() async {
-    final storedValue = await storage.read(key: keyQualityLevel);
-
-    // Default value
-    if (storedValue == null) {
-      await setQualityLevel(4);
-      return await getQualityLevel();
-    }
-
-    return int.parse(storedValue);
+    try {
+      final storedValue = await storage.read(key: keyQualityLevel);
+      final value = int.tryParse(storedValue ?? "");
+      if (value != null && value >= 1 && value <= 4) return value;
+    } catch (_) {/* Use the documented default when secure storage fails. */}
+    return 4;
   }
 
   Future<void> setQualityLevel(int newValue) async {
@@ -173,15 +189,13 @@ class Storage {
 
   // Prefetching Level
   Future<PrefetchingLevel> getPrefetchingLevel() async {
-    final storedValue = await storage.read(key: keyPrefetchingLevel);
-
-    // Default value
-    if (storedValue == null) {
-      await setPrefetchingLevel(PrefetchingLevel.firstResult);
-      return await getPrefetchingLevel();
+    try {
+      final storedValue = await storage.read(key: keyPrefetchingLevel);
+      if (storedValue != null) return PrefetchingLevel.deserialize(storedValue);
+    } catch (_) {
+      // A bad preference must not break room search prefetching.
     }
-
-    return PrefetchingLevel.deserialize(storedValue);
+    return PrefetchingLevel.firstResult;
   }
 
   Future<void> setPrefetchingLevel(PrefetchingLevel newValue) async {
@@ -191,15 +205,13 @@ class Storage {
 
   // Cache duration
   Future<CacheDuration> getCacheDuration() async {
-    final storedValue = await storage.read(key: keyCacheDuration);
-
-    // Default value
-    if (storedValue == null) {
-      await setCacheDuration(CacheDuration.day);
-      return await getCacheDuration();
+    try {
+      final storedValue = await storage.read(key: keyCacheDuration);
+      if (storedValue != null) return CacheDuration.deserialize(storedValue);
+    } catch (_) {
+      // A bad preference must not stop cached networking from working.
     }
-
-    return CacheDuration.deserialize(storedValue);
+    return CacheDuration.day;
   }
 
   Future<void> setCacheDuration(CacheDuration newValue) async {

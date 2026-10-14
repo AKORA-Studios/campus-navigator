@@ -48,3 +48,6 @@ app.*.map.json
 # A
 data/
 coverage
+
+# Generated visual-test diagnostics (keep golden references tracked).
+/test/regression/failures/

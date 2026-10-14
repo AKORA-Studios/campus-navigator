@@ -1,127 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DraggableBottomSheet extends StatefulWidget {
   const DraggableBottomSheet(
-      {super.key, required this.name, required this.child});
+      {super.key, required this.name, required this.child, this.leading});
   final String name;
   final Widget child;
-
+  final Widget? leading;
+  static double headerHeight(BuildContext context) =>
+      48 + MediaQuery.textScalerOf(context).scale(16);
   @override
   State<DraggableBottomSheet> createState() => _DraggableBottomSheetState();
 }
 
 class _DraggableBottomSheetState extends State<DraggableBottomSheet> {
-  final _sheet = GlobalKey();
   final _controller = DraggableScrollableController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(_onChanged);
-  }
-
-  void _onChanged() {
-    final currentSize = _controller.size;
-    if (currentSize <= 0.05) _collapse();
-  }
-
-  void _collapse() => _animateSheet(sheet.snapSizes!.first);
-
-  void _anchor() => _animateSheet(sheet.snapSizes!.last);
-
-  void _expand() => _animateSheet(sheet.maxChildSize);
-
-  void _hide() => _animateSheet(sheet.minChildSize);
-
-  void _animateSheet(double size) {
+  double _collapsed = 0.15;
+  void _toggle() {
+    if (!_controller.isAttached) return;
     _controller.animateTo(
-      size,
-      duration: const Duration(milliseconds: 50),
-      curve: Curves.easeInOut,
-    );
+        _controller.size < _collapsed + 0.05 ? 0.55 : _collapsed,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut);
   }
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
-
-  DraggableScrollableSheet get sheet =>
-      (_sheet.currentWidget as DraggableScrollableSheet);
 
   @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      key: _sheet,
-      initialChildSize: 0.3,
-      maxChildSize: 1.0,
-      minChildSize: 0.1,
-      expand: true,
-      snap: true,
-      snapSizes: const [0.15, 0.4, 1.0],
-      controller: _controller,
-      builder: (BuildContext context, ScrollController scrollController) {
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            // border: Border.all(color: Colors.grey),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 5,
-                blurStyle: BlurStyle.normal,
-                color: Theme.of(context).shadowColor.withAlpha(100),
-                offset: Offset.zero,
-                spreadRadius: 2,
-              ),
-            ],
+  Widget build(BuildContext context) =>
+      LayoutBuilder(builder: (context, constraints) {
+        final headerHeight = DraggableBottomSheet.headerHeight(context);
+        _collapsed = (headerHeight / constraints.maxHeight).clamp(0.0, 0.85);
+        return DraggableScrollableSheet(
+          initialChildSize: _collapsed,
+          minChildSize: _collapsed,
+          maxChildSize: 0.9,
+          snap: true,
+          snapSizes: {_collapsed, if (_collapsed < 0.55) 0.55, 0.9}.toList(),
+          controller: _controller,
+          builder: (context, scrollController) => Material(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-          ),
-          child: CustomScrollView(
-            controller: scrollController,
-            slivers: [
-              SliverList.list(
-                children: [
-                  const Grabber(),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: widget.child,
-                  )
-                ],
-              ),
-            ],
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
+                side: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant)),
+            clipBehavior: Clip.antiAlias,
+            child: CustomScrollView(controller: scrollController, slivers: [
+              SliverToBoxAdapter(
+                  child: AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, _) => Semantics(
+                          button: true,
+                          label: _controller.isAttached &&
+                                  _controller.size > _collapsed + .03
+                              ? AppLocalizations.of(context)!
+                                  .roomDetailsCollapse
+                              : AppLocalizations.of(context)!.roomDetailsExpand,
+                          child: InkWell(
+                            onTap: _toggle,
+                            child: SizedBox(
+                                height: headerHeight,
+                                child: Column(children: [
+                                  const Grabber(),
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      child: Row(children: [
+                                        if (widget.leading != null) ...[
+                                          widget.leading!,
+                                          const SizedBox(width: 12)
+                                        ],
+                                        Expanded(
+                                            child: Text(widget.name,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall)),
+                                        const Icon(Icons.unfold_more, size: 20)
+                                      ])),
+                                ])),
+                          )))),
+              SliverToBoxAdapter(
+                  child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+                      child: widget.child)),
+            ]),
           ),
         );
-      },
-    );
-  }
+      });
 }
 
 class Grabber extends StatelessWidget {
   const Grabber({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      color: Colors.transparent,
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8.0),
-          width: 32.0,
-          height: 4.0,
+  Widget build(BuildContext context) => Center(
+      child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          width: 32,
+          height: 4,
           decoration: BoxDecoration(
-            color: colorScheme.onSurface,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-      ),
-    );
-  }
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              borderRadius: BorderRadius.circular(2))));
 }
